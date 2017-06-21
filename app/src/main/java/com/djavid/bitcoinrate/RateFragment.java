@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +50,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import at.grabner.circleprogress.CircleProgressView;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,6 +71,10 @@ public class RateFragment extends Fragment {
     private TextView topPanel, leftPanel;
     private Spinner rightPanel;
     LineChart chart;
+    API api;
+
+    private final static String TAG = "MainActivity";
+    CircleProgressView mCircleView;
 
 
     private OnFragmentInteractionListener mListener;
@@ -94,20 +101,6 @@ public class RateFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    private AdapterView.OnItemSelectedListener itemSelectedListener =
-            new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            String curr = (String)parent.getItemAtPosition(position);
-            viewRate(curr);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -118,11 +111,30 @@ public class RateFragment extends Fragment {
         rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
         chart = (LineChart) view.findViewById(R.id.chart);
 
-        viewRate("USD");
-        viewChart("30days");
-        getCurrencies();
+        mCircleView = (CircleProgressView) view.findViewById(R.id.circleView);
+        mCircleView.setSpinSpeed(3);
+        mCircleView.setVisibility(View.VISIBLE);
+        topPanel.setVisibility(View.GONE);
+
+        spin(true);
+        api = new API(getActivity(), view, mCircleView);
+        api.viewRate("USD");
+        api.viewChart("30days");
+        api.getCurrencies();
 
         return view;
+    }
+
+    private void spin(boolean state) {
+        if (state) {
+            mCircleView.spin();
+            mCircleView.setVisibility(View.VISIBLE);
+            topPanel.setVisibility(View.GONE);
+        } else {
+            mCircleView.stopSpinning();
+            mCircleView.setVisibility(View.GONE);
+            topPanel.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -135,8 +147,11 @@ public class RateFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.refresh){
-            Toast.makeText(getActivity(), "Refreshed", Toast.LENGTH_SHORT).show();
-            viewRate(rightPanel.getSelectedItem().toString());
+            spin(true);
+
+            if (api != null && rightPanel.getSelectedItemPosition() == 0) {
+                api.viewRate(rightPanel.getSelectedItem().toString());
+            }
 
             return true;
         }
@@ -183,131 +198,6 @@ public class RateFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void viewRate(final String currency) {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "https://blockchain.info/ru/ticker";
-
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject ticker = response.getJSONObject(currency);
-                            double price = ticker.getDouble("last");
-
-                            DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-                            symbols.setGroupingSeparator(' ');
-                            DecimalFormat formatter = new DecimalFormat("###,###.##", symbols);
-                            String text2 = formatter.format(price) + " " + currency;
-
-                            if (!topPanel.getText().equals(text2)) {
-                                topPanel.setText(text2);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
-
-        queue.add(jsonRequest);
-    }
-
-    private void viewChart(String timespan) {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "https://blockchain.info/ru/charts/market-price?"
-                + "timespan=" + timespan + "&" + "sampled=true&" + "format=json";
-
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray values = response.getJSONArray("values");
-                            List<Entry> entries = new ArrayList<Entry>();
-
-                            for (int i = 0; i < values.length(); i++) {
-                                JSONObject tick = values.getJSONObject(i);
-                                Date x = new Date(tick.getLong("x") * 1000);
-                                double y = tick.getDouble("y");
-
-                                entries.add(new Entry(i, (float)y));
-                            }
-
-                            LineDataSet dataSet = new LineDataSet(entries, "");
-                            int color = getResources().getColor(R.color.colorChart);
-                            dataSet.setColor(color);
-                            dataSet.setDrawCircles(false);
-                            dataSet.setDrawValues(false);
-                            dataSet.setLineWidth(4);
-
-
-                            LineData lineData = new LineData(dataSet);
-                            chart.setData(lineData);
-                            Description desc = new Description();
-                            desc.setText("");
-                            chart.setDescription(desc);
-                            chart.getLegend().setEnabled(false);
-                            chart.getAxisRight().setDrawLabels(false);
-                            chart.invalidate();
-
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
-
-        queue.add(jsonRequest);
-    }
-
-    private void getCurrencies() {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "https://blockchain.info/ru/ticker";
-
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray keys = response.names();
-                            String[] names = new String[keys.length()];
-
-                            for (int i = 0; i < names.length; i++) {
-                                names[i] = keys.getString(i);
-                            }
-
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                                    R.layout.currency_spinner, names);
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            rightPanel.setAdapter(adapter);
-                            rightPanel.setOnItemSelectedListener(itemSelectedListener);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
-
-
-        queue.add(jsonRequest);
-    }
 }
 
 
