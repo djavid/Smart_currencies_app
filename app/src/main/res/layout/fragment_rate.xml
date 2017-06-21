@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.djavid.bitcoinrate.RateFragment">
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/CardViewStyle">
+
+        <TextView
+            android:id="@+id/topPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/top_value_fragment"
+            android:gravity="center"
+            android:textSize="40sp" />
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/CardViewStyle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:weightSum="9">
+
+            <TextView
+                android:id="@+id/leftPanel"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="@string/left_value_fragment"
+                android:textSize="30sp" />
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/switch_imagebutton"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_compare_arrows" />
+
+            <Spinner
+                android:id="@+id/rightPanel"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="4"
+                android:text="@string/right_value_fragment" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        style="@style/CardViewStyle">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"/>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
