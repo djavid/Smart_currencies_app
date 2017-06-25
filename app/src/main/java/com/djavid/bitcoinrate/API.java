@@ -104,8 +104,6 @@ public class API {
                                 topPanel.setText(text2);
                             }
 
-                            Toast.makeText(activity, "Refreshed", Toast.LENGTH_SHORT).show();
-
                             mCircleView.stopSpinning();
                             mCircleView.setVisibility(View.GONE);
                             topPanel.setVisibility(View.VISIBLE);

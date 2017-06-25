@@ -9,8 +9,14 @@
     <string name="left_value_fragment">BTC</string>
     <string name="right_value_fragment">USD</string>
     <string name="switch_imagebutton">Switch currencies</string>
+    <string name="option_one">30 days</string>
+    <string name="option_two">3 months</string>
+    <string name="option_three">6 months</string>
+    <string name="option_four">1 year</string>
 
     <!-- Action bar strings -->
     <string name="main_menu_item_1">Refresh rate</string>
+
+
 
 </resources>

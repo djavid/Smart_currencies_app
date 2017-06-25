@@ -116,6 +116,11 @@ public class RateFragment extends Fragment {
         mCircleView.setVisibility(View.VISIBLE);
         topPanel.setVisibility(View.GONE);
 
+        view.findViewById(R.id.optionFirst).setOnClickListener(onChartOptionClick);
+        view.findViewById(R.id.optionSecond).setOnClickListener(onChartOptionClick);
+        view.findViewById(R.id.optionThird).setOnClickListener(onChartOptionClick);
+        view.findViewById(R.id.optionFourth).setOnClickListener(onChartOptionClick);
+
         spin(true);
         api = new API(getActivity(), view, mCircleView);
         api.viewRate("USD");
@@ -124,6 +129,22 @@ public class RateFragment extends Fragment {
 
         return view;
     }
+
+    View.OnClickListener onChartOptionClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.optionFirst) {
+                api.viewChart("30days");
+            } else if (v.getId() == R.id.optionSecond) {
+                api.viewChart("90days");
+            } else if (v.getId() == R.id.optionThird) {
+                api.viewChart("180days");
+            } else if (v.getId() == R.id.optionFourth) {
+                api.viewChart("1year");
+            }
+        }
+    };
+
 
     private void spin(boolean state) {
         if (state) {
