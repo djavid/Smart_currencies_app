@@ -7,12 +7,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -50,21 +46,21 @@ public class API {
     private View view;
     private TextView topPanel, leftPanel;
     private Spinner rightPanel;
-    private LineChart chart;
     CircleProgressView mCircleView;
+    private RateChart chart;
 
 
-    public API(Activity activity, View view, CircleProgressView circle) {
+    public API(Activity activity, View view, CircleProgressView circle, RateChart chart) {
         queue = Volley.newRequestQueue(activity);
         this.activity = activity;
         this.view = view;
         mCircleView = circle;
+        this.chart = chart;
 
         if (view != null) {
             topPanel = (TextView) view.findViewById(R.id.topPanel);
             leftPanel = (TextView) view.findViewById(R.id.leftPanel);
             rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
-            chart = (LineChart) view.findViewById(R.id.chart);
             mCircleView = (CircleProgressView) view.findViewById(R.id.circleView);
             mCircleView.setSpinSpeed(3);
         }
@@ -152,29 +148,15 @@ public class API {
 
                             for (int i = 0; i < values.length(); i++) {
                                 JSONObject tick = values.getJSONObject(i);
-                                Date x = new Date(tick.getLong("x") * 1000);
+                                //Date x = new Date(tick.getLong("x") * 1000);
+                                long X = tick.getLong("x") * 1000;
                                 double y = tick.getDouble("y");
 
-                                entries.add(new Entry(i, (float)y));
+                                entries.add(new Entry(X, (float)y));
                             }
 
-                            LineDataSet dataSet = new LineDataSet(entries, "");
                             int color = activity.getResources().getColor(R.color.colorChart);
-                            dataSet.setColor(color);
-                            dataSet.setDrawCircles(false);
-                            dataSet.setDrawValues(false);
-                            dataSet.setLineWidth(4);
-
-
-                            LineData lineData = new LineData(dataSet);
-                            chart.setData(lineData);
-                            Description desc = new Description();
-                            desc.setText("");
-                            chart.setDescription(desc);
-                            chart.getLegend().setEnabled(false);
-                            chart.getAxisRight().setDrawLabels(false);
-                            chart.invalidate();
-
+                            chart.initialize(entries, color);
 
                         } catch (JSONException e) {
                             e.printStackTrace();

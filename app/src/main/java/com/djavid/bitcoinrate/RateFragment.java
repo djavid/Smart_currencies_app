@@ -1,55 +1,18 @@
 package com.djavid.bitcoinrate;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
-import com.jjoe64.graphview.helper.StaticLabelsFormatter;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import at.grabner.circleprogress.CircleProgressView;
 
 
@@ -70,7 +33,7 @@ public class RateFragment extends Fragment {
     private View view;
     private TextView topPanel, leftPanel;
     private Spinner rightPanel;
-    LineChart chart;
+    RateChart chart;
     API api;
 
     private final static String TAG = "MainActivity";
@@ -109,8 +72,6 @@ public class RateFragment extends Fragment {
         topPanel = (TextView) view.findViewById(R.id.topPanel);
         leftPanel = (TextView) view.findViewById(R.id.leftPanel);
         rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
-        chart = (LineChart) view.findViewById(R.id.chart);
-
         mCircleView = (CircleProgressView) view.findViewById(R.id.circleView);
         mCircleView.setSpinSpeed(3);
         mCircleView.setVisibility(View.VISIBLE);
@@ -121,8 +82,10 @@ public class RateFragment extends Fragment {
         view.findViewById(R.id.optionThird).setOnClickListener(onChartOptionClick);
         view.findViewById(R.id.optionFourth).setOnClickListener(onChartOptionClick);
 
+        chart = new RateChart(view);
+
         spin(true);
-        api = new API(getActivity(), view, mCircleView);
+        api = new API(getActivity(), view, mCircleView, chart);
         api.viewRate("USD");
         api.viewChart("30days");
         api.getCurrencies();
