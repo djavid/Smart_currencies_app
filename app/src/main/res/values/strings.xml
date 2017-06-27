@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Курс биткоина</string>
     <string name="title_home">Курс</string>
-    <string name="title_calculator">Конвертер</string>
+    <string name="title_cards">Тикеры</string>
     <string name="title_settings">Настройки</string>
 
     <!-- fragment layout strings -->
@@ -17,6 +17,8 @@
     <!-- Action bar strings -->
     <string name="main_menu_item_1">Refresh rate</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

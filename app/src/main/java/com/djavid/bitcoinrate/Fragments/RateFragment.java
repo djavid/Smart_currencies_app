@@ -1,9 +1,10 @@
-package com.djavid.bitcoinrate;
+package com.djavid.bitcoinrate.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,23 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import com.github.mikephil.charting.charts.LineChart;
+import android.widget.Toast;
+
+import com.djavid.bitcoinrate.API;
+import com.djavid.bitcoinrate.R;
+import com.djavid.bitcoinrate.RateChart;
+
 import at.grabner.circleprogress.CircleProgressView;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RateFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RateFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class RateFragment extends Fragment {
+public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;
 
     private View view;
     private TextView topPanel, leftPanel;
@@ -38,6 +35,7 @@ public class RateFragment extends Fragment {
 
     private final static String TAG = "MainActivity";
     CircleProgressView mCircleView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     private OnFragmentInteractionListener mListener;
@@ -56,10 +54,6 @@ public class RateFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
         setHasOptionsMenu(true);
     }
@@ -72,6 +66,14 @@ public class RateFragment extends Fragment {
         topPanel = (TextView) view.findViewById(R.id.topPanel);
         leftPanel = (TextView) view.findViewById(R.id.leftPanel);
         rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(
+                getResources().getColor(R.color.colorAccent),
+                getResources().getColor(R.color.colorChart),
+                getResources().getColor(R.color.colorOptions));
+
         mCircleView = (CircleProgressView) view.findViewById(R.id.circleView);
         mCircleView.setSpinSpeed(3);
         mCircleView.setVisibility(View.VISIBLE);
@@ -130,15 +132,6 @@ public class RateFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.refresh){
-            spin(true);
-
-            if (api != null && rightPanel.getSelectedItemPosition() == 0) {
-                api.viewRate(rightPanel.getSelectedItem().toString());
-            }
-
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -165,6 +158,17 @@ public class RateFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onRefresh() {
+
+        if (api != null && rightPanel.getSelectedItemPosition() == 0) {
+            api.Refresh(mSwipeRefreshLayout);
+        } else {
+            mSwipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

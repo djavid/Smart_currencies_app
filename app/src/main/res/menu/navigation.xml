@@ -7,9 +7,9 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_calculator"
-        android:icon="@drawable/ic_account_balance_wallet_black_24dp"
-        android:title="@string/title_calculator" />
+        android:id="@+id/navigation_cards"
+        android:icon="@drawable/ic_view_agenda_black_24dp"
+        android:title="@string/title_cards" />
 
     <item
         android:id="@+id/navigation_settings"

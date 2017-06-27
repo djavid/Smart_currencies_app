@@ -33,8 +33,6 @@ class DayAxisValueFormatter implements IAxisValueFormatter
         String monthName = mMonths[month % mMonths.length - 1];
         String yearName = String.valueOf(year);
 
-        System.out.println((chart.getVisibleXRange() / 1000 / 3600 / 24));
-
         if ((chart.getVisibleXRange() / 1000 / 3600 / 24) > 30 * 5) {
 
             return monthName + " " + yearName;

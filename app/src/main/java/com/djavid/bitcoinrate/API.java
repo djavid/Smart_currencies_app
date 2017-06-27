@@ -1,12 +1,15 @@
 package com.djavid.bitcoinrate;
 
 import android.app.Activity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.ParseError;
@@ -31,6 +34,7 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +52,9 @@ public class API {
     private Spinner rightPanel;
     CircleProgressView mCircleView;
     private RateChart chart;
+    String timespan;
+    SwipeRefreshLayout refreshLayout;
+    boolean[] refreshKeys;
 
 
     public API(Activity activity, View view, CircleProgressView circle, RateChart chart) {
@@ -56,6 +63,8 @@ public class API {
         this.view = view;
         mCircleView = circle;
         this.chart = chart;
+        timespan = "30days";
+        refreshKeys = new boolean[2];
 
         if (view != null) {
             topPanel = (TextView) view.findViewById(R.id.topPanel);
@@ -104,6 +113,11 @@ public class API {
                             mCircleView.setVisibility(View.GONE);
                             topPanel.setVisibility(View.VISIBLE);
 
+                            if (refreshLayout != null) {
+                                if (refreshKeys[1]) refreshLayout.setRefreshing(false);
+                                else refreshKeys[0] = true;
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -111,21 +125,7 @@ public class API {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String message = null;
-                        if (error instanceof NetworkError) {
-                            message = "Cannot connect to Internet...Please check your connection!";
-                        } else if (error instanceof ServerError) {
-                            message = "The server could not be found. Please try again after some time!!";
-                        } else if (error instanceof AuthFailureError) {
-                            message = "Cannot connect to Internet...Please check your connection!";
-                        } else if (error instanceof ParseError) {
-                            message = "Parsing error! Please try again after some time!!";
-                        } else if (error instanceof TimeoutError) {
-                            message = "Connection TimeOut! Please check your internet connection.";
-                        }
-
-                        Log.e(TAG, message);
-                        System.out.println(message);
+                        errorHandler(error);
                     }
                 });
 
@@ -134,6 +134,7 @@ public class API {
 
     public void viewChart(String timespan) {
         if (view == null) return;
+        this.timespan = timespan;
 
         String url = "https://blockchain.info/ru/charts/market-price?"
                 + "timespan=" + timespan + "&" + "sampled=true&" + "format=json";
@@ -158,6 +159,11 @@ public class API {
                             int color = activity.getResources().getColor(R.color.colorChart);
                             chart.initialize(entries, color);
 
+                            if (refreshLayout != null) {
+                                if (refreshKeys[0]) refreshLayout.setRefreshing(false);
+                                else refreshKeys[1] = true;
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -165,7 +171,7 @@ public class API {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        errorHandler(error);
                     }
                 });
 
@@ -200,11 +206,40 @@ public class API {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        errorHandler(error);
                     }
                 });
 
 
         queue.add(jsonRequest);
+    }
+
+    private void errorHandler(VolleyError error) {
+        String message = null;
+        if (error instanceof NetworkError) {
+            message = "Cannot connect to Internet...Please check your connection!";
+        } else if (error instanceof ServerError) {
+            message = "The server could not be found. Please try again after some time!!";
+        } else if (error instanceof AuthFailureError) {
+            message = "Cannot connect to Internet...Please check your connection!";
+        } else if (error instanceof ParseError) {
+            message = "Parsing error! Please try again after some time!!";
+        } else if (error instanceof TimeoutError) {
+            message = "Connection TimeOut! Please check your internet connection.";
+        }
+
+        Log.e(TAG, message);
+
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+        if (refreshLayout != null && refreshLayout.isRefreshing())
+            refreshLayout.setRefreshing(false);
+    }
+
+    public void Refresh(SwipeRefreshLayout refreshLayout) {
+        this.refreshLayout = refreshLayout;
+        Arrays.fill(refreshKeys, false);
+
+        viewRate(rightPanel.getSelectedItem().toString());
+        viewChart(timespan);
     }
 }
