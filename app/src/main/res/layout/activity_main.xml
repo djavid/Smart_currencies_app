@@ -8,6 +8,8 @@
     android:orientation="vertical"
     tools:context="com.djavid.bitcoinrate.MainActivity">
 
+    <include layout="@layout/toolbar" />
+
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"

@@ -4,13 +4,22 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +37,9 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private static final String ARG_PARAM2 = "param2";
 
     private View view;
+    private LayoutInflater layoutInflater;
+    private PopupWindow popupWindow;
+
     private TextView topPanel, leftPanel;
     private Spinner rightPanel;
     RateChart chart;
@@ -62,11 +74,14 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_rate, container, false);
+        layoutInflater = inflater;
 
         topPanel = (TextView) view.findViewById(R.id.topPanel);
         leftPanel = (TextView) view.findViewById(R.id.leftPanel);
         rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+
+        //rightPanel.setOnClickListener(onRightCurrencySelect);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeColors(
@@ -163,12 +178,12 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh() {
 
-        if (api != null && rightPanel.getSelectedItemPosition() == 0) {
-            api.Refresh(mSwipeRefreshLayout);
-        } else {
-            mSwipeRefreshLayout.setRefreshing(false);
-            Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
-        }
+//        if (api != null && rightPanel.getSelectedItemPosition() == 0) {
+//            api.Refresh(mSwipeRefreshLayout);
+//        } else {
+//            mSwipeRefreshLayout.setRefreshing(false);
+//            Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     /**
@@ -185,6 +200,7 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 
 }
 

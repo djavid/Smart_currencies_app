@@ -1,11 +1,18 @@
 package com.djavid.bitcoinrate;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +28,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.djavid.bitcoinrate.Fragments.RateFragment;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
@@ -193,9 +201,9 @@ public class API {
                                 names[i] = keys.getString(i);
                             }
 
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
-                                    R.layout.currency_spinner, names);
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            ArrayAdapter<String> adapter =
+                                    new CurrenciesAdapter(activity, R.layout.row, names);
+
                             rightPanel.setAdapter(adapter);
                             rightPanel.setOnItemSelectedListener(itemSelectedListener);
 
@@ -241,5 +249,52 @@ public class API {
 
         viewRate(rightPanel.getSelectedItem().toString());
         viewChart(timespan);
+    }
+
+    private class CurrenciesAdapter extends ArrayAdapter<String> {
+        String[] currs;
+
+        CurrenciesAdapter(Context context, int textViewResourceId, String[] objects) {
+            super(context, textViewResourceId, objects);
+            currs = objects;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return getCustomView(position, convertView, parent);
+        }
+
+        View getCustomView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = activity.getLayoutInflater();
+            View item = inflater.inflate(R.layout.row, parent, false);
+
+            TextView name = (TextView) item.findViewById(R.id.curr_name);
+            ImageView icon = (ImageView) item.findViewById(R.id.curr_icon);
+
+            name.setText(currs[position]);
+            if (currs[position].equals("RUB")) {
+                icon.setImageResource(R.drawable.ic_russia);
+            } else if (currs[position].equals("USD")) {
+                icon.setImageResource(R.drawable.ic_united_states_of_america);
+            } else if (currs[position].equals("EUR")) {
+                icon.setImageResource(R.drawable.ic_european_union);
+            } else if (currs[position].equals("ISK")) {
+                icon.setImageResource(R.drawable.ic_iceland);
+            } else if (currs[position].equals("HKD")) {
+                icon.setImageResource(R.drawable.ic_hong_kong);
+            } else if (currs[position].equals("TWD")) {
+                icon.setImageResource(R.drawable.ic_taiwan);
+            } else {
+                icon.setImageResource(R.drawable.ic_european_union);
+            }
+
+            return item;
+        }
     }
 }
