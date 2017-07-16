@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate;
+package com.djavid.bitcoinrate.Activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.djavid.bitcoinrate.Fragments.RateFragment;
 import com.djavid.bitcoinrate.Fragments.TicketFragment;
+import com.djavid.bitcoinrate.R;
 
 
 public class MainActivity extends AppCompatActivity implements RateFragment.OnFragmentInteractionListener,

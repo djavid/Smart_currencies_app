@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.djavid.bitcoinrate.MainActivity">
+    tools:context="com.djavid.bitcoinrate.Activity.MainActivity">
 
     <include layout="@layout/toolbar" />
 

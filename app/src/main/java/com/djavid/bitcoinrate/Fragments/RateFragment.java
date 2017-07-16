@@ -4,27 +4,19 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.djavid.bitcoinrate.API;
+import com.djavid.bitcoinrate.API.API;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
 
@@ -40,8 +32,8 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private LayoutInflater layoutInflater;
     private PopupWindow popupWindow;
 
-    private TextView topPanel, leftPanel;
-    private Spinner rightPanel;
+    private TextView topPanel;
+    private Spinner rightPanel, leftPanel;
     RateChart chart;
     API api;
 
@@ -77,11 +69,12 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         layoutInflater = inflater;
 
         topPanel = (TextView) view.findViewById(R.id.topPanel);
-        leftPanel = (TextView) view.findViewById(R.id.leftPanel);
+        leftPanel = (Spinner) view.findViewById(R.id.leftPanel);
         rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
         //rightPanel.setOnClickListener(onRightCurrencySelect);
+
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeColors(
@@ -103,9 +96,9 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         spin(true);
         api = new API(getActivity(), view, mCircleView, chart);
-        api.viewRate("USD");
-        api.viewChart("30days");
         api.getCurrencies();
+        //api.viewRate();
+        api.viewChart("30days");
 
         return view;
     }
@@ -178,12 +171,12 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh() {
 
-//        if (api != null && rightPanel.getSelectedItemPosition() == 0) {
-//            api.Refresh(mSwipeRefreshLayout);
-//        } else {
-//            mSwipeRefreshLayout.setRefreshing(false);
-//            Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
-//        }
+        if (api != null) { //&& rightPanel.getSelectedItemPosition() == 0
+            api.Refresh(mSwipeRefreshLayout);
+        } else {
+            mSwipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
