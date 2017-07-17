@@ -28,6 +28,7 @@ import com.djavid.bitcoinrate.Model.BlockchainModel;
 import com.djavid.bitcoinrate.Model.CryptonatorTicker;
 import com.djavid.bitcoinrate.Model.CurrenciesModel;
 import com.djavid.bitcoinrate.Model.Row;
+import com.djavid.bitcoinrate.Model.Ticker;
 import com.djavid.bitcoinrate.Model.Value;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
@@ -41,7 +42,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import at.grabner.circleprogress.CircleProgressView;
 import retrofit2.Call;
@@ -49,7 +52,27 @@ import retrofit2.Callback;
 
 
 public class API {
+    String[] country_codes = new String[]{
+        "AED",	"AFN",	"ALL",	"AMD",	"ANG",	"AOA",	"ARS",	"AUD",	"AWG",	"AZN",
+        "BAM",	"BBD",	"BDT",	"BGN",	"BHD",	"BIF",	"BMD",	"BND",	"BOB",	"BRL",
+        "BSD",	"BTN",	"BWP",	"BYN",	"BZD",	"CAD",	"CDF",	"CHF",	"CLP",	"CNY",
+        "COP",	"CRC",	"CUC",	"CUP",	"CVE",	"CZK",	"DJF",	"DKK",	"DOP",	"DZD",
+        "EGP",	"ERN",	"ETB",	"EUR",	"FJD",	"FKP",	"GBP",	"GEL",	"GGP",	"GHS",
+        "GIP",	"GMD",	"GNF",	"GTQ",	"GYD",	"HKD",	"HNL",	"HRK",	"HTG",	"HUF",
+        "IDR",	"ILS",	"IMP",	"INR",	"IQD",	"IRR",	"ISK",	"JEP",	"JMD",	"JOD",
+        "JPY",	"KES",	"KGS",	"KHR",	"KMF",	"KPW",	"KRW",	"KWD",	"KYD",	"KZT",
+        "LAK",	"LBP",	"LKR",	"LRD",	"LSL",	"LYD",	"MAD",	"MDL",	"MGA",	"MKD",
+        "MMK",	"MNT",	"MOP",	"MRO",	"MUR",	"MVR",	"MWK",	"MXN",	"MYR",	"MZN",
+        "NAD",	"NGN",	"NIO",	"NOK",	"NPR",	"NZD",	"OMR",	"PAB",	"PEN",	"PGK",
+        "PHP",	"PKR",	"PLN",	"PYG",	"QAR",	"RON",	"RSD",	"RUB",	"RWF",	"SAR",
+        "SBD",	"SCR",	"SDG",	"SEK",	"SGD",	"SHP",	"SLL",	"SOS",	"SPL*",	"SRD",
+        "STD",	"SVC",	"SYP",	"SZL",	"THB",	"TJS",	"TMT",	"TND",	"TOP",	"TRY",
+        "TTD",	"TVD",	"TWD",	"TZS",	"UAH",	"UGX",	"USD",	"UYU",	"UZS",	"VEF",
+        "VND",	"VUV",	"WST",	"XAF",	"XCD",	"XDR",	"XOF",	"XPF",	"YER",	"ZAR",
+        "ZMW",	"ZWD"
+    };
     private String[] crypto_coins = {"BTC", "LTC", "ETH", "NVC", "NMC", "PPC", "DOGE"};
+    private String[] country_coins = {"USD", "EUR", "CAD", "CNY", "JPY", "PLN", "GBP", "RUB", "UAH"};
 
     private final String TICKER_URL = "https://blockchain.info/ru/ticker";
 
@@ -105,12 +128,18 @@ public class API {
                                @NonNull retrofit2.Response<CryptonatorTicker> response) {
 
             try {
-                double price = response.body().getTicker().getPrice();
+                Ticker ticker = response.body().getTicker();
+                double price = ticker.getPrice();
 
                 DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
                 symbols.setGroupingSeparator(' ');
-                DecimalFormat formatter = new DecimalFormat("###,###.##", symbols);
-                String text = formatter.format(price) + " " + response.body().getTicker().getTarget();
+                DecimalFormat formatter;
+                if (!ticker.getBase().equals("DOGE")) {
+                    formatter = new DecimalFormat("###,###.##", symbols);
+                } else {
+                    formatter = new DecimalFormat("###,###.####", symbols);
+                }
+                String text = formatter.format(price) + " " + ticker.getTarget();
 
                 if (!topPanel.getText().equals(text)) {
                     topPanel.setText(text);
@@ -135,6 +164,7 @@ public class API {
         @Override
         public void onFailure(@NonNull Call<CryptonatorTicker> call, @NonNull Throwable t) {
             Log.e(TAG_FAILURE, t.getMessage());
+            t.printStackTrace();
             stopRefresh();
         }
     };
@@ -184,6 +214,7 @@ public class API {
 
         final String curr1 = ((Spinner) view.findViewById(R.id.leftPanel)).getSelectedItem().toString();
         final String curr2 = ((Spinner) view.findViewById(R.id.rightPanel)).getSelectedItem().toString();
+        System.out.println(curr1 + " " + curr2);
 
         App.getCryptonatorApi().getRate(curr1, curr2).enqueue(getRateCallback);
     }
@@ -198,62 +229,89 @@ public class API {
     public void getCurrencies() {
         if (view == null) return;
 
-        App.getCryptonatorApi().getCurrencies().enqueue(new Callback<CurrenciesModel>() {
-            @Override
-            public void onResponse(Call<CurrenciesModel> call, retrofit2.Response<CurrenciesModel> response) {
-                List<Row> rows = response.body().getRows();
-                for (int i = 0; i < rows.size(); i++) {
-                    System.out.print(rows.get(i).getCode() + " ");
-                }
-                System.out.println();
-            }
+//        App.getCryptonatorApi().getCurrencies().enqueue(new Callback<CurrenciesModel>() {
+//            @Override
+//            public void onResponse(Call<CurrenciesModel> call, retrofit2.Response<CurrenciesModel> response) {
+//
+//                List<Row> rows = response.body().getRows();
+//                String[] arr1 = new String[rows.size()];
+//                for (int i = 0; i < rows.size(); i++) {
+//                    arr1[i] = rows.get(i).getCode();
+//                    //System.out.print(rows.get(i).getCode() + " ");
+//                }
+//                //System.out.println();
+//
+//                Set<String> set1 = new HashSet<String>(Arrays.asList(arr1));
+//                Set<String> set2 = new HashSet<String>(Arrays.asList(country_codes));
+//                set1.retainAll(set2);
+//                String[] result = set1.toArray(new String[set1.size()]);
+//
+//                for (String word: result) {
+//                    System.out.print(word + " ");
+//                }
+//                System.out.println();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<CurrenciesModel> call, Throwable t) {
+//
+//            }
+//        });
 
-            @Override
-            public void onFailure(Call<CurrenciesModel> call, Throwable t) {
+//        JsonObjectRequest jsonRequest = new JsonObjectRequest
+//                (Request.Method.GET, TICKER_URL, null, new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            JSONArray keys = response.names();
+//                            String[] names = new String[keys.length()];
+//
+//                            for (int i = 0; i < names.length; i++) {
+//                                names[i] = keys.getString(i);
+//                            }
+//
+//                            ArrayAdapter<String> adapterLeft =
+//                                    new CurrenciesAdapter(activity, R.layout.row, crypto_coins,
+//                                            activity.getLayoutInflater());
+//                            leftPanel.setAdapter(adapterLeft);
+//                            leftPanel.setOnItemSelectedListener(itemSelectedListener);
+//
+//                            ArrayAdapter<String> adapterRight =
+//                                    new CurrenciesAdapter(activity, R.layout.row, names,
+//                                            activity.getLayoutInflater());
+//                            rightPanel.setAdapter(adapterRight);
+//                            rightPanel.setOnItemSelectedListener(itemSelectedListener);
+//
+//                            leftPanel.setSelection(0);
+//                            rightPanel.setSelection(0);
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        errorHandler(error);
+//                    }
+//                });
+//
+//        queue.add(jsonRequest);
 
-            }
-        });
+        ArrayAdapter<String> adapterLeft =
+                new CurrenciesAdapter(activity, R.layout.row, crypto_coins,
+                        activity.getLayoutInflater());
+        leftPanel.setAdapter(adapterLeft);
+        leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.GET, TICKER_URL, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray keys = response.names();
-                            String[] names = new String[keys.length()];
+        ArrayAdapter<String> adapterRight =
+                new CurrenciesAdapter(activity, R.layout.row, country_coins,
+                        activity.getLayoutInflater());
+        rightPanel.setAdapter(adapterRight);
+        rightPanel.setOnItemSelectedListener(itemSelectedListener);
 
-                            for (int i = 0; i < names.length; i++) {
-                                names[i] = keys.getString(i);
-                            }
-
-                            ArrayAdapter<String> adapterLeft =
-                                    new CurrenciesAdapter(activity, R.layout.row, crypto_coins,
-                                            activity.getLayoutInflater());
-                            leftPanel.setAdapter(adapterLeft);
-                            leftPanel.setOnItemSelectedListener(itemSelectedListener);
-
-                            ArrayAdapter<String> adapterRight =
-                                    new CurrenciesAdapter(activity, R.layout.row, names,
-                                            activity.getLayoutInflater());
-                            rightPanel.setAdapter(adapterRight);
-                            rightPanel.setOnItemSelectedListener(itemSelectedListener);
-
-                            leftPanel.setSelection(0);
-                            rightPanel.setSelection(0);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        errorHandler(error);
-                    }
-                });
-
-
-        queue.add(jsonRequest);
+        leftPanel.setSelection(0);
+        rightPanel.setSelection(0);
     }
 
     private void errorHandler(VolleyError error) {

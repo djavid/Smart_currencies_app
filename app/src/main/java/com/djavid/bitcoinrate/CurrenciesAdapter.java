@@ -122,6 +122,18 @@ public class CurrenciesAdapter extends ArrayAdapter<String> {
             case "DOGE":
                 icon.setImageResource(R.drawable.ic_dogecoin);
                 break;
+            case "UAH":
+                icon.setImageResource(R.drawable.ic_ukraine);
+                break;
+            case "ETH":
+                icon.setImageResource(R.drawable.ic_ethereum);
+                break;
+            case "NVC":
+                icon.setImageResource(R.drawable.ic_novacoin);
+                break;
+            case "PPC":
+                icon.setImageResource(R.drawable.ic_peercoin);
+                break;
             default:
                 icon.setImageResource(R.drawable.ic_european_union);
                 break;

@@ -18,7 +18,7 @@ public class Ticker {
     private double price;
     @SerializedName("volume")
     @Expose
-    private double volume;
+    private String volume;
     @SerializedName("change")
     @Expose
     private double change;
@@ -42,7 +42,7 @@ public class Ticker {
      * @param target
      * @param base
      */
-    public Ticker(String base, String target, double price, double volume, double change, List<Market> markets) {
+    public Ticker(String base, String target, double price, String volume, double change, List<Market> markets) {
         super();
         this.base = base;
         this.target = target;
@@ -76,11 +76,11 @@ public class Ticker {
         this.price = price;
     }
 
-    public double getVolume() {
+    public String getVolume() {
         return volume;
     }
 
-    public void setVolume(double volume) {
+    public void setVolume(String volume) {
         this.volume = volume;
     }
 
