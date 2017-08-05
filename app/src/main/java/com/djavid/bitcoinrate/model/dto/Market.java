@@ -1,5 +1,5 @@
 
-package com.djavid.bitcoinrate.Model;
+package com.djavid.bitcoinrate.model.dto;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

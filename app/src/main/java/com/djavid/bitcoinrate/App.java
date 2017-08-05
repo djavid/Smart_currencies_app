@@ -1,41 +1,88 @@
 package com.djavid.bitcoinrate;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatDelegate;
 
-import com.djavid.bitcoinrate.API.BlockchainApi;
-import com.djavid.bitcoinrate.API.CryptonatorApi;
+import com.djavid.bitcoinrate.model.ApiInterface;
+import com.djavid.bitcoinrate.domain.PreferencesWrapper;
+import com.djavid.bitcoinrate.domain.PresenterProvider;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class App extends Application {
-    private Retrofit retrofit;
-    private static CryptonatorApi cryptonatorApi;
-    private static BlockchainApi blockchainApi;
+
+    private static App appInstance;
+
+    private ApiInterface apiInterface;
+    private PresenterProvider presenterProvider;
+    private SharedPreferences sharedPreferences;
+
+    private static String SHARED_PREFERENCES_CODE = "bitcoin_rate_app";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.cryptonator.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        cryptonatorApi = retrofit.create(CryptonatorApi.class);
+        getPresenterProvider();
+        getPrefencesWrapper();
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        JodaTimeAndroid.init(this);
 
-        retrofit = new Retrofit.Builder()
+        appInstance = (App) getApplicationContext();
+    }
+
+    public static Context getContext() {
+        return appInstance.getApplicationContext();
+    }
+
+    public static App getAppInstance() {
+        return appInstance;
+    }
+
+    public ApiInterface getApiInterface() {
+        if (apiInterface == null)
+            apiInterface = buildApiInterface();
+        return apiInterface;
+    }
+
+    public PresenterProvider getPresenterProvider() {
+        if (presenterProvider == null)
+            presenterProvider = new PresenterProvider();
+
+        return presenterProvider;
+    }
+
+    public SharedPreferences getRawPreferences() {
+        return getSharedPreferences(SHARED_PREFERENCES_CODE, MODE_PRIVATE);
+    }
+
+    public PreferencesWrapper getPrefencesWrapper() {
+        return new PreferencesWrapper(getRawPreferences());
+    }
+
+    private ApiInterface buildApiInterface() {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        httpClient.addInterceptor(logging);
+
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://blockchain.info/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(httpClient.build())
                 .build();
-        blockchainApi = retrofit.create(BlockchainApi.class);
+
+        return retrofit.create(ApiInterface.class);
     }
 
-    public static CryptonatorApi getCryptonatorApi() {
-        return cryptonatorApi;
-    }
-
-    public static BlockchainApi getBlockchainApi() {
-        return blockchainApi;
-    }
 }

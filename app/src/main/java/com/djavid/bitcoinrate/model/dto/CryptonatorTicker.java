@@ -1,8 +1,5 @@
 
-package com.djavid.bitcoinrate.Model;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+package com.djavid.bitcoinrate.model.dto;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

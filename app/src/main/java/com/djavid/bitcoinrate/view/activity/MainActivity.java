@@ -1,6 +1,6 @@
-package com.djavid.bitcoinrate.Activity;
+package com.djavid.bitcoinrate.view.activity;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
@@ -12,8 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.djavid.bitcoinrate.Fragments.RateFragment;
-import com.djavid.bitcoinrate.Fragments.TicketFragment;
 import com.djavid.bitcoinrate.R;
 
 
@@ -23,7 +21,8 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     Fragment rateFragment, ticketFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+            =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {

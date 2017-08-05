@@ -1,7 +1,4 @@
-package com.djavid.bitcoinrate.Model;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.djavid.bitcoinrate.model.dto;
 
 /**
  * Created by djavid on 16.07.17.

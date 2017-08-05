@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.Fragments;
+package com.djavid.bitcoinrate.view.fragment;
 
 import android.content.Context;
 import android.net.Uri;

@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.Fragments;
+package com.djavid.bitcoinrate.view.fragment;
 
 import android.content.Context;
 import android.net.Uri;
@@ -16,30 +16,37 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.djavid.bitcoinrate.API.API;
+import com.djavid.bitcoinrate.core.BaseFragment;
+import com.djavid.bitcoinrate.domain.MainRouter;
+import com.djavid.bitcoinrate.model.API;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
+import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
+import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
 import at.grabner.circleprogress.CircleProgressView;
+import butterknife.BindView;
 
 
-public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class RateFragment extends BaseFragment implements RateFragmentView, SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    @BindView(R.id.topPanel)
+    TextView topPanel;
+    @BindView(R.id.leftPanel)
+    Spinner leftPanel;
+    @BindView(R.id.rightPanel)
+    Spinner rightPanel;
+    @BindView(R.id.swipe_container)
+    SwipeRefreshLayout swipe_container;
+    @BindView(R.id.circleView)
+    CircleProgressView circleView;
 
-    private View view;
-    private LayoutInflater layoutInflater;
-    private PopupWindow popupWindow;
+    RateFragmentPresenter presenter;
 
-    private TextView topPanel;
-    private Spinner rightPanel, leftPanel;
     RateChart chart;
     API api;
 
     private final static String TAG = "MainActivity";
-    CircleProgressView mCircleView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     private OnFragmentInteractionListener mListener;
@@ -56,6 +63,21 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
+    public void onStart() {
+        presenter = getPresenter(RateFragmentPresenter.class);
+        presenter.setView(this);
+        presenter.setRouter((MainRouter) getActivity());
+
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        presenter.setView(null);
+        super.onStop();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -63,28 +85,18 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_rate, container, false);
-        layoutInflater = inflater;
-
-        topPanel = (TextView) view.findViewById(R.id.topPanel);
-        leftPanel = (Spinner) view.findViewById(R.id.leftPanel);
-        rightPanel = (Spinner) view.findViewById(R.id.rightPanel);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+    public View setupView(View view) {
 
         //rightPanel.setOnClickListener(onRightCurrencySelect);
 
-
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeColors(
+        swipe_container.setOnRefreshListener(this);
+        swipe_container.setColorSchemeColors(
                 getResources().getColor(R.color.colorAccent),
                 getResources().getColor(R.color.colorChart),
                 getResources().getColor(R.color.colorOptions));
 
-        mCircleView = (CircleProgressView) view.findViewById(R.id.circleView);
-        mCircleView.setSpinSpeed(3);
-        mCircleView.setVisibility(View.VISIBLE);
+        circleView.setSpinSpeed(3);
+        circleView.setVisibility(View.VISIBLE);
         topPanel.setVisibility(View.GONE);
 
         view.findViewById(R.id.optionFirst).setOnClickListener(onChartOptionClick);
@@ -95,7 +107,7 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         chart = new RateChart(view);
 
         spin(true);
-        api = new API(getActivity(), view, mCircleView, chart);
+        api = new API(getActivity(), view, circleView, chart);
         api.getCurrencies();
         //api.viewRate();
         api.viewChart("30days");
@@ -121,12 +133,12 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private void spin(boolean state) {
         if (state) {
-            mCircleView.spin();
-            mCircleView.setVisibility(View.VISIBLE);
+            circleView.spin();
+            circleView.setVisibility(View.VISIBLE);
             topPanel.setVisibility(View.GONE);
         } else {
-            mCircleView.stopSpinning();
-            mCircleView.setVisibility(View.GONE);
+            circleView.stopSpinning();
+            circleView.setVisibility(View.GONE);
             topPanel.setVisibility(View.VISIBLE);
         }
     }
@@ -172,9 +184,9 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onRefresh() {
 
         if (api != null) { //&& rightPanel.getSelectedItemPosition() == 0
-            api.Refresh(mSwipeRefreshLayout);
+            api.Refresh(swipe_container);
         } else {
-            mSwipeRefreshLayout.setRefreshing(false);
+            swipe_container.setRefreshing(false);
             Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -194,7 +206,20 @@ public class RateFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public int getLayoutId() {
+        return R.layout.fragment_rate;
+    }
 
+    @Override
+    public String getPresenterId() {
+        return "rate_fragment";
+    }
+
+    @Override
+    public void loadData() {
+
+    }
 }
 
 

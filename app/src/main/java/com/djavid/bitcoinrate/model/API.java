@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.API;
+package com.djavid.bitcoinrate.model;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -14,37 +14,26 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.CurrenciesAdapter;
-import com.djavid.bitcoinrate.Model.BlockchainModel;
-import com.djavid.bitcoinrate.Model.CryptonatorTicker;
-import com.djavid.bitcoinrate.Model.CurrenciesModel;
-import com.djavid.bitcoinrate.Model.Row;
-import com.djavid.bitcoinrate.Model.Ticker;
-import com.djavid.bitcoinrate.Model.Value;
+import com.djavid.bitcoinrate.model.dto.BlockchainModel;
+import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
+import com.djavid.bitcoinrate.model.dto.Ticker;
+import com.djavid.bitcoinrate.model.dto.Value;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
 import com.github.mikephil.charting.data.Entry;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import at.grabner.circleprogress.CircleProgressView;
 import retrofit2.Call;
