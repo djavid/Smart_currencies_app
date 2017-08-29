@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate;
+package com.djavid.bitcoinrate.util;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-class DayAxisValueFormatter implements IAxisValueFormatter
+public class DayAxisValueFormatter implements IAxisValueFormatter
 {
 
     private String[] mMonths = new String[]{
@@ -17,7 +17,7 @@ class DayAxisValueFormatter implements IAxisValueFormatter
 
     private BarLineChartBase<?> chart;
 
-    DayAxisValueFormatter(BarLineChartBase<?> chart) {
+    public DayAxisValueFormatter(BarLineChartBase<?> chart) {
         this.chart = chart;
     }
 

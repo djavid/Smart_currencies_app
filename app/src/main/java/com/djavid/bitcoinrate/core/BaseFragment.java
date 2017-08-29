@@ -15,18 +15,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-/**
- * Created by djavid on 05.08.17.
- */
-
 
 public abstract class BaseFragment extends Fragment implements com.djavid.bitcoinrate.core.View {
 
     @BindView(R.id.progressbar)
-    ProgressBar progressbar;
+    View progressbar;
 
     private Unbinder unbinder;
-
 
     public abstract int getLayoutId();
 

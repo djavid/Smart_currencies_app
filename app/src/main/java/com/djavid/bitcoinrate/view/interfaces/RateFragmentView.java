@@ -1,12 +1,20 @@
 package com.djavid.bitcoinrate.view.interfaces;
 
-import com.djavid.bitcoinrate.core.View;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
-/**
- * Created by djavid on 05.08.17.
- */
+import com.djavid.bitcoinrate.RateChart;
+import com.djavid.bitcoinrate.core.View;
 
 
 public interface RateFragmentView extends View {
+    void setCurrenciesSpinner();
 
+    Spinner getLeftSpinner();
+    Spinner getRightSpinner();
+    TextView getTopPanel();
+    SwipeRefreshLayout getRefreshLayout();
+    RateChart getRateChart();
+    String getSelectedTimespan();
 }

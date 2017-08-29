@@ -1,6 +1,8 @@
 package com.djavid.bitcoinrate;
 
 import android.view.View;
+
+import com.djavid.bitcoinrate.util.DayAxisValueFormatter;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;

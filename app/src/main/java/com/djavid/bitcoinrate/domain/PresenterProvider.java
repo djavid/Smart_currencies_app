@@ -1,6 +1,7 @@
 package com.djavid.bitcoinrate.domain;
 
 import com.djavid.bitcoinrate.core.Presenter;
+import com.djavid.bitcoinrate.presenter.implementations.RateFragmentPresenterImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,12 @@ public class PresenterProvider {
         if (presenterMap.containsKey(presenterId)) return;
 
         switch (presenterId){
+            case "rate_fragment":
+                presenterMap.put(presenterId, new RateFragmentPresenterImpl());
+                break;
+            case "ticker_fragment":
 
+                break;
         }
     }
 

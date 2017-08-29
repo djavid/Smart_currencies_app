@@ -3,22 +3,20 @@ package com.djavid.bitcoinrate.view.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.PopupWindow;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.domain.MainRouter;
-import com.djavid.bitcoinrate.model.API;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
@@ -26,6 +24,9 @@ import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
+
+import static com.djavid.bitcoinrate.util.Codes.country_coins;
+import static com.djavid.bitcoinrate.util.Codes.crypto_coins;
 
 
 public class RateFragment extends BaseFragment implements RateFragmentView, SwipeRefreshLayout.OnRefreshListener {
@@ -44,16 +45,14 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     RateFragmentPresenter presenter;
 
     RateChart chart;
-    API api;
+    String timespan;
 
     private final static String TAG = "MainActivity";
 
 
     private OnFragmentInteractionListener mListener;
 
-    public RateFragment() {
-        // Required empty public constructor
-    }
+    public RateFragment() { }
 
     public static RateFragment newInstance() {
         RateFragment fragment = new RateFragment();
@@ -95,9 +94,9 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
                 getResources().getColor(R.color.colorChart),
                 getResources().getColor(R.color.colorOptions));
 
-        circleView.setSpinSpeed(3);
-        circleView.setVisibility(View.VISIBLE);
-        topPanel.setVisibility(View.GONE);
+        //circleView.setSpinSpeed(3);
+        //circleView.setVisibility(View.VISIBLE);
+        //topPanel.setVisibility(View.GONE);
 
         view.findViewById(R.id.optionFirst).setOnClickListener(onChartOptionClick);
         view.findViewById(R.id.optionSecond).setOnClickListener(onChartOptionClick);
@@ -106,26 +105,32 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
         chart = new RateChart(view);
 
-        spin(true);
-        api = new API(getActivity(), view, circleView, chart);
-        api.getCurrencies();
-        //api.viewRate();
-        api.viewChart("30days");
+        //spin(true);
+        setCurrenciesSpinner();
 
         return view;
+    }
+
+    @Override
+    public void loadData() {
+        presenter.showChart("30days");
     }
 
     View.OnClickListener onChartOptionClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.optionFirst) {
-                api.viewChart("30days");
+                timespan = "30days";
+                presenter.showChart(timespan);
             } else if (v.getId() == R.id.optionSecond) {
-                api.viewChart("90days");
+                timespan = "90days";
+                presenter.showChart(timespan);
             } else if (v.getId() == R.id.optionThird) {
-                api.viewChart("180days");
+                timespan = "180days";
+                presenter.showChart(timespan);
             } else if (v.getId() == R.id.optionFourth) {
-                api.viewChart("1year");
+                timespan = "1year";
+                presenter.showChart(timespan);
             }
         }
     };
@@ -182,13 +187,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public void onRefresh() {
-
-        if (api != null) { //&& rightPanel.getSelectedItemPosition() == 0
-            api.Refresh(swipe_container);
-        } else {
-            swipe_container.setRefreshing(false);
-            Toast.makeText(getActivity(), "Refresh error!", Toast.LENGTH_SHORT).show();
-        }
+        presenter.refresh();
     }
 
     /**
@@ -217,8 +216,75 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     }
 
     @Override
-    public void loadData() {
+    public void setCurrenciesSpinner() {
+        ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row, crypto_coins,
+                getActivity().getLayoutInflater());
+        leftPanel.setAdapter(adapterLeft);
+        leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
+        ArrayAdapter<String> adapterRight =
+                new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
+                        getActivity().getLayoutInflater());
+        rightPanel.setAdapter(adapterRight);
+        rightPanel.setOnItemSelectedListener(itemSelectedListener);
+
+        leftPanel.setSelection(0);
+        rightPanel.setSelection(0);
+    }
+
+    private AdapterView.OnItemSelectedListener itemSelectedListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    presenter.showRate(false); //TODO decide whether to load chart every time
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            };
+
+    @Override
+    public Spinner getLeftSpinner() {
+        return leftPanel;
+    }
+
+    @Override
+    public Spinner getRightSpinner() {
+        return rightPanel;
+    }
+
+    @Override
+    public TextView getTopPanel() {
+        return topPanel;
+    }
+
+    @Override
+    public void showProgressbar() {
+        super.showProgressbar();
+        swipe_container.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void hideProgressbar() {
+        super.hideProgressbar();
+        swipe_container.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public SwipeRefreshLayout getRefreshLayout() {
+        return swipe_container;
+    }
+
+    @Override
+    public RateChart getRateChart() {
+        return chart;
+    }
+
+    @Override
+    public String getSelectedTimespan() {
+        return timespan;
     }
 }
 

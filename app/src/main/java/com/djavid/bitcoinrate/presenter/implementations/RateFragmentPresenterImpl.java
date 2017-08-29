@@ -1,25 +1,38 @@
 package com.djavid.bitcoinrate.presenter.implementations;
 
+import android.util.Log;
+import android.view.View;
+
+import com.djavid.bitcoinrate.App;
+import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.domain.MainRouter;
+import com.djavid.bitcoinrate.interactor.RateFragmentInteractor;
+import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
+import com.djavid.bitcoinrate.model.dto.Value;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
+import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
+import com.github.mikephil.charting.data.Entry;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
-
-/**
- * Created by djavid on 05.08.17.
- */
 
 
 public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, MainRouter, Object>
         implements RateFragmentPresenter {
 
     private Disposable disposable = Disposables.empty();
+    private RateFragmentInteractor rateFragmentInteractor;
 
-
-    public RateFragmentPresenterImpl() { }
+    public RateFragmentPresenterImpl() {
+        rateFragmentInteractor = new RateFragmentUseCase();
+    }
 
     @Override
     public String getId() {
@@ -39,5 +52,93 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     @Override
     public void saveInstanceState(Object instanceState) {
         setInstanceState(instanceState);
+    }
+
+    private void setRefreshing(boolean key) {
+        if (getView() != null) {
+            if (getView().getRefreshLayout() != null)
+                getView().getRefreshLayout().setRefreshing(key);
+        }
+    }
+
+    @Override
+    public void refresh() {
+        showRate(true);
+    }
+
+    @Override
+    public void showRate(boolean update_chart) {
+        if (getView() != null) getView().showProgressbar();
+        setRefreshing(false);
+
+        final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
+        final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
+
+        disposable = rateFragmentInteractor.getRate(curr1, curr2)
+                .compose(RxUtils.applySingleSchedulers())
+                .retry(2L)
+                .subscribe(ticker -> {
+                    if (!ticker.getError().isEmpty()) {
+                        //TODO
+                        Log.e("showRate():", ticker.getError());
+                        return;
+                    }
+
+                    double price = ticker.getTicker().getPrice();
+
+                    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+                    symbols.setGroupingSeparator(' ');
+                    DecimalFormat formatter;
+
+                    if (!ticker.getTicker().getBase().equals("DOGE")) {
+                        formatter = new DecimalFormat("###,###.##", symbols);
+                    } else {
+                        formatter = new DecimalFormat("###,###.####", symbols);
+                    }
+                    String text = formatter.format(price) + " " + ticker.getTicker().getTarget();
+
+                    if (!getView().getTopPanel().getText().equals(text)) {
+                        getView().getTopPanel().setText(text);
+                    }
+
+                    if (getView() != null) {
+                        if (update_chart) showChart(getView().getSelectedTimespan());
+                        else getView().hideProgressbar();
+                    }
+
+                }, error -> {
+                    if (getView() != null) getView().hideProgressbar();
+                });
+    }
+
+    @Override
+    public void showChart(String timespan) {
+        if (getView() != null) getView().showProgressbar();
+        setRefreshing(false);
+
+        disposable = rateFragmentInteractor.getChartValues(timespan, true, "json")
+                .compose(RxUtils.applySingleSchedulers())
+                .retry(2L)
+                .subscribe(response -> {
+                    List<Entry> entries = new ArrayList<Entry>();
+                    List<Value> values = response.getValues();
+                    int color = App.getContext().getResources().getColor(R.color.colorChart);
+
+                    for (int i = 0; i < values.size(); i++) {
+                        //Date x = new Date(tick.getLong("x") * 1000);
+                        long X = values.get(i).getX() * 1000;
+                        double y = values.get(i).getY();
+
+                        entries.add(new Entry(X, (float)y));
+                    }
+
+                    if (getView() != null) {
+                        getView().getRateChart().initialize(entries, color);
+                        getView().hideProgressbar();
+                    }
+
+                }, error -> {
+                    if (getView() != null) getView().hideProgressbar();
+                });
     }
 }
