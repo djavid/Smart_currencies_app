@@ -1,12 +1,9 @@
 package com.djavid.bitcoinrate.view.interfaces;
 
-import com.djavid.bitcoinrate.core.View;
-
-/**
- * Created by djavid on 05.08.17.
- */
+import com.djavid.bitcoinrate.core.ScrollView;
+import com.djavid.bitcoinrate.model.realm.TickerItem;
 
 
-public interface TickerFragmentView extends View {
+public interface TickerFragmentView extends ScrollView<TickerItem> {
 
 }

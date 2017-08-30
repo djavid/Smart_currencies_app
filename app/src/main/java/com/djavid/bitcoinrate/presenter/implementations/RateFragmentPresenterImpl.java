@@ -46,7 +46,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
     @Override
     public void onStop() {
-
+        disposable.dispose();
     }
 
     @Override

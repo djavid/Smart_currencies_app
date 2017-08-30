@@ -16,11 +16,11 @@ import android.view.MenuItem;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.view.fragment.RateFragment;
-import com.djavid.bitcoinrate.view.fragment.TicketFragment;
+import com.djavid.bitcoinrate.view.fragment.TickerFragment;
 
 
 public class MainActivity extends AppCompatActivity implements RateFragment.OnFragmentInteractionListener,
-        TicketFragment.OnFragmentInteractionListener, MainRouter {
+        TickerFragment.OnFragmentInteractionListener, MainRouter {
 
     private FragmentManager fragmentManager;
     Fragment rateFragment, ticketFragment;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
         setSupportActionBar(toolbar);
 
         rateFragment = RateFragment.newInstance();
-        ticketFragment = TicketFragment.newInstance();
+        ticketFragment = TickerFragment.newInstance();
 
         fragmentManager = getSupportFragmentManager();
 

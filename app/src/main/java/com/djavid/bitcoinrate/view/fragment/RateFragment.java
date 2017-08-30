@@ -48,9 +48,8 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     String timespan;
 
     private final static String TAG = "MainActivity";
-
-
     private OnFragmentInteractionListener mListener;
+
 
     public RateFragment() { }
 
