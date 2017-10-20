@@ -1,3 +1,4 @@
+
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
@@ -68,4 +69,10 @@ dependencies {
     // butterknife
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    //fonts
+    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
+
+    //placeholderview
+    compile 'com.mindorks:placeholderview:0.7.1'
 }

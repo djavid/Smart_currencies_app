@@ -29,7 +29,74 @@ public class Codes {
 
     public static String[] country_coins = {"USD", "EUR", "CAD", "CNY", "JPY", "PLN", "GBP", "RUB", "UAH"};
 
-    public static int getCountryImage(String code) {
+    public static String getCurrencyFullName(String code) {
+        switch (code) {
+            case "RUB":
+                return "Ruble;Рубль";
+            case "USD":
+                return "Dollar;Доллар";
+            case "EUR":
+                return "Euro;Евро";
+            case "ISK":
+                return ";";
+            case "HKD":
+                return ";";
+            case "TWD":
+                return ";";
+            case "CHF":
+                return ";";
+            case "DKK":
+                return ";";
+            case "CLP":
+                return ";";
+            case "CAD":
+                return ";";
+            case "INR":
+                return ";";
+            case "CNY":
+                return ";";
+            case "THB":
+                return ";";
+            case "AUD":
+                return ";";
+            case "SGD":
+                return ";";
+            case "KRW":
+                return ";";
+            case "JPY":
+                return ";";
+            case "PLN":
+                return ";";
+            case "GBP":
+                return ";";
+            case "SEK":
+                return ";";
+            case "NZD":
+                return ";";
+            case "BRL":
+                return ";";
+            case "BTC":
+                return "Bitcoin;Bitcoin";
+            case "LTC":
+                return "Litecoin;Litecoin";
+            case "NMC":
+                return "Namecoin;Namecoin";
+            case "DOGE":
+                return "Doge;Doge";
+            case "UAH":
+                return ";";
+            case "ETH":
+                return "Ethereum;Ethereum";
+            case "NVC":
+                return "Novacoin;Novacoin";
+            case "PPC":
+                return "Pipecoin;Pipecoin";
+            default:
+                return ";";
+        }
+    }
+
+    public static int getCurrencyImage(String code) {
         
         switch (code) {
             case "RUB":

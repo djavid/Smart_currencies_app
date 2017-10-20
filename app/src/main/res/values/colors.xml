@@ -7,8 +7,11 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorChart">#F0949D</color>
 
-    <color name="colorOptions">#FFD740</color>
-    <color name="colorOptionsText">#FFFFFF</color>
+    <color name="colorLabelBackground">#FFD740</color>
+    <color name="colorLabelText">#FFFFFF</color>
 
     <color name="colorCardBackground">#FFFFFF</color>
+    <color name="colorCardTitleBackground">#FFFFFF</color>
+    <color name="colorCardDivider">#23000000</color>
+
 </resources>

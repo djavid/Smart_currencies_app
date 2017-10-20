@@ -46,7 +46,7 @@ public class CurrenciesAdapter extends ArrayAdapter<String> {
         ImageView icon = (ImageView) item.findViewById(R.id.curr_icon);
 
         name.setText(currs[position]);
-        icon.setImageResource(Codes.getCountryImage(currs[position]));
+        icon.setImageResource(Codes.getCurrencyImage(currs[position]));
 
         return item;
     }

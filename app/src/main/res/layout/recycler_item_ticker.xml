@@ -1,18 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    android:id="@+id/ticket_card"
+<android.support.v7.widget.CardView android:id="@+id/ticket_card"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/CardViewStyle">
+    style="@style/TickerCardViewStyle"
+    tools:ignore="MissingPrefix, ContentDescription"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
 
-    <TextView
-        android:id="@+id/ticket_text"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/top_value_fragment"
-        android:gravity="center"
-        android:textSize="40sp" />
+        android:layout_height="wrap_content"
+        android:background="@color/colorCardTitleBackground"
+        android:paddingTop="6dp">
+
+        <RelativeLayout
+            android:id="@+id/ll_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_ticker_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_btc"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif"
+                android:textAllCaps="true"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="4dp"
+                fontpath="roboto-bold.ttf"/>
+
+            <ImageView
+                android:id="@+id/iv_ticker_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                app:srcCompat="@drawable/ic_bitcoin"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/tv_ticker_title"/>
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/v_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/colorCardDivider"
+            android:layout_below="@id/ll_title"
+            android:layout_marginTop="6dp" />
+
+        <TextView
+            android:id="@+id/tickerValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/top_value_fragment"
+            android:gravity="center"
+            android:textSize="40sp"
+            android:layout_below="@id/v_divider"/>
+
+        <View
+            android:id="@+id/v_divider2"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/colorCardDivider"
+            android:layout_below="@id/tickerValue" />
+        
+
+        <com.mindorks.placeholderview.PlaceHolderView
+            android:id="@+id/label_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/v_divider2"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+            tools:listitem="@layout/ticker_label_item" />
+
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,15 +7,27 @@
     tools:context=".view.fragment.TickerFragment">
 
 
-    <android.support.v7.widget.RecyclerView
+    <com.mindorks.placeholderview.PlaceHolderView
         android:id="@+id/rv_ticker_list"
-        android:name="com.djavid.bitcoinrate.view.fragment.TickerFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/recycler_item_ticker" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_add_white_24px"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:elevation="6dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:pressedTranslationZ="12dp" />
+
     <include layout="@layout/view_progressbar"
         android:visibility="invisible"/>
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.core.BaseFragment;
@@ -91,7 +90,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         swipe_container.setColorSchemeColors(
                 getResources().getColor(R.color.colorAccent),
                 getResources().getColor(R.color.colorChart),
-                getResources().getColor(R.color.colorOptions));
+                getResources().getColor(R.color.colorLabelBackground));
 
         //circleView.setSpinSpeed(3);
         //circleView.setVisibility(View.VISIBLE);
@@ -174,7 +173,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnTickerInteractionListener");
         }
     }
 

@@ -15,12 +15,13 @@ import android.view.MenuItem;
 
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.domain.MainRouter;
+import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.view.fragment.RateFragment;
 import com.djavid.bitcoinrate.view.fragment.TickerFragment;
 
 
 public class MainActivity extends AppCompatActivity implements RateFragment.OnFragmentInteractionListener,
-        TickerFragment.OnFragmentInteractionListener, MainRouter {
+        TickerFragment.OnTickerInteractionListener, MainRouter {
 
     private FragmentManager fragmentManager;
     Fragment rateFragment, ticketFragment;
@@ -31,14 +32,11 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-            final FragmentTransaction transaction = fragmentManager.beginTransaction();
-
+            
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 
@@ -107,6 +105,11 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(TickerItemRealm item) {
 
     }
 
