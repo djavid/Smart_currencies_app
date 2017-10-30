@@ -5,6 +5,7 @@ import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.interactor.TickerFragmentInteractor;
 import com.djavid.bitcoinrate.interactor.TickerFragmentUseCase;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
+import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 
 import io.reactivex.disposables.Disposable;

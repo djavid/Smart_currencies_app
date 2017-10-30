@@ -12,6 +12,7 @@ import com.djavid.bitcoinrate.domain.PresenterProvider;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -43,6 +44,12 @@ public class App extends Application {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         JodaTimeAndroid.init(this);
         Realm.init(this);
+
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        Realm.setDefaultConfiguration(config);
 
         appInstance = (App) getApplicationContext();
     }

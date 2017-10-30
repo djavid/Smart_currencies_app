@@ -1,20 +1,25 @@
 package com.djavid.bitcoinrate.model.dto;
 
 
-public class LabelItemDto {
+import io.realm.RealmObject;
+
+public class LabelItemDto extends RealmObject {
 
     private String value;
     private boolean isTrendingUp;
     private boolean isAddButton;
 
 
-    public LabelItemDto() {}
+    public LabelItemDto() {
+        this.isAddButton = true;
+    }
 
-    public LabelItemDto(String value, boolean isTrendingUp, boolean isAddButton) {
+    public LabelItemDto(String value, boolean isTrendingUp) {
         this.value = value;
         this.isTrendingUp = isTrendingUp;
-        this.isAddButton = isAddButton;
+        this.isAddButton = false;
     }
+
 
     public String getValue() {
         return value;

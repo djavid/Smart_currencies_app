@@ -2,6 +2,9 @@ package com.djavid.bitcoinrate.interactor;
 
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
+
+import io.reactivex.Single;
 
 
 public class TickerFragmentUseCase implements TickerFragmentInteractor {
@@ -15,6 +18,5 @@ public class TickerFragmentUseCase implements TickerFragmentInteractor {
     public TickerFragmentUseCase() {
         this(new RestDataRepository());
     }
-
 
 }

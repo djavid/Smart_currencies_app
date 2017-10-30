@@ -3,6 +3,9 @@ package com.djavid.bitcoinrate.model;
 import com.djavid.bitcoinrate.model.dto.BlockchainModel;
 import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
+import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
+
+import java.util.List;
 
 import io.reactivex.Single;
 import retrofit2.Call;
@@ -13,6 +16,7 @@ import retrofit2.http.Query;
 /**
  * Created by djavid on 05.08.17.
  */
+
 
 public interface ApiInterface {
 
@@ -30,5 +34,10 @@ public interface ApiInterface {
 
     @GET("https://www.cryptonator.com/api/currencies")
     Single<CurrenciesModel> getCurrencies();
+
+    @GET("https://api.cryptowat.ch/markets/gdax/{curr}/ohlc")
+    Single<HistoryDataModel> getHistory(@Path("curr") String curr,
+                                              @Query("periods") int periods,
+                                              @Query("after") long after);
 
 }

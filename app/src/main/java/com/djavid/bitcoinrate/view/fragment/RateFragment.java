@@ -21,6 +21,10 @@ import com.djavid.bitcoinrate.RateChart;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
+import org.joda.time.LocalDateTime;
+
+import java.sql.Timestamp;
+
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 
@@ -111,7 +115,19 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public void loadData() {
-        presenter.showChart("30days");
+        //presenter.showChart("30days");
+        //timespan = "30days";
+        getChart(30);
+    }
+
+    private void getChart(int daysAgo) {
+        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
+        long start = end - 86400 * daysAgo;
+
+        String curr = ((String) leftPanel.getSelectedItem()).toLowerCase() +
+                ((String) rightPanel.getSelectedItem()).toLowerCase();
+
+        presenter.getHistory(curr, 86400, start);
     }
 
     View.OnClickListener onChartOptionClick = new View.OnClickListener() {
@@ -119,16 +135,20 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         public void onClick(View v) {
             if (v.getId() == R.id.optionFirst) {
                 timespan = "30days";
-                presenter.showChart(timespan);
+                //presenter.showChart(timespan);
+                getChart(getTimespanDays());
             } else if (v.getId() == R.id.optionSecond) {
                 timespan = "90days";
-                presenter.showChart(timespan);
+                //presenter.showChart(timespan);
+                getChart(getTimespanDays());
             } else if (v.getId() == R.id.optionThird) {
                 timespan = "180days";
-                presenter.showChart(timespan);
+                //presenter.showChart(timespan);
+                getChart(getTimespanDays());
             } else if (v.getId() == R.id.optionFourth) {
                 timespan = "1year";
-                presenter.showChart(timespan);
+                //presenter.showChart(timespan);
+                getChart(getTimespanDays());
             }
         }
     };
@@ -220,8 +240,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         leftPanel.setAdapter(adapterLeft);
         leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
-        ArrayAdapter<String> adapterRight =
-                new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
+        ArrayAdapter<String> adapterRight = new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
                         getActivity().getLayoutInflater());
         rightPanel.setAdapter(adapterRight);
         rightPanel.setOnItemSelectedListener(itemSelectedListener);
@@ -234,7 +253,8 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    presenter.showRate(false); //TODO decide whether to load chart every time
+                    presenter.showRate(true); //TODO decide whether to load chart every time
+                    //getChart(getTimespanDays());
                 }
 
                 @Override
@@ -283,6 +303,24 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public String getSelectedTimespan() {
         return timespan;
+    }
+
+    @Override
+    public int getTimespanDays() {
+        if (timespan == null) timespan = "30days";
+
+        switch (timespan) {
+            case "30days":
+                return 30;
+            case "90days":
+                return 90;
+            case "180days":
+                return 180;
+            case "1year":
+                return 365;
+        }
+
+        return 0;
     }
 }
 

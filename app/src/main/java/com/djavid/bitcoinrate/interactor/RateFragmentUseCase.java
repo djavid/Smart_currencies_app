@@ -6,6 +6,9 @@ import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.BlockchainModel;
 import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
+import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
+
+import java.util.List;
 
 import io.reactivex.Single;
 import retrofit2.Call;
@@ -40,4 +43,11 @@ public class RateFragmentUseCase implements RateFragmentInteractor {
         return dataRepository.getChartValues(timespan, sampled, format)
                 .doOnError(Throwable::printStackTrace);
     }
+
+    @Override
+    public Single<HistoryDataModel> getHistory(String curr, int periods, long after) {
+        return dataRepository.getHistory(curr, periods, after)
+                .doOnError(Throwable::printStackTrace);
+    }
+
 }

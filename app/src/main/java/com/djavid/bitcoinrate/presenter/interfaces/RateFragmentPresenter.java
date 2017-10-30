@@ -1,7 +1,5 @@
 package com.djavid.bitcoinrate.presenter.interfaces;
 
-import android.widget.Spinner;
-
 import com.djavid.bitcoinrate.core.Presenter;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
@@ -15,4 +13,5 @@ public interface RateFragmentPresenter extends Presenter<RateFragmentView, MainR
     void showRate(boolean update_chart);
     void showChart(String timespan);
     void refresh();
+    void getHistory(String curr, int periods, long after);
 }

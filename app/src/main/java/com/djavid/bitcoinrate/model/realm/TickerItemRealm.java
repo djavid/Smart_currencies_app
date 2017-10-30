@@ -3,6 +3,8 @@ package com.djavid.bitcoinrate.model.realm;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 
 import java.util.List;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 
@@ -11,7 +13,7 @@ public class TickerItemRealm extends RealmObject {
     private String price;
     private String code_crypto;
     private String code_country;
-    private List<LabelItemDto> labels;
+    private RealmList<LabelItemDto> labels;
 
     public TickerItemRealm() {}
 
@@ -19,7 +21,16 @@ public class TickerItemRealm extends RealmObject {
         this.price = price;
         this.code_crypto = code_crypto;
         this.code_country = code_country;
-        this.labels = labels;
+
+        this.labels = new RealmList<>();
+        this.labels.addAll(labels);
+    }
+
+    public TickerItemRealm(String price, String code_crypto, String code_country) {
+        this.price = price;
+        this.code_crypto = code_crypto;
+        this.code_country = code_country;
+        this.labels = new RealmList<>();
     }
 
     public String getPrice() {
@@ -51,6 +62,6 @@ public class TickerItemRealm extends RealmObject {
     }
 
     public void setLabels(List<LabelItemDto> labels) {
-        this.labels = labels;
+        this.labels.addAll(labels);
     }
 }

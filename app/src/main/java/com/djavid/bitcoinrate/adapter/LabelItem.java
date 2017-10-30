@@ -51,7 +51,8 @@ public class LabelItem {
             iv_label_trending.setVisibility(android.view.View.VISIBLE);
             iv_label_add.setVisibility(android.view.View.GONE);
         } else {
-            tv_ticker_label.setVisibility(android.view.View.GONE);
+            tv_ticker_label.setVisibility(android.view.View.VISIBLE);
+            tv_ticker_label.setText("");
             iv_label_trending.setVisibility(android.view.View.GONE);
             iv_label_add.setVisibility(android.view.View.VISIBLE);
         }

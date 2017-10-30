@@ -28,7 +28,7 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
 
         int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(date));
         int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(date));
-        int year = Integer.parseInt(new SimpleDateFormat("yyyy", Locale.US).format(date));
+        int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.US).format(date));
 
         String monthName = mMonths[month % mMonths.length - 1];
         String yearName = String.valueOf(year);

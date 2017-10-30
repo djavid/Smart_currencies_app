@@ -57,6 +57,7 @@ public class TickerItem {
         for (LabelItemDto item : itemRealm.getLabels()) {
             label_container.addView(new LabelItem(mContext, label_container, item));
         }
+        label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto()));
     }
 
 

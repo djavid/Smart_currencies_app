@@ -85,19 +85,22 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView {
     @Override
     public void loadData() {
         List<LabelItemDto> labelItems = new ArrayList<>();
-        labelItems.add(new LabelItemDto("2450", true, false));
-        labelItems.add(new LabelItemDto("2100", false, false));
-        labelItems.add(new LabelItemDto("", false, true));
+        labelItems.add(new LabelItemDto("2450", true));
+        labelItems.add(new LabelItemDto("2100", false));
+
+        //TickerItemRealm tickerItem = realm.createObject(TickerItemRealm.class);
+        //TickerItemRealm.load()
+
+        //TickerItemRealm.
 
         rv_ticker_list.addView(new TickerItem(getContext(), rv_ticker_list,
                 new TickerItemRealm("2403", "BTC", "USD", labelItems)));
         rv_ticker_list.addView(new TickerItem(getContext(), rv_ticker_list,
-                new TickerItemRealm("17 553,74", "ETH", "RUB", labelItems)));
+                new TickerItemRealm("17 553,74", "ETH", "RUB")));
         rv_ticker_list.addView(new TickerItem(getContext(), rv_ticker_list,
                 new TickerItemRealm("46,02", "LTC", "EUR", labelItems)));
         rv_ticker_list.addView(new TickerItem(getContext(), rv_ticker_list,
                 new TickerItemRealm("72,95", "NVC", "UAH", labelItems)));
-
     }
 
     @Override

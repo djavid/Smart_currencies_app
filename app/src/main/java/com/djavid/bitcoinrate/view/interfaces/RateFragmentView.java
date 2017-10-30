@@ -17,4 +17,5 @@ public interface RateFragmentView extends View {
     SwipeRefreshLayout getRefreshLayout();
     RateChart getRateChart();
     String getSelectedTimespan();
+    int getTimespanDays();
 }
