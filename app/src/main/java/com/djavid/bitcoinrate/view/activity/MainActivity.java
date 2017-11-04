@@ -1,5 +1,6 @@
 package com.djavid.bitcoinrate.view.activity;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,10 +15,15 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.djavid.bitcoinrate.R;
+import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
+import com.djavid.bitcoinrate.view.dialog.CreateLabelDialog;
+import com.djavid.bitcoinrate.view.dialog.CreateTickerDialog;
 import com.djavid.bitcoinrate.view.fragment.RateFragment;
 import com.djavid.bitcoinrate.view.fragment.TickerFragment;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class MainActivity extends AppCompatActivity implements RateFragment.OnFragmentInteractionListener,
@@ -26,9 +32,11 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     private FragmentManager fragmentManager;
     Fragment rateFragment, ticketFragment;
 
-    private final String TAG = getClass().getSimpleName();
-    private final String TAG_RATE = "TAG_RATE";
-    private final String TAG_TICKET = "TAG_TICKET";
+    final String TAG = getClass().getSimpleName();
+    final String TAG_RATE = "TAG_RATE";
+    final String TAG_TICKER = "TAG_TICKER";
+    final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
+    final String TAG_CREATE_LABEL_DIALOG = "TAG_CREATE_LABEL_DIALOG";
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -45,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
                     return true;
                 case R.id.navigation_cards:
 
-                    changeFragment(ticketFragment, TAG_TICKET, true);
+                    changeFragment(ticketFragment, TAG_TICKER, true);
 
                     return true;
                 case R.id.navigation_settings:
@@ -104,6 +112,11 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
@@ -116,5 +129,25 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     @Override
     public void goBack() {
 
+    }
+
+    @Override
+    public void showCreateDialog() {
+        CreateTickerDialog dialog = CreateTickerDialog.newInstance();
+        dialog.show(fragmentManager, TAG_CREATE_DIALOG);
+    }
+
+    private TickerItem selectedTickerItem;
+
+    @Override
+    public void showCreateLabelDialog(TickerItem tickerItem) {
+        selectedTickerItem = tickerItem;
+        CreateLabelDialog dialog = CreateLabelDialog.newInstance();
+        dialog.show(fragmentManager, TAG_CREATE_LABEL_DIALOG);
+    }
+
+    @Override
+    public TickerItem getSelectedTickerItem() {
+        return selectedTickerItem;
     }
 }

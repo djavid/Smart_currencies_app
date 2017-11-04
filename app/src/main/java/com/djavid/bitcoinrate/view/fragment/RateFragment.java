@@ -236,12 +236,12 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public void setCurrenciesSpinner() {
         ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row, crypto_coins,
-                getActivity().getLayoutInflater());
+                getActivity().getLayoutInflater(), R.layout.row_item);
         leftPanel.setAdapter(adapterLeft);
         leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
         ArrayAdapter<String> adapterRight = new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
-                        getActivity().getLayoutInflater());
+                        getActivity().getLayoutInflater(), R.layout.row_item);
         rightPanel.setAdapter(adapterRight);
         rightPanel.setOnItemSelectedListener(itemSelectedListener);
 

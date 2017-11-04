@@ -1,25 +1,34 @@
-package com.djavid.bitcoinrate.model.dto;
-
+package com.djavid.bitcoinrate.model.realm;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class LabelItemDto extends RealmObject {
+
+public class LabelItemRealm extends RealmObject {
 
     private String value;
     private boolean isTrendingUp;
     private boolean isAddButton;
 
 
-    public LabelItemDto() {
+    public LabelItemRealm() {
         this.isAddButton = true;
     }
 
-    public LabelItemDto(String value, boolean isTrendingUp) {
+    public LabelItemRealm(String value, boolean isTrendingUp) {
         this.value = value;
         this.isTrendingUp = isTrendingUp;
         this.isAddButton = false;
     }
 
+    @Override
+    public String toString() {
+        return "LabelItemRealm{" +
+                "value='" + value + '\'' +
+                ", isTrendingUp=" + isTrendingUp +
+                ", isAddButton=" + isAddButton +
+                '}';
+    }
 
     public String getValue() {
         return value;

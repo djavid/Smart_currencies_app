@@ -43,6 +43,6 @@ public abstract class BasePresenter<V extends View, R extends Router, I> impleme
         return instanceState;
     }
     protected void setInstanceState(I instanceState){
-        this.instanceState=instanceState;
+        this.instanceState = instanceState;
     }
 }

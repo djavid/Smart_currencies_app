@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.djavid.bitcoinrate.view.dialog.CreateTickerDialog"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_gravity="center">
+    
+
+    <TextView
+        android:id="@+id/tv_create_dialog_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_create_dialog_name"
+        android:textColor="#ddf0a311"
+        android:lineSpacingExtra="8sp"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginStart="27dp"
+        android:layout_marginTop="21dp" />
+
+    <LinearLayout
+        android:id="@+id/ll_spiners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_create_dialog_name"
+        android:layout_marginStart="27dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="11dp"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/leftSpinner"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/border_spinner"
+            android:spinnerMode="dialog"
+            android:layout_marginEnd="7dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/ticker_row_item"
+            android:text="@string/left_value_fragment" />
+
+        <Spinner
+            android:id="@+id/rightSpinner"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/border_spinner"
+            android:spinnerMode="dialog"
+            android:layout_marginStart="7dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/ticker_row_item"
+            android:text="@string/left_value_fragment" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_spiners"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="12.5dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="7dp">
+
+        <TextView
+            android:id="@+id/tv_cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="11dp"
+            android:paddingBottom="9dp"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
+            android:layout_marginEnd="9dp"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#00bcd4"
+            android:text="@string/title_dialog_cancel_btn" />
+
+        <TextView
+            android:id="@+id/tv_create_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="11dp"
+            android:paddingBottom="9dp"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#00bcd4"
+            android:text="@string/title_dialog_add_btn" />
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

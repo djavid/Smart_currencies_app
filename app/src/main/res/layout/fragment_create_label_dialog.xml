@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.djavid.bitcoinrate.view.dialog.CreateLabelDialog"
+    tools:ignore="MissingPrefix, ContentDescription"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_gravity="center">
+
+
+    <TextView
+        android:id="@+id/tv_create_dialog_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_label_dialog_name"
+        android:textColor="#ddf0a311"
+        android:lineSpacingExtra="8sp"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="21dp" />
+
+    <info.hoang8f.android.segmented.SegmentedGroup
+        android:id="@+id/segmented_button"
+        xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@id/tv_create_dialog_name"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:orientation="horizontal"
+        segmentedgroup:sc_tint_color="@color/colorTint"
+        segmentedgroup:sc_border_width="1dp"
+        segmentedgroup:sc_corner_radius="20dp">
+
+        <RadioButton
+            android:id="@+id/btn_trending_up"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:checked="true"
+            android:text="@string/title_dialog_rise_btn"
+            style="@style/RadioButton"
+            fontPath="revofit-light.ttf" />
+
+        <RadioButton
+            android:id="@+id/btn_trending_down"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:text="@string/title_dialog_decline_btn"
+            style="@style/RadioButton"
+            fontPath="revofit-light.ttf" />
+
+    </info.hoang8f.android.segmented.SegmentedGroup>
+
+    <EditText
+        android:id="@+id/et_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/segmented_button"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:hint="@string/title_hint"
+        android:textColorHint="@color/colorEditTextHint"
+        android:textColorHighlight="@color/colorEditTextBorder"
+        android:textColor="@color/colorEditTextHint"
+
+        android:textColorLink="@color/colorEditTextBorder"
+        android:shadowColor="@color/colorEditTextBorder"
+
+        android:textCursorDrawable="@null"
+        android:inputType="numberDecimal"
+        app:backgroundTint="@color/colorEditTextBorder"
+        />
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_price"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="12.5dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="7dp">
+
+        <TextView
+            android:id="@+id/tv_cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="11dp"
+            android:paddingBottom="9dp"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
+            android:layout_marginEnd="9dp"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#00bcd4"
+            android:text="@string/title_dialog_cancel_btn" />
+
+        <TextView
+            android:id="@+id/tv_create_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="11dp"
+            android:paddingBottom="9dp"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#00bcd4"
+            android:text="@string/title_dialog_add_btn" />
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

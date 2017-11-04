@@ -37,7 +37,7 @@ public class App extends Application {
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setFontAttrId(R.attr.fontPath)
-                .build());super.onCreate();
+                .build());
 
         getPresenterProvider();
         getPrefencesWrapper();

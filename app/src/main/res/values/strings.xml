@@ -26,4 +26,19 @@
     <string name="title_ppc">Pipecoin</string>
     <string name="title_doge">Doge</string>
 
+    <!-- Dialogs -->
+    <string name="title_create_dialog_name">Выберите пару</string>
+    <string name="title_label_dialog_name">Уведомить при</string>
+
+    <string name="title_dialog_rise_btn">увеличении</string>
+    <string name="title_dialog_decline_btn">уменьшении</string>
+
+    <string name="title_dialog_cancel_btn">ОТМЕНА</string>
+    <string name="title_dialog_add_btn">ДОБАВИТЬ</string>
+
+    <string name="title_hint">Введите цену</string>
+
+    <!-- Snackbar messages -->
+    <string name="title_cardview_removed">Элемент удален</string>
+
 </resources>

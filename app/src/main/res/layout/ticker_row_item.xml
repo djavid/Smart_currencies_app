@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center_horizontal"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    tools:ignore="MissingPrefix, ContentDescription"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/curr_icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_bitcoin"/>
+
+        <TextView
+            android:id="@+id/curr_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textColor="@color/colorSpinnerClosedItem"
+            android:text="BTC"
+            fontPath="revofit-light.ttf" />
+
+    </LinearLayout>
+
+</LinearLayout>

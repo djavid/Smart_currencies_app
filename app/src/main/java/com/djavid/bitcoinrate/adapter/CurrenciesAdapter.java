@@ -21,17 +21,20 @@ import com.djavid.bitcoinrate.util.Codes;
 public class CurrenciesAdapter extends ArrayAdapter<String> {
     String[] currs;
     LayoutInflater inflater;
+    int rowItemId;
 
-    public CurrenciesAdapter(Context context, int textViewResourceId, String[] objects, LayoutInflater inflater) {
+    public CurrenciesAdapter(Context context, int textViewResourceId, String[] objects,
+                             LayoutInflater inflater, int rowItemId) {
         super(context, textViewResourceId, objects);
         currs = objects;
         this.inflater = inflater;
+        this.rowItemId = rowItemId;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        return getCustomView(position, convertView, parent, R.layout.row_item);
+        return getCustomView(position, convertView, parent, rowItemId);
     }
 
     @Override
