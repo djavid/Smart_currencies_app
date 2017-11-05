@@ -1,6 +1,7 @@
 package com.djavid.bitcoinrate.view.fragment;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
@@ -20,6 +21,7 @@ import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.mindorks.placeholderview.PlaceHolderView;
 
 import java.util.Date;
@@ -44,7 +46,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     private OnTickerInteractionListener mTickerListener;
 
 
-    public TickerFragment() { }
+    public TickerFragment() {
+    }
 
     public static TickerFragment newInstance() {
         TickerFragment fragment = new TickerFragment();
@@ -103,6 +106,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @Override
     public void loadData() {
         addViewsFromRealm();
+        System.out.println(FirebaseInstanceId.getInstance().getToken() + "---------------------------------------------------------------");
     }
 
     @Override
@@ -167,12 +171,10 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             presenter.loadTickerPrice(tickerItem);
 
             scrollToPosition(tickerItemRealms.size() - 1);
-            rv_ticker_list.refresh();
         }
     }
 
     private void addViewsFromRealm() {
-        System.out.println("ADDVIEWSFROMREALM -------------------------------------------------------------------");
         resetFeed();
         RealmResults<TickerItemRealm> tickers = presenter.getAllTickers();
 
@@ -185,36 +187,36 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     ItemTouchHelper.SimpleCallback simpleCallback =
             new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            return false;
-        }
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    return false;
+                }
 
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
-            int pos = viewHolder.getAdapterPosition();
-            cl_ticker.setTag(pos);
+                    int pos = viewHolder.getAdapterPosition();
+                    cl_ticker.setTag(pos);
 
-            TickerItem tickerItem = (TickerItem) rv_ticker_list.getViewResolverAtPosition(pos);
-            Date createdAt = tickerItem.getCreatedAt();
+                    TickerItem tickerItem = (TickerItem) rv_ticker_list.getViewResolverAtPosition(pos);
+                    Date createdAt = tickerItem.getCreatedAt();
 
-            Snackbar snackbar = Snackbar.make(cl_ticker,
-                    getResources().getString(R.string.title_cardview_removed), Snackbar.LENGTH_SHORT)
-                    .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                    Snackbar snackbar = Snackbar.make(cl_ticker,
+                            getResources().getString(R.string.title_cardview_removed), Snackbar.LENGTH_SHORT)
+                            .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
 //                        @Override
 //                        public void onDismissed(Snackbar transientBottomBar, int event) {
 //                            System.out.println(createdAt.toString());
 //                            presenter.deleteTicker(createdAt);
 //                        }
 
-                        @Override
-                        public void onShown(Snackbar transientBottomBar) {
-                            presenter.deleteTicker(createdAt);
-                            rv_ticker_list.removeView(viewHolder.getAdapterPosition());
-                            rv_ticker_list.refresh();
-                        }
-                    });
+                                @Override
+                                public void onShown(Snackbar transientBottomBar) {
+                                    int position = (int) cl_ticker.getTag();
+                                    presenter.deleteTicker(createdAt);
+                                    rv_ticker_list.removeView(viewHolder.getAdapterPosition());
+                                }
+                            });
 //                    .setAction(getResources().getString(R.string.title_cardview_undo), v -> {
 //                        int position = (int) cl_ticker.getTag();
 //
@@ -229,11 +231,23 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 //                            presenter.loadTickerPrice(tickerItem);
 //                        });
 //                    });
-            snackbar.show();
+                    snackbar.show();
 
-        }
-    };
+                }
 
+                @Override
+                public void onChildDraw(Canvas c, RecyclerView recyclerView,
+                                        RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                        int actionState, boolean isCurrentlyActive) {
+
+                    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                        float alpha = 1 - (Math.abs(dX) / recyclerView.getWidth());
+                        viewHolder.itemView.setAlpha(alpha);
+                    }
+
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+            };
 
 
     @Override

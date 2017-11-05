@@ -21,6 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 
 public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentView, MainRouter, Object>
@@ -60,7 +61,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
     @Override
     public RealmResults<TickerItemRealm> getAllTickers() {
-        tickers = realm.where(TickerItemRealm.class).findAll();
+        tickers = realm.where(TickerItemRealm.class).findAll().sort("createdAt", Sort.ASCENDING);
         tickers.addChangeListener((RealmResults<TickerItemRealm> tickerItemRealms) -> {
             if (getView() != null) getView().refreshFeed(tickerItemRealms);
         });

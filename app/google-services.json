@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "722671693779-17dvdj4g42k6lebt70ct9k1pvd5lu0vd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.djavid.bitcoinrate",
+            "certificate_hash": "08f348669ec8430a6ff5bb218497580e28ba54b1"
+          }
+        },
+        {
           "client_id": "722671693779-nmqr6lbu8k8ilrufsqg01diujpnjlcdh.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "722671693779-nmqr6lbu8k8ilrufsqg01diujpnjlcdh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
