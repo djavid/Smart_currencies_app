@@ -2,7 +2,7 @@ package com.djavid.bitcoinrate;
 
 import android.view.View;
 
-import com.djavid.bitcoinrate.util.DayAxisValueFormatter;
+import com.djavid.bitcoinrate.util.DateFormatter;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -14,6 +14,7 @@ import java.util.List;
 
 
 public class RateChart {
+
     private LineChart chart;
 
     public LineChart getChart() {
@@ -45,7 +46,7 @@ public class RateChart {
         chart.getAxisRight().setDrawLabels(false);
 
         XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new DayAxisValueFormatter(chart));
+        xAxis.setValueFormatter(new DateFormatter(chart));
 
         chart.invalidate();
     }

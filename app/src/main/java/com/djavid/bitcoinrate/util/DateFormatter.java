@@ -1,14 +1,18 @@
 package com.djavid.bitcoinrate.util;
 
+import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 
-public class DayAxisValueFormatter implements IAxisValueFormatter
+public class DateFormatter implements IAxisValueFormatter
 {
 
     private String[] mMonths = new String[]{
@@ -17,7 +21,7 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
 
     private BarLineChartBase<?> chart;
 
-    public DayAxisValueFormatter(BarLineChartBase<?> chart) {
+    public DateFormatter(BarLineChartBase<?> chart) {
         this.chart = chart;
     }
 
@@ -40,5 +44,19 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
 
             return day == 0 ? "" : day + " " + monthName;
         }
+    }
+
+    public static String convertPrice(double price, CryptonatorTicker ticker) {
+        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+        symbols.setGroupingSeparator(' ');
+        DecimalFormat formatter;
+
+        if (!ticker.getTicker().getBase().equals("DOGE")) {
+            formatter = new DecimalFormat("###,###.##", symbols);
+        } else {
+            formatter = new DecimalFormat("###,###.####", symbols);
+        }
+
+        return formatter.format(price);
     }
 }

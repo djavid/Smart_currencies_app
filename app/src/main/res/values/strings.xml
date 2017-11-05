@@ -40,5 +40,6 @@
 
     <!-- Snackbar messages -->
     <string name="title_cardview_removed">Элемент удален</string>
+    <string name="title_cardview_undo">Отмена</string>
 
 </resources>

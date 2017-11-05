@@ -1,9 +1,7 @@
 package com.djavid.bitcoinrate.presenter.implementations;
 
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.widget.Toast;
 import com.djavid.bitcoinrate.R;
 
 import com.djavid.bitcoinrate.adapter.TickerItem;
@@ -13,18 +11,15 @@ import com.djavid.bitcoinrate.interactor.TickerFragmentInteractor;
 import com.djavid.bitcoinrate.interactor.TickerFragmentUseCase;
 import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
+import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 
-import org.joda.time.LocalDateTime;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.util.Date;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
@@ -67,26 +62,28 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     public RealmResults<TickerItemRealm> getAllTickers() {
         tickers = realm.where(TickerItemRealm.class).findAll();
         tickers.addChangeListener((RealmResults<TickerItemRealm> tickerItemRealms) -> {
-            getView().refreshFeed(tickerItemRealms);
+            if (getView() != null) getView().refreshFeed(tickerItemRealms);
         });
 
         return tickers;
     }
 
     @Override
-    public void deleteTicker(TickerItemRealm ticker) {
+    public void deleteTicker(Date createdAt) {
         realm.executeTransaction(realm1 -> {
-            ticker.deleteFromRealm();
-            if (getView() != null) getView().showSnackbar(((Fragment) getView())
-                            .getResources()
-                            .getString(R.string.title_cardview_removed));
+            TickerItemRealm ticker = realm1
+                    .where(TickerItemRealm.class)
+                    .equalTo("createdAt", createdAt).findFirst();
+            if (ticker != null) ticker.deleteFromRealm();
         });
     }
 
     @Override
     public void loadTickerPrice(TickerItem tickerItem) {
-        String curr1 = tickerItem.getRealm().getCode_crypto();
-        String curr2 = tickerItem.getRealm().getCode_country();
+        setRefreshing(true);
+
+        String curr1 = tickerItem.getCode_crypto();
+        String curr2 = tickerItem.getCode_country();
 
         disposable = tickerFragmentInteractor.getRate(curr1, curr2)
                 .compose(RxUtils.applySingleSchedulers())
@@ -99,22 +96,24 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     }
 
                     double price = ticker.getTicker().getPrice();
-
-                    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-                    symbols.setGroupingSeparator(' ');
-                    DecimalFormat formatter;
-
-                    if (!ticker.getTicker().getBase().equals("DOGE")) {
-                        formatter = new DecimalFormat("###,###.##", symbols);
-                    } else {
-                        formatter = new DecimalFormat("###,###.####", symbols);
-                    }
-                    String text = formatter.format(price);
+                    String text = DateFormatter.convertPrice(price, ticker);
 
                     tickerItem.setPrice(text);
+                    setRefreshing(false);
 
                 }, error -> {
-                    if (getView() != null) getView().hideProgressbar();
+                    setRefreshing(false);
                 });
+    }
+
+    private void setRefreshing(boolean key) {
+        if (getView() != null) {
+            if (getView().getRefreshLayout() != null)
+                getView().getRefreshLayout().setRefreshing(key);
+        }
+    }
+
+    public Realm getRealm() {
+        return realm;
     }
 }

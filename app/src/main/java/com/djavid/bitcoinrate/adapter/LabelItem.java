@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.model.realm.LabelItemRealm;
+import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.mindorks.placeholderview.PlaceHolderView;
 import com.mindorks.placeholderview.annotations.Click;
@@ -35,24 +35,24 @@ class LabelItem {
 
     private Context mContext;
     private PlaceHolderView mPlaceHolderView;
-    private LabelItemRealm labelItemRealm;
+    private LabelItemDto labelItemDto;
 
-    LabelItem(Context mContext, PlaceHolderView mPlaceHolderView, LabelItemRealm labelItemRealm,
+    LabelItem(Context mContext, PlaceHolderView mPlaceHolderView, LabelItemDto labelItemDto,
               TickerItem tickerItem) {
         this.mContext = mContext;
         this.mPlaceHolderView = mPlaceHolderView;
-        this.labelItemRealm = labelItemRealm;
+        this.labelItemDto = labelItemDto;
         this.tickerItem = tickerItem;
 
-        isAddButton = labelItemRealm.isAddButton();
+        isAddButton = labelItemDto.isAddButton();
     }
 
     @Resolve
     private void onResolved() {
-        if (!labelItemRealm.isAddButton()) {
-            tv_ticker_label.setText(labelItemRealm.getValue());
+        if (!labelItemDto.isAddButton()) {
+            tv_ticker_label.setText(labelItemDto.getValue());
 
-            if (labelItemRealm.isTrendingUp())
+            if (labelItemDto.isTrendingUp())
                 iv_label_trending.setImageResource(R.drawable.ic_trending_up_white_24px);
             else
                 iv_label_trending.setImageResource(R.drawable.ic_trending_down_white_24px);

@@ -7,13 +7,19 @@
     android:orientation="vertical"
     tools:context=".view.fragment.TickerFragment">
 
-
-    <com.mindorks.placeholderview.PlaceHolderView
-        android:id="@+id/rv_ticker_list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/recycler_item_ticker" />
+        android:layout_height="match_parent">
+
+        <com.mindorks.placeholderview.PlaceHolderView
+            android:id="@+id/rv_ticker_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/recycler_item_ticker" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

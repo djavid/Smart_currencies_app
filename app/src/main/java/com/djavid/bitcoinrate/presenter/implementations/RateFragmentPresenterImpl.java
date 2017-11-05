@@ -12,6 +12,7 @@ import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
 import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
 import com.djavid.bitcoinrate.model.dto.Value;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
+import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.Entry;
@@ -72,8 +73,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
     @Override
     public void showRate(boolean update_chart) {
-        if (getView() != null) getView().showProgressbar();
-        setRefreshing(false);
+        setRefreshing(true);
 
         final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
         final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
@@ -89,23 +89,13 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                     }
 
                     double price = ticker.getTicker().getPrice();
-
-                    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-                    symbols.setGroupingSeparator(' ');
-                    DecimalFormat formatter;
-
-                    if (!ticker.getTicker().getBase().equals("DOGE")) {
-                        formatter = new DecimalFormat("###,###.##", symbols);
-                    } else {
-                        formatter = new DecimalFormat("###,###.####", symbols);
-                    }
-                    String text = formatter.format(price) + " " + ticker.getTicker().getTarget();
-
-                    if (!getView().getTopPanel().getText().equals(text)) {
-                        getView().getTopPanel().setText(text);
-                    }
+                    String text = DateFormatter.convertPrice(price, ticker) + " " + ticker.getTicker().getTarget();
 
                     if (getView() != null) {
+                        if (!getView().getTopPanel().getText().equals(text)) {
+                            getView().getTopPanel().setText(text);
+                        }
+
                         //if (update_chart) showChart(getView().getSelectedTimespan());
 
                         int daysAgo = getView().getTimespanDays();
@@ -113,18 +103,17 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                         long start = end - 86400 * daysAgo;
 
                         if (update_chart) getHistory(curr1 + curr2, 86400, start);
-                        else getView().hideProgressbar();
+                        else setRefreshing(false);
                     }
 
                 }, error -> {
-                    if (getView() != null) getView().hideProgressbar();
+                    setRefreshing(false);
                 });
     }
 
     @Override
     public void showChart(String timespan) {
-        if (getView() != null) getView().showProgressbar();
-        setRefreshing(false);
+        setRefreshing(true);
 
         disposable = rateFragmentInteractor.getChartValues(timespan, true, "json")
                 .compose(RxUtils.applySingleSchedulers())
@@ -144,18 +133,17 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
                     if (getView() != null) {
                         getView().getRateChart().initialize(entries, color);
-                        getView().hideProgressbar();
+                        setRefreshing(false);
                     }
 
                 }, error -> {
-                    if (getView() != null) getView().hideProgressbar();
+                    setRefreshing(false);
                 });
     }
 
     @Override
     public void getHistory(String curr, int periods, long after) {
-//        if (getView() != null) getView().showProgressbar();
-        setRefreshing(false);
+        setRefreshing(true);
 
         disposable = rateFragmentInteractor.getHistory(curr, periods, after)
                 .compose(RxUtils.applySingleSchedulers())
@@ -182,11 +170,11 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
                     if (getView() != null) {
                         getView().getRateChart().initialize(entries, color);
-                        getView().hideProgressbar();
+                        setRefreshing(false);
                     }
 
                 }, error -> {
-                    if (getView() != null) getView().hideProgressbar();
+                    setRefreshing(false);
                 });
     }
 
