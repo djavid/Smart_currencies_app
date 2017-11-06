@@ -1,6 +1,7 @@
 package com.djavid.bitcoinrate.model;
 
 import com.djavid.bitcoinrate.model.dto.BlockchainModel;
+import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
@@ -34,6 +35,13 @@ public interface ApiInterface {
 
     @GET("https://www.cryptonator.com/api/currencies")
     Single<CurrenciesModel> getCurrencies();
+
+    //coinmarketcap
+
+    @GET("https://api.coinmarketcap.com/v1/ticker/{crypto_id}")
+    Single<List<CoinMarketCapTicker>> getRateCMC(@Path("crypto_id") String crypto_id, @Query("convert") String country_id);
+
+    //cryptowatch
 
     @GET("https://api.cryptowat.ch/markets/gdax/{curr}/ohlc")
     Single<HistoryDataModel> getHistory(@Path("curr") String curr,

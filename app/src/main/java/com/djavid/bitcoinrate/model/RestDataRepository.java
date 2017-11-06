@@ -3,6 +3,7 @@ package com.djavid.bitcoinrate.model;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.model.dto.BlockchainModel;
+import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
@@ -44,4 +45,10 @@ public class RestDataRepository implements DataRepository {
     public Single<HistoryDataModel> getHistory(String curr, int periods, long after) {
         return apiInterface.getHistory(curr, periods, after);
     }
+
+    @Override
+    public Single<List<CoinMarketCapTicker>> getRateCMC(String crypto_id, String country_id) {
+        return apiInterface.getRateCMC(crypto_id, country_id);
+    }
+
 }

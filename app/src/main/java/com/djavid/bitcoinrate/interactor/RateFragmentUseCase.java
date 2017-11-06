@@ -4,6 +4,7 @@ package com.djavid.bitcoinrate.interactor;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.BlockchainModel;
+import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
@@ -18,7 +19,7 @@ public class RateFragmentUseCase implements RateFragmentInteractor {
 
     private DataRepository dataRepository;
 
-    public RateFragmentUseCase(DataRepository dataRepository) {
+    private RateFragmentUseCase(DataRepository dataRepository) {
         this.dataRepository = dataRepository;
     }
 
@@ -50,4 +51,9 @@ public class RateFragmentUseCase implements RateFragmentInteractor {
                 .doOnError(Throwable::printStackTrace);
     }
 
+    @Override
+    public Single<List<CoinMarketCapTicker>> getRateCMC(String crypto_id, String country_id) {
+        return dataRepository.getRateCMC(crypto_id, country_id)
+                .doOnError(Throwable::printStackTrace);
+    }
 }

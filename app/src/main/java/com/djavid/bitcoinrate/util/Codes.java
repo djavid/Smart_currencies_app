@@ -82,7 +82,7 @@ public class Codes {
             case "NMC":
                 return "Namecoin;Namecoin";
             case "DOGE":
-                return "Doge;Doge";
+                return "DogeCoin;DogeCoin";
             case "UAH":
                 return ";";
             case "ETH":
@@ -90,9 +90,30 @@ public class Codes {
             case "NVC":
                 return "Novacoin;Novacoin";
             case "PPC":
-                return "Pipecoin;Pipecoin";
+                return "Peercoin;Peercoin";
             default:
                 return ";";
+        }
+    }
+
+    public static String getCryptoCurrencyId(String code) {
+        switch (code) {
+            case "BTC":
+                return "bitcoin";
+            case "LTC":
+                return "litecoin";
+            case "NMC":
+                return "namecoin";
+            case "DOGE":
+                return "dogecoin";
+            case "ETH":
+                return "ethereum";
+            case "NVC":
+                return "novacoin";
+            case "PPC":
+                return "peercoin";
+            default:
+                return "";
         }
     }
 

@@ -1,5 +1,6 @@
 package com.djavid.bitcoinrate.util;
 
+import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
@@ -52,6 +53,20 @@ public class DateFormatter implements IAxisValueFormatter
         DecimalFormat formatter;
 
         if (!ticker.getTicker().getBase().equals("DOGE")) {
+            formatter = new DecimalFormat("###,###.##", symbols);
+        } else {
+            formatter = new DecimalFormat("###,###.####", symbols);
+        }
+
+        return formatter.format(price);
+    }
+
+    public static String convertPrice(double price, CoinMarketCapTicker ticker) {
+        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+        symbols.setGroupingSeparator(' ');
+        DecimalFormat formatter;
+
+        if (!ticker.getSymbol().equals("DOGE")) {
             formatter = new DecimalFormat("###,###.##", symbols);
         } else {
             formatter = new DecimalFormat("###,###.####", symbols);

@@ -179,7 +179,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -253,7 +252,8 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    presenter.showRate(true); //TODO decide whether to load chart every time
+                    //presenter.showRate(true); //TODO decide whether to load chart every time
+                    presenter.showRateCMC(true);
                     //getChart(getTimespanDays());
                 }
 

@@ -9,9 +9,11 @@ import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.interactor.RateFragmentInteractor;
 import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
+import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
 import com.djavid.bitcoinrate.model.dto.Value;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
@@ -68,7 +70,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
     @Override
     public void refresh() {
-        showRate(true);
+        //showRate(true);
+        showRateCMC(true);
     }
 
     @Override
@@ -96,13 +99,52 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                             getView().getTopPanel().setText(text);
                         }
 
-                        //if (update_chart) showChart(getView().getSelectedTimespan());
-
                         int daysAgo = getView().getTimespanDays();
                         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
                         long start = end - 86400 * daysAgo;
 
                         if (update_chart) getHistory(curr1 + curr2, 86400, start);
+                        else setRefreshing(false);
+                    }
+
+                }, error -> {
+                    setRefreshing(false);
+                });
+    }
+
+    @Override
+    public void showRateCMC(boolean update_chart) {
+        setRefreshing(true);
+
+        final String crypto_id = getView().getLeftSpinner().getSelectedItem().toString();
+        final String crypto_full_id = Codes.getCryptoCurrencyId(crypto_id);
+        final String country_id = getView().getRightSpinner().getSelectedItem().toString();
+
+        disposable = rateFragmentInteractor.getRateCMC(crypto_full_id, country_id)
+                .compose(RxUtils.applySingleSchedulers())
+                .retry(2L)
+                .subscribe(array -> {
+
+                    CoinMarketCapTicker ticker = array.get(0);
+//                    if (!ticker.getError().isEmpty()) {
+//                        //TODO
+//                        Log.e("showRate():", ticker.getError());
+//                        return;
+//                    }
+
+                    double price = ticker.getPrice(country_id);
+                    String text = DateFormatter.convertPrice(price, ticker) + " " + country_id;
+
+                    if (getView() != null) {
+                        if (!getView().getTopPanel().getText().equals(text)) {
+                            getView().getTopPanel().setText(text);
+                        }
+
+                        int daysAgo = getView().getTimespanDays();
+                        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
+                        long start = end - 86400 * daysAgo;
+
+                        if (update_chart) getHistory(crypto_id + country_id, 86400, start);
                         else setRefreshing(false);
                     }
 
@@ -153,7 +195,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
                     for (List<Double> item : values) {
                         Double weightened = (item.get(1) + item.get(2) + item.get(3) + item.get(4)) / 4;
-                        System.out.println(new Timestamp(item.get(0).longValue() * 1000).toString() + " " + weightened);
                     }
 
                     List<Entry> entries = new ArrayList<Entry>();
