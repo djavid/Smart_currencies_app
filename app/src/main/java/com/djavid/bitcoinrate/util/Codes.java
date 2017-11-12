@@ -25,7 +25,7 @@ public class Codes {
             "ZMW",	"ZWD"
     };
 
-    public static String[] crypto_coins = {"BTC", "LTC", "ETH", "NVC", "NMC", "PPC", "DOGE"};
+    public static String[] crypto_coins = {"BTC", "BCH", "LTC", "ETH", "NVC", "NMC", "PPC", "DOGE"};
 
     public static String[] country_coins = {"USD", "EUR", "CAD", "CNY", "JPY", "PLN", "GBP", "RUB", "UAH"};
 
@@ -77,6 +77,8 @@ public class Codes {
                 return ";";
             case "BTC":
                 return "Bitcoin;Bitcoin";
+            case "BCH":
+                return "Bitcoin Cash;Bitcoin Cash";
             case "LTC":
                 return "Litecoin;Litecoin";
             case "NMC":
@@ -112,6 +114,8 @@ public class Codes {
                 return "novacoin";
             case "PPC":
                 return "peercoin";
+            case "BCH":
+                return "bitcoin-cash";
             default:
                 return "";
         }
@@ -166,6 +170,8 @@ public class Codes {
                 return R.drawable.ic_brazil;
             case "BTC":
                 return R.drawable.ic_bitcoin;
+            case "BCH":
+                return R.drawable.ic_bitcoin_cash;
             case "LTC":
                 return R.drawable.ic_litecoin;
             case "NMC":
