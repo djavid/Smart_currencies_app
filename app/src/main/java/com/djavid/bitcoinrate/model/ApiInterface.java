@@ -1,16 +1,20 @@
 package com.djavid.bitcoinrate.model;
 
-import com.djavid.bitcoinrate.model.dto.BlockchainModel;
-import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
-import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
-import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
+import com.djavid.bitcoinrate.model.dto.blockchain.BlockchainModel;
+import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
+import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
+import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
-import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -20,6 +24,9 @@ import retrofit2.http.Query;
 
 
 public interface ApiInterface {
+
+    String HEROKU_URL = "https://bitcoinrate-server.herokuapp.com";
+    String GOOGLE_CLOUD_URL = "https://second-conquest-186513.appspot.com";
 
     //blockchain
 
@@ -47,5 +54,16 @@ public interface ApiInterface {
     Single<HistoryDataModel> getHistory(@Path("curr") String curr,
                                               @Query("periods") int periods,
                                               @Query("after") long after);
+
+    //brb server
+
+    @GET(HEROKU_URL + "/registerToken")
+    Single<ResponseId> registerToken(@Query("token") String token, @Query("id") long id);
+
+    @POST(HEROKU_URL + "/subscribe")
+    Single<ResponseId> sendSubscribe(@Body Subscribe subscribe);
+
+    @GET(HEROKU_URL + "/deleteSubscribe")
+    Completable deleteSubscribe(@Query("id") long id);
 
 }

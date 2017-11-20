@@ -9,8 +9,10 @@ import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.interactor.TickerFragmentInteractor;
 import com.djavid.bitcoinrate.interactor.TickerFragmentUseCase;
+import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
@@ -81,6 +83,11 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
     @Override
     public void loadTickerPrice(TickerItem tickerItem) {
+        loadTickerPriceCMC(tickerItem);
+    }
+
+    @Override
+    public void loadTickerPriceCryptonator(TickerItem tickerItem) {
         setRefreshing(true);
 
         String curr1 = tickerItem.getCode_crypto();
@@ -97,6 +104,31 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     }
 
                     double price = ticker.getTicker().getPrice();
+                    String text = DateFormatter.convertPrice(price, ticker);
+
+                    tickerItem.setPrice(text);
+                    setRefreshing(false);
+
+                }, error -> {
+                    setRefreshing(false);
+                });
+    }
+
+    @Override
+    public void loadTickerPriceCMC(TickerItem tickerItem) {
+        setRefreshing(true);
+
+        String code_crypto = tickerItem.getCode_crypto();
+        final String code_crypto_full = Codes.getCryptoCurrencyId(code_crypto);
+        String code_country = tickerItem.getCode_country();
+
+        disposable = tickerFragmentInteractor.getRateCMC(code_crypto_full, code_country)
+                .compose(RxUtils.applySingleSchedulers())
+                .retry(2L)
+                .subscribe(array -> {
+                    CoinMarketCapTicker ticker = array.get(0);
+
+                    double price = ticker.getPrice(code_country);
                     String text = DateFormatter.convertPrice(price, ticker);
 
                     tickerItem.setPrice(text);

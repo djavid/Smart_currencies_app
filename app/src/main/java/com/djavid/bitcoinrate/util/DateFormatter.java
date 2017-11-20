@@ -1,7 +1,7 @@
 package com.djavid.bitcoinrate.util;
 
-import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
+import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;

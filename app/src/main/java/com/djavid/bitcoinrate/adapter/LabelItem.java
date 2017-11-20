@@ -1,12 +1,19 @@
 package com.djavid.bitcoinrate.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.djavid.bitcoinrate.R;
+import com.djavid.bitcoinrate.model.DataRepository;
+import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
+import com.djavid.bitcoinrate.model.realm.LabelItemRealm;
+import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
+import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.mindorks.placeholderview.PlaceHolderView;
 import com.mindorks.placeholderview.annotations.Click;
@@ -14,6 +21,8 @@ import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.NonReusable;
 import com.mindorks.placeholderview.annotations.Resolve;
 import com.mindorks.placeholderview.annotations.View;
+
+import io.realm.Realm;
 
 
 @NonReusable
@@ -32,10 +41,11 @@ class LabelItem {
     private Boolean isAddButton;
     private TickerItem tickerItem;
 
+    Realm realm;
 
     private Context mContext;
     private PlaceHolderView mPlaceHolderView;
-    private LabelItemDto labelItemDto;
+    public LabelItemDto labelItemDto;
 
     LabelItem(Context mContext, PlaceHolderView mPlaceHolderView, LabelItemDto labelItemDto,
               TickerItem tickerItem) {
@@ -45,6 +55,7 @@ class LabelItem {
         this.tickerItem = tickerItem;
 
         isAddButton = labelItemDto.isAddButton();
+        realm = Realm.getDefaultInstance();
     }
 
     @Resolve
@@ -73,7 +84,51 @@ class LabelItem {
     private void onClick() {
         if (isAddButton) {
             ((MainActivity) mContext).showCreateLabelDialog(tickerItem);
+        } else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+            alert.setTitle("Удалить оповещение");
+            alert.setMessage("Вы действительно хотите удалить это оповещение?");
+
+            alert.setPositiveButton("Да", (dialog, which) -> {
+                deleteSubscribe(labelItemDto.getId());
+
+                realm.executeTransaction(realm1 -> {
+                    TickerItemRealm itemRealm = realm1
+                            .where(TickerItemRealm.class)
+                            .equalTo("createdAt", tickerItem.getCreatedAt()).findFirst();
+
+                    if (itemRealm != null) {
+                        for (LabelItemRealm item : itemRealm.getLabels()) {
+                            if (item.getId() == labelItemDto.getId()) {
+                                item.deleteFromRealm();
+                                tickerItem.deleteLabel(this);
+                                break;
+                            }
+                        }
+                    }
+
+                });
+            });
+
+            alert.setNegativeButton("Нет", ((dialog, which) -> {
+                dialog.dismiss();
+            }));
+
+            alert.show();
         }
+    }
+
+    private void deleteSubscribe(Long id) {
+        DataRepository dataRepository = new RestDataRepository();
+
+        dataRepository.deleteSubscribe(id)
+                .compose(RxUtils.applyCompletableSchedulers())
+                .doOnError(Throwable::printStackTrace)
+                .subscribe(() -> {
+                    Log.d("LabelDialog", "Succesfully deleted subscribe with id = " + id);
+                }, error -> {
+
+                });
     }
 
 }

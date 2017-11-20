@@ -1,7 +1,6 @@
 package com.djavid.bitcoinrate.presenter.implementations;
 
 import android.util.Log;
-import android.view.View;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
@@ -9,21 +8,18 @@ import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.interactor.RateFragmentInteractor;
 import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
-import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
-import com.djavid.bitcoinrate.model.dto.Value;
+import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.blockchain.Value;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.Entry;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.joda.time.LocalDateTime;
 
-import java.sql.Timestamp;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,12 +66,16 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
     @Override
     public void refresh() {
-        //showRate(true);
-        showRateCMC(true);
+        showRate(true);
     }
 
     @Override
     public void showRate(boolean update_chart) {
+        showRateCMC(update_chart);
+    }
+
+    @Override
+    public void showRateCryptonator(boolean update_chart) {
         setRefreshing(true);
 
         final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
@@ -114,6 +114,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
     @Override
     public void showRateCMC(boolean update_chart) {
+        if (getView() == null) return;
+
         setRefreshing(true);
 
         final String crypto_id = getView().getLeftSpinner().getSelectedItem().toString();
@@ -126,11 +128,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                 .subscribe(array -> {
 
                     CoinMarketCapTicker ticker = array.get(0);
-//                    if (!ticker.getError().isEmpty()) {
-//                        //TODO
-//                        Log.e("showRate():", ticker.getError());
-//                        return;
-//                    }
 
                     double price = ticker.getPrice(country_id);
                     String text = DateFormatter.convertPrice(price, ticker) + " " + country_id;
@@ -219,6 +216,48 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                 });
     }
 
+    public void sendTokenToServer() {
 
+        String token = FirebaseInstanceId.getInstance().getToken();
+
+        if (token == null || token.isEmpty()) {
+            return;
+        }
+
+        long id;
+
+        if (App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
+            id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+        } else {
+            id = 0;
+        }
+
+        disposable = rateFragmentInteractor.registerToken(token, id)
+                .compose(RxUtils.applySingleSchedulers())
+                .subscribe(response -> {
+
+                    if (response.error.isEmpty()) {
+
+                        if (response.id != 0) {
+
+                            App.getAppInstance()
+                                    .getPrefencesWrapper()
+                                    .sharedPreferences
+                                    .edit()
+                                    .putLong("token_id", response.id)
+                                    .apply();
+
+                            App.getAppInstance()
+                                    .getPrefencesWrapper()
+                                    .sharedPreferences
+                                    .edit()
+                                    .putString("token", token)
+                                    .apply();
+                        }
+                    }
+                }, error -> {
+
+                });
+    }
 
 }

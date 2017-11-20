@@ -1,5 +1,6 @@
-package com.djavid.bitcoinrate.model.dto;
+package com.djavid.bitcoinrate.model.dto.cryptowatch;
 
+import com.djavid.bitcoinrate.model.dto.cryptowatch.Result;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

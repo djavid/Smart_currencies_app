@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.model.dto;
+package com.djavid.bitcoinrate.model.dto.cryptonator;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

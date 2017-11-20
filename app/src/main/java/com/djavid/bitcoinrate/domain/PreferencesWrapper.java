@@ -14,4 +14,5 @@ public class PreferencesWrapper {
     public PreferencesWrapper(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
     }
+    
 }

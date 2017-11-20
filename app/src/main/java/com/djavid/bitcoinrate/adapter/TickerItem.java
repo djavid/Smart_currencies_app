@@ -54,7 +54,7 @@ public class TickerItem {
     private Context mContext;
     private PlaceHolderView mPlaceHolderView;
     private String tv_price;
-    Subject<String> mObeservable = PublishSubject.create();
+    Subject<String> mObservable = PublishSubject.create();
 
 
     public TickerItem(Context mContext, PlaceHolderView mPlaceHolderView, TickerItemRealm itemRealm) {
@@ -68,7 +68,8 @@ public class TickerItem {
         code_country = itemRealm.getCode_country();
         labels = new ArrayList<>();
         for (LabelItemRealm item : itemRealm.getLabels()) {
-            labels.add(new LabelItemDto(item.getValue(), item.isTrendingUp(), item.isAddButton()));
+            labels.add(new LabelItemDto(item.getId(), item.getValue(),
+                    item.isTrendingUp(), item.isAddButton()));
         }
     }
 
@@ -120,7 +121,9 @@ public class TickerItem {
     public void addLabelItem(LabelItemRealm new_item) {
         label_container.removeAllViews();
 
-        labels.add(new LabelItemDto(new_item.getValue(), new_item.isTrendingUp(), new_item.isAddButton()));
+        labels.add(new LabelItemDto(new_item.getId(), new_item.getValue(),
+                new_item.isTrendingUp(), new_item.isAddButton()));
+
         for (LabelItemDto item : labels) {
             label_container.addView(new LabelItem(mContext, label_container, item, this));
         }
@@ -133,6 +136,20 @@ public class TickerItem {
             if (itemRealm != null) itemRealm.getLabels().add(new_item);
 
         });
+    }
+
+    public void refreshLabels() {
+        label_container.removeAllViews();
+
+        for (LabelItemDto item : labels) {
+            label_container.addView(new LabelItem(mContext, label_container, item, this));
+        }
+        label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
+    }
+
+    void deleteLabel(LabelItem labelItem) {
+        labels.remove(labelItem.labelItemDto);
+        label_container.removeView(labelItem);
     }
 
     public void setPrice(String price) {

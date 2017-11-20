@@ -15,6 +15,8 @@ import io.realm.RealmResults;
 public interface TickerFragmentPresenter extends Presenter<TickerFragmentView, MainRouter, Object> {
     RealmResults<TickerItemRealm> getAllTickers();
     void deleteTicker(Date createdAt);
-    void loadTickerPrice(TickerItem ticker);
+    void loadTickerPrice(TickerItem tickerItem);
+    void loadTickerPriceCMC(TickerItem tickerItem);
+    void loadTickerPriceCryptonator(TickerItem tickerItem);
     Realm getRealm();
 }

@@ -2,16 +2,18 @@ package com.djavid.bitcoinrate.model;
 
 
 import com.djavid.bitcoinrate.App;
-import com.djavid.bitcoinrate.model.dto.BlockchainModel;
-import com.djavid.bitcoinrate.model.dto.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.CryptonatorTicker;
-import com.djavid.bitcoinrate.model.dto.CurrenciesModel;
-import com.djavid.bitcoinrate.model.dto.HistoryDataModel;
+import com.djavid.bitcoinrate.model.dto.blockchain.BlockchainModel;
+import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
+import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
+import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
-import retrofit2.Call;
 
 
 public class RestDataRepository implements DataRepository {
@@ -51,4 +53,18 @@ public class RestDataRepository implements DataRepository {
         return apiInterface.getRateCMC(crypto_id, country_id);
     }
 
+    @Override
+    public Single<ResponseId> registerToken(String token, long id) {
+        return apiInterface.registerToken(token, id);
+    }
+
+    @Override
+    public Single<ResponseId> sendSubscribe(Subscribe subscribe) {
+        return apiInterface.sendSubscribe(subscribe);
+    }
+
+    @Override
+    public Completable deleteSubscribe(long id) {
+        return apiInterface.deleteSubscribe(id);
+    }
 }

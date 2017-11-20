@@ -1,38 +1,16 @@
+package com.djavid.bitcoinrate.model.dto.cryptonator;
 
-package com.djavid.bitcoinrate.model.dto;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class CryptonatorTicker {
 
-    @SerializedName("ticker")
-    @Expose
     private Ticker ticker;
-    @SerializedName("timestamp")
-    @Expose
     private Long timestamp;
-    @SerializedName("success")
-    @Expose
     private Boolean success;
-    @SerializedName("error")
-    @Expose
     private String error;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public CryptonatorTicker() {
-    }
 
-    /**
-     * 
-     * @param timestamp
-     * @param ticker
-     * @param error
-     * @param success
-     */
+    public CryptonatorTicker() { }
+
     public CryptonatorTicker(Ticker ticker, Long timestamp, Boolean success, String error) {
         super();
         this.ticker = ticker;
@@ -44,7 +22,6 @@ public class CryptonatorTicker {
     public Ticker getTicker() {
         return ticker;
     }
-
     public void setTicker(Ticker ticker) {
         this.ticker = ticker;
     }
@@ -52,7 +29,6 @@ public class CryptonatorTicker {
     public Long getTimestamp() {
         return timestamp;
     }
-
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
@@ -60,7 +36,6 @@ public class CryptonatorTicker {
     public Boolean getSuccess() {
         return success;
     }
-
     public void setSuccess(Boolean success) {
         this.success = success;
     }
@@ -68,7 +43,6 @@ public class CryptonatorTicker {
     public String getError() {
         return error;
     }
-
     public void setError(String error) {
         this.error = error;
     }

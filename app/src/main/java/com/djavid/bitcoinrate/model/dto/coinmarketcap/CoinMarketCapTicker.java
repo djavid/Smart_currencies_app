@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.model.dto;
+package com.djavid.bitcoinrate.model.dto.coinmarketcap;
 
 
 public class CoinMarketCapTicker {

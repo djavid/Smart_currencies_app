@@ -1,15 +1,21 @@
 package com.djavid.bitcoinrate.view.dialog;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
+import com.djavid.bitcoinrate.model.DataRepository;
+import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.realm.LabelItemRealm;
+import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 
 import butterknife.BindView;
@@ -57,13 +63,45 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 isTrendingUp = btn_trending_up.isChecked();
 
                 LabelItemRealm labelItemRealm = new LabelItemRealm(value, isTrendingUp);
-                ((MainActivity) getActivity()).getSelectedTickerItem().addLabelItem(labelItemRealm);
+
+                long token = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+                Subscribe subscribe = new Subscribe(
+                        ((MainActivity) getActivity()).getSelectedTickerItem().getCode_crypto(),
+                        ((MainActivity) getActivity()).getSelectedTickerItem().getCode_country(),
+                        isTrendingUp,
+                        value,
+                        token
+                );
+
+                sendSubscribe(subscribe, labelItemRealm,
+                        ((MainActivity) getActivity()).getSelectedTickerItem());
 
                 this.dismiss();
             }
         });
 
         return view;
+    }
+
+    private void sendSubscribe(Subscribe subscribe, LabelItemRealm label, TickerItem tickerItem) {
+        DataRepository dataRepository = new RestDataRepository();
+
+        dataRepository.sendSubscribe(subscribe)
+                .compose(RxUtils.applySingleSchedulers())
+                .subscribe(response -> {
+                    if (response.error.isEmpty()) {
+                        Log.d("LabelDialog", "Succesfully sent " + subscribe.toString());
+
+                        if (response.id != 0) {
+                            label.setId(response.id);
+                            tickerItem.addLabelItem(label);
+                        }
+                    } else {
+                        Log.e("LabelDialog", response.error);
+                    }
+                }, error -> {
+
+                });
     }
 
     @Override

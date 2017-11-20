@@ -2,6 +2,8 @@ package com.djavid.bitcoinrate.model.dto;
 
 
 public class LabelItemDto {
+
+    private Long id;
     private String value;
     private boolean isTrendingUp;
     private boolean isAddButton;
@@ -11,7 +13,8 @@ public class LabelItemDto {
         this.isAddButton = true;
     }
 
-    public LabelItemDto(String value, boolean isTrendingUp, boolean isAddButton) {
+    public LabelItemDto(long id, String value, boolean isTrendingUp, boolean isAddButton) {
+        this.id = id;
         this.value = value;
         this.isTrendingUp = isTrendingUp;
         this.isAddButton = isAddButton;
@@ -36,5 +39,12 @@ public class LabelItemDto {
     }
     public void setAddButton(boolean addButton) {
         isAddButton = addButton;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
     }
 }

@@ -8,6 +8,10 @@ import android.support.v7.app.AppCompatDelegate;
 import com.djavid.bitcoinrate.model.ApiInterface;
 import com.djavid.bitcoinrate.domain.PreferencesWrapper;
 import com.djavid.bitcoinrate.domain.PresenterProvider;
+import com.djavid.bitcoinrate.model.DataRepository;
+import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.util.RxUtils;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -52,6 +56,7 @@ public class App extends Application {
         Realm.setDefaultConfiguration(config);
 
         appInstance = (App) getApplicationContext();
+
     }
 
     public static Context getContext() {
@@ -98,5 +103,4 @@ public class App extends Application {
 
         return retrofit.create(ApiInterface.class);
     }
-
 }

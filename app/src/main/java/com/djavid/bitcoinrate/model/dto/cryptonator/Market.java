@@ -1,34 +1,15 @@
+package com.djavid.bitcoinrate.model.dto.cryptonator;
 
-package com.djavid.bitcoinrate.model.dto;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class Market {
 
-    @SerializedName("market")
-    @Expose
     private String market;
-    @SerializedName("price")
-    @Expose
     private Double price;
-    @SerializedName("volume")
-    @Expose
     private Double volume;
 
-    /**
-     * No args constructor for use in serialization
-     * 
-     */
-    public Market() {
-    }
 
-    /**
-     * 
-     * @param price
-     * @param market
-     * @param volume
-     */
+    public Market() { }
+
     public Market(String market, Double price, Double volume) {
         super();
         this.market = market;

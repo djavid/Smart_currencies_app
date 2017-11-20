@@ -6,6 +6,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class LabelItemRealm extends RealmObject {
 
+    private long id;
     private String value;
     private boolean isTrendingUp;
     private boolean isAddButton;
@@ -49,5 +50,12 @@ public class LabelItemRealm extends RealmObject {
     }
     public void setAddButton(boolean addButton) {
         isAddButton = addButton;
+    }
+
+    public long getId() {
+        return id;
+    }
+    public void setId(long id) {
+        this.id = id;
     }
 }

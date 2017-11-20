@@ -1,24 +1,31 @@
 package com.djavid.bitcoinrate;
 
-import android.app.Service;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import static android.content.ContentValues.TAG;
 
+
 public class FirebaseService extends FirebaseMessagingService {
+
+    private static final int NOTIFY_ID = 101;
+
 
     public FirebaseService() { }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // ...
 
-        // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
@@ -36,17 +43,44 @@ public class FirebaseService extends FirebaseMessagingService {
 
         }
 
-        // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-        }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+            showNotification(remoteMessage);
+        }
     }
 
     @Override
     public void onMessageSent(String s) {
         super.onMessageSent(s);
     }
+
+    private void showNotification(RemoteMessage remoteMessage) {
+
+        Context context = getApplicationContext();
+
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context,
+                0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Resources res = context.getResources();
+        Notification.Builder builder = new Notification.Builder(context)
+                .setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true)
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setLargeIcon(BitmapFactory.decodeResource(res, R.mipmap.ic_launcher_round))
+                //.setTicker(res.getString(R.string.warning)) // текст в строке состояния
+                .setTicker("Последнее китайское предупреждение!")
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setContentTitle(remoteMessage.getNotification().getTitle())
+                .setContentText(remoteMessage.getNotification().getBody());
+
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFY_ID, builder.build());
+
+    }
+
 }

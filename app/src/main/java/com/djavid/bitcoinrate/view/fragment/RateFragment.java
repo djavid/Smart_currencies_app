@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.domain.MainRouter;
@@ -20,6 +21,7 @@ import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.joda.time.LocalDateTime;
 
@@ -115,8 +117,13 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public void loadData() {
-        //presenter.showChart("30days");
-        //timespan = "30days";
+
+//        if (!App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
+            presenter.sendTokenToServer();
+//        }
+
+//        presenter.showChart("30days");
+//        timespan = "30days";
         getChart(30);
     }
 
