@@ -1,6 +1,8 @@
 package com.djavid.bitcoinrate.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.design.widget.BaseTransientBottomBar;
@@ -14,17 +16,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
+import com.annimon.stream.Stream;
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.domain.MainRouter;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
+import com.djavid.bitcoinrate.view.dialog.CreateTickerDialog;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.mindorks.placeholderview.PlaceHolderView;
 
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -45,9 +50,10 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     TickerFragmentPresenter presenter;
     private OnTickerInteractionListener mTickerListener;
 
+    final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
 
-    public TickerFragment() {
-    }
+
+    public TickerFragment() { }
 
     public static TickerFragment newInstance() {
         TickerFragment fragment = new TickerFragment();
@@ -97,7 +103,12 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                 getResources().getColor(R.color.colorLabelBackground));
 
         fab.setOnClickListener(v -> {
-            presenter.getRouter().showCreateDialog();
+
+            CreateTickerDialog dialog = CreateTickerDialog.newInstance();
+            dialog.setTargetFragment(this, 0);
+            dialog.show(getFragmentManager(), TAG_CREATE_DIALOG);
+
+            //presenter.getRouter().showCreateTickerDialog();
         });
 
         return view;
@@ -105,8 +116,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     @Override
     public void loadData() {
-        addViewsFromRealm();
-        System.out.println(FirebaseInstanceId.getInstance().getToken() + "---------------------------------------------------------------");
+        presenter.getAllTickers();
     }
 
     @Override
@@ -129,7 +139,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     public void onDetach() {
         super.onDetach();
         mTickerListener = null;
-
     }
 
     public interface OnTickerInteractionListener {
@@ -138,12 +147,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     @Override
     public void onRefresh() {
-        List tickers = rv_ticker_list.getAllViewResolvers();
-
-        for (Object obj : tickers) {
-            TickerItem item = ((TickerItem) obj);
-            presenter.loadTickerPrice(item);
-        }
+        presenter.getAllTickers();
     }
 
     @Override
@@ -166,20 +170,58 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         List tickers = rv_ticker_list.getAllViewResolvers();
 
         if (tickerItemRealms.size() - tickers.size() == 1) {
-            TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, tickerItemRealms.last());
-            rv_ticker_list.addView(tickerItem);
-            presenter.loadTickerPrice(tickerItem);
-
+//            TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, tickerItemRealms.last());
+//            rv_ticker_list.addView(tickerItem);
+//            presenter.loadTickerPrice(tickerItem);
+            //TODO refreshFeed
             scrollToPosition(tickerItemRealms.size() - 1);
         }
     }
 
-    private void addViewsFromRealm() {
-        resetFeed();
-        RealmResults<TickerItemRealm> tickers = presenter.getAllTickers();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        for (TickerItemRealm item : tickers) {
-            TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item);
+        if (requestCode == 0) {
+
+            if (resultCode == Activity.RESULT_OK) {
+
+                if (data.getExtras().containsKey("countryId") &&
+                        data.getExtras().containsKey("cryptoId") &&
+                        data.getExtras().containsKey("id")) {
+
+                    String countryId = data.getExtras().getString("countryId");
+                    String cryptoId = data.getExtras().getString("cryptoId");
+                    long id = data.getExtras().getLong("id");
+                    long token_id = App.getAppInstance().getPrefencesWrapper()
+                            .sharedPreferences.getLong("token_id", 0);
+
+                    Ticker ticker = new Ticker(id, token_id, cryptoId, countryId);
+                    TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
+                    rv_ticker_list.addView(tickerItem);
+                    presenter.loadTickerPrice(tickerItem);
+                    scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void addAllTickers(List<Ticker> tickers, List<Subscribe> subscribes) {
+        resetFeed();
+
+        for (Ticker item : tickers) {
+            List<Subscribe> itemSubs = Stream.of(subscribes)
+                    .filter(s -> s.getTickerId() == item.getId())
+                    .toList();
+
+            TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             rv_ticker_list.addView(tickerItem);
             presenter.loadTickerPrice(tickerItem);
         }
@@ -197,40 +239,36 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
                     int pos = viewHolder.getAdapterPosition();
                     cl_ticker.setTag(pos);
-
                     TickerItem tickerItem = (TickerItem) rv_ticker_list.getViewResolverAtPosition(pos);
-                    Date createdAt = tickerItem.getCreatedAt();
 
                     Snackbar snackbar = Snackbar.make(cl_ticker,
                             getResources().getString(R.string.title_cardview_removed), Snackbar.LENGTH_SHORT)
                             .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-//                        @Override
-//                        public void onDismissed(Snackbar transientBottomBar, int event) {
-//                            System.out.println(createdAt.toString());
-//                            presenter.deleteTicker(createdAt);
-//                        }
+
+//                                @Override
+//                                public void onDismissed(Snackbar transientBottomBar, int event) {
+//                                    //presenter.deleteTicker(tickerItem.getTickerItem().getId());
+//                                    System.out.println("onDismissed");
+//                                }
 
                                 @Override
                                 public void onShown(Snackbar transientBottomBar) {
-                                    int position = (int) cl_ticker.getTag();
-                                    presenter.deleteTicker(createdAt);
+                                    presenter.deleteTicker(tickerItem.getTickerItem().getId());
                                     rv_ticker_list.removeView(viewHolder.getAdapterPosition());
                                 }
                             });
-//                    .setAction(getResources().getString(R.string.title_cardview_undo), v -> {
-//                        int position = (int) cl_ticker.getTag();
+//                            .setAction(getResources().getString(R.string.title_cardview_undo), v -> {
+//                                int position = (int) cl_ticker.getTag();
 //
-//                        presenter.getRealm().executeTransaction(realm -> {
-//                            TickerItemRealm ticker = realm
-//                                    .where(TickerItemRealm.class)
-//                                    .equalTo("createdAt", createdAt).findFirst();
+//                                TickerItem restoredTickerItem = new TickerItem(getContext(),
+//                                        rv_ticker_list, presenter.getTickersLocal().get(position));
+//                                rv_ticker_list.addView(position, restoredTickerItem);
 //
-//                            TickerItem restoredTickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
-//                            rv_ticker_list.addView(position, tickerItem);
-//                            rv_ticker_list.refresh();
-//                            presenter.loadTickerPrice(tickerItem);
-//                        });
-//                    });
+//                                System.out.println(presenter.getTickersLocal().get(position));
+//                                rv_ticker_list.refresh();
+//                                presenter.loadTickerPrice(restoredTickerItem);
+//                                scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
+//                            }); //TODO undo deleting
                     snackbar.show();
 
                 }

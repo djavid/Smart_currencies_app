@@ -11,8 +11,6 @@ import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
-import com.djavid.bitcoinrate.model.realm.LabelItemRealm;
-import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.mindorks.placeholderview.PlaceHolderView;
@@ -21,8 +19,6 @@ import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.NonReusable;
 import com.mindorks.placeholderview.annotations.Resolve;
 import com.mindorks.placeholderview.annotations.View;
-
-import io.realm.Realm;
 
 
 @NonReusable
@@ -41,11 +37,10 @@ class LabelItem {
     private Boolean isAddButton;
     private TickerItem tickerItem;
 
-    Realm realm;
-
     private Context mContext;
     private PlaceHolderView mPlaceHolderView;
     public LabelItemDto labelItemDto;
+
 
     LabelItem(Context mContext, PlaceHolderView mPlaceHolderView, LabelItemDto labelItemDto,
               TickerItem tickerItem) {
@@ -55,8 +50,8 @@ class LabelItem {
         this.tickerItem = tickerItem;
 
         isAddButton = labelItemDto.isAddButton();
-        realm = Realm.getDefaultInstance();
     }
+
 
     @Resolve
     private void onResolved() {
@@ -91,23 +86,7 @@ class LabelItem {
 
             alert.setPositiveButton("Да", (dialog, which) -> {
                 deleteSubscribe(labelItemDto.getId());
-
-                realm.executeTransaction(realm1 -> {
-                    TickerItemRealm itemRealm = realm1
-                            .where(TickerItemRealm.class)
-                            .equalTo("createdAt", tickerItem.getCreatedAt()).findFirst();
-
-                    if (itemRealm != null) {
-                        for (LabelItemRealm item : itemRealm.getLabels()) {
-                            if (item.getId() == labelItemDto.getId()) {
-                                item.deleteFromRealm();
-                                tickerItem.deleteLabel(this);
-                                break;
-                            }
-                        }
-                    }
-
-                });
+                tickerItem.deleteLabel(this);
             });
 
             alert.setNegativeButton("Нет", ((dialog, which) -> {
@@ -125,7 +104,7 @@ class LabelItem {
                 .compose(RxUtils.applyCompletableSchedulers())
                 .doOnError(Throwable::printStackTrace)
                 .subscribe(() -> {
-                    Log.d("LabelDialog", "Succesfully deleted subscribe with id = " + id);
+                    Log.d("LabelDialog", "Successfully deleted subscribe with id = " + id);
                 }, error -> {
 
                 });

@@ -1,16 +1,23 @@
 package com.djavid.bitcoinrate.view.dialog;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
-import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
+import com.djavid.bitcoinrate.model.DataRepository;
+import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.util.RxUtils;
 
 import butterknife.BindView;
 
@@ -48,19 +55,12 @@ public class CreateTickerDialog extends BaseDialogFragment {
         });
 
         tv_create_btn.setOnClickListener(v -> {
-            //create realm object in local database
             String code_crypto = leftSpinner.getSelectedItem().toString();
             String code_country = rightSpinner.getSelectedItem().toString();
+            long token_id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
 
-            realm.executeTransactionAsync(realm -> {
-                TickerItemRealm tickerItemRealm = realm.createObject(TickerItemRealm.class);
-                tickerItemRealm.setCode_crypto(code_crypto);
-                tickerItemRealm.setCode_country(code_country);
-            }, () -> {
-                System.out.println("Created realm object {code_crypto = '" + code_crypto +
-                        "', code_country = '" + code_country + "'}");
-                this.dismiss();
-            });
+            Ticker ticker = new Ticker(token_id, code_crypto, code_country);
+            sendTicker(ticker);
         });
 
         setCurrenciesSpinner();
@@ -71,6 +71,40 @@ public class CreateTickerDialog extends BaseDialogFragment {
     @Override
     public int getLayoutId() {
         return R.layout.fragment_create_ticker_dialog;
+    }
+
+
+    private void sendTicker(Ticker ticker) {
+        DataRepository dataRepository = new RestDataRepository();
+
+        dataRepository.sendTicker(ticker)
+                .compose(RxUtils.applySingleSchedulers())
+                .subscribe(response -> {
+                    if (response.error.isEmpty()) {
+                        Log.d("TickerDialog", "Succesfully sent " + ticker.toString());
+
+                        if (response.id != 0) {
+                            //label.setId(response.id);
+                            //tickerItem.addLabelItem(label);
+
+                            //ticker.setId(response.id);
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("cryptoId", ticker.getCryptoId());
+                            bundle.putString("countryId", ticker.getCountryId());
+                            bundle.putLong("id", response.id);
+
+                            Intent intent = new Intent().putExtras(bundle);
+                            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+
+                            dismiss();
+                        }
+                    } else {
+                        Log.e("TickerDialog", response.error);
+                    }
+                }, error -> {
+
+                });
     }
 
     public void setCurrenciesSpinner() {

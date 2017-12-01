@@ -13,11 +13,16 @@ public class LabelItemDto {
         this.isAddButton = true;
     }
 
-    public LabelItemDto(long id, String value, boolean isTrendingUp, boolean isAddButton) {
+    public LabelItemDto(long id, String value, boolean isTrendingUp) {
         this.id = id;
         this.value = value;
         this.isTrendingUp = isTrendingUp;
-        this.isAddButton = isAddButton;
+        this.isAddButton = false;
+    }
+
+    public LabelItemDto(String value, boolean isTrendingUp) {
+        this.value = value;
+        this.isTrendingUp = isTrendingUp;
     }
 
     public String getValue() {

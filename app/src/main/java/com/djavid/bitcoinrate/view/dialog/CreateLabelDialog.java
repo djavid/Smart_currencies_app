@@ -13,7 +13,9 @@ import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.djavid.bitcoinrate.model.realm.LabelItemRealm;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
@@ -55,26 +57,24 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
         tv_create_btn.setOnClickListener(v -> {
             if (et_price.getText().toString().isEmpty()) {
-
+                //TODO show alert
             } else {
 
                 String value = et_price.getText().toString();
                 boolean isTrendingUp;
                 isTrendingUp = btn_trending_up.isChecked();
 
-                LabelItemRealm labelItemRealm = new LabelItemRealm(value, isTrendingUp);
+                LabelItemDto labelItemDto = new LabelItemDto(value, isTrendingUp);
 
-                long token = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
-                Subscribe subscribe = new Subscribe(
-                        ((MainActivity) getActivity()).getSelectedTickerItem().getCode_crypto(),
-                        ((MainActivity) getActivity()).getSelectedTickerItem().getCode_country(),
-                        isTrendingUp,
-                        value,
-                        token
-                );
+                long token_id = App.getAppInstance().getPrefencesWrapper()
+                        .sharedPreferences.getLong("token_id", 0);
+                TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
+                long ticker_id = selectedTicker.getTickerItem().getId();
+                String cryptoId = selectedTicker.getTickerItem().getCryptoId();
+                String countryId = selectedTicker.getTickerItem().getCountryId();
 
-                sendSubscribe(subscribe, labelItemRealm,
-                        ((MainActivity) getActivity()).getSelectedTickerItem());
+                Subscribe subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
+                sendSubscribe(subscribe, labelItemDto, selectedTicker);
 
                 this.dismiss();
             }
@@ -83,14 +83,14 @@ public class CreateLabelDialog extends BaseDialogFragment {
         return view;
     }
 
-    private void sendSubscribe(Subscribe subscribe, LabelItemRealm label, TickerItem tickerItem) {
+    private void sendSubscribe(Subscribe subscribe, LabelItemDto label, TickerItem tickerItem) {
         DataRepository dataRepository = new RestDataRepository();
 
         dataRepository.sendSubscribe(subscribe)
                 .compose(RxUtils.applySingleSchedulers())
                 .subscribe(response -> {
                     if (response.error.isEmpty()) {
-                        Log.d("LabelDialog", "Succesfully sent " + subscribe.toString());
+                        Log.d("LabelDialog", "Successfully sent " + subscribe.toString());
 
                         if (response.id != 0) {
                             label.setId(response.id);

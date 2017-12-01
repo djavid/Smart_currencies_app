@@ -132,12 +132,10 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     }
 
     @Override
-    public void showCreateDialog() {
+    public void showCreateTickerDialog() {
         CreateTickerDialog dialog = CreateTickerDialog.newInstance();
         dialog.show(fragmentManager, TAG_CREATE_DIALOG);
     }
-
-    private TickerItem selectedTickerItem;
 
     @Override
     public void showCreateLabelDialog(TickerItem tickerItem) {
@@ -145,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
         CreateLabelDialog dialog = CreateLabelDialog.newInstance();
         dialog.show(fragmentManager, TAG_CREATE_LABEL_DIALOG);
     }
+
+    private TickerItem selectedTickerItem;
 
     @Override
     public TickerItem getSelectedTickerItem() {

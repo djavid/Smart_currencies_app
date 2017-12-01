@@ -17,7 +17,7 @@ import io.realm.Realm;
 
 public abstract class BaseDialogFragment extends DialogFragment {
 
-    protected Realm realm;
+//    protected Realm realm;
     private Unbinder unbinder;
 
     public abstract int getLayoutId();
@@ -28,7 +28,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
+//        realm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -48,6 +48,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.close();
+//        realm.close();
     }
 }

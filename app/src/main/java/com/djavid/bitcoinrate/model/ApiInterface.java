@@ -7,6 +7,7 @@ import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 
 import java.util.List;
 
@@ -65,5 +66,17 @@ public interface ApiInterface {
 
     @GET(HEROKU_URL + "/deleteSubscribe")
     Completable deleteSubscribe(@Query("id") long id);
+
+    @POST(HEROKU_URL + "/addTicker")
+    Single<ResponseId> sendTicker(@Body Ticker ticker);
+
+    @GET(HEROKU_URL + "/getTickers")
+    Single<List<Ticker>> getTickersByTokenId(@Query("token_id") long token_id);
+
+    @GET(HEROKU_URL + "/getSubscribes")
+    Single<List<Subscribe>> getSubscribesByTokenId(@Query("token_id") long token_id);
+
+    @GET(HEROKU_URL + "/deleteTicker")
+    Completable deleteTicker(@Query("id") long id);
 
 }

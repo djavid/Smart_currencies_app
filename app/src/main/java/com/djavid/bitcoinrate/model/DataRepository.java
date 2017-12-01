@@ -7,6 +7,7 @@ import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 
 import java.util.List;
 
@@ -23,4 +24,8 @@ public interface DataRepository {
     Single<ResponseId> registerToken(String token, long id);
     Single<ResponseId> sendSubscribe(Subscribe subscribe);
     Completable deleteSubscribe(long id);
+    Single<ResponseId> sendTicker(Ticker ticker);
+    Single<List<Ticker>> getTickersByTokenId(long token_id);
+    Single<List<Subscribe>> getSubscribesByTokenId(long token_id);
+    Completable deleteTicker(long id);
 }

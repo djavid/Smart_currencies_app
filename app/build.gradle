@@ -84,5 +84,8 @@ dependencies {
     //segmented button
     compile 'info.hoang8f:android-segmented:1.0.6'
 
+    //Lightweight-Stream-API
+    compile 'com.annimon:stream:1.1.9'
+
 }
 apply plugin: 'com.google.gms.google-services'

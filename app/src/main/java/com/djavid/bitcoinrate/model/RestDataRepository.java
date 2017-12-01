@@ -9,6 +9,7 @@ import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 
 import java.util.List;
 
@@ -66,5 +67,25 @@ public class RestDataRepository implements DataRepository {
     @Override
     public Completable deleteSubscribe(long id) {
         return apiInterface.deleteSubscribe(id);
+    }
+
+    @Override
+    public Single<ResponseId> sendTicker(Ticker ticker) {
+        return apiInterface.sendTicker(ticker);
+    }
+
+    @Override
+    public Single<List<Ticker>> getTickersByTokenId(long token_id) {
+        return apiInterface.getTickersByTokenId(token_id);
+    }
+
+    @Override
+    public Single<List<Subscribe>> getSubscribesByTokenId(long token_id) {
+        return apiInterface.getSubscribesByTokenId(token_id);
+    }
+
+    @Override
+    public Completable deleteTicker(long id) {
+        return apiInterface.deleteTicker(id);
     }
 }
