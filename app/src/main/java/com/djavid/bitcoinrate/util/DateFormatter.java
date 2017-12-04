@@ -17,7 +17,7 @@ public class DateFormatter implements IAxisValueFormatter
 {
 
     private String[] mMonths = new String[]{
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
 
     private BarLineChartBase<?> chart;
@@ -35,7 +35,9 @@ public class DateFormatter implements IAxisValueFormatter
         int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(date));
         int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.US).format(date));
 
-        String monthName = mMonths[month % mMonths.length - 1];
+        System.out.println("value " + value);
+        System.out.println("day " + day + " month " + month + " year " + year);
+        String monthName = mMonths[month]; //TODO check
         String yearName = String.valueOf(year);
 
         if ((chart.getVisibleXRange() / 1000 / 3600 / 24) > 30 * 5) {

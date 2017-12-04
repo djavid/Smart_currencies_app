@@ -117,7 +117,9 @@ public class TickerItem {
     }
 
     public void setPrice(String price) {
-        tv_price = price + " " + tickerItem.getCountryId();
+        if (tickerItem != null)
+            tv_price = price + " " + tickerItem.getCountryId();
+
         if (tickerValue != null) {
             tickerValue.setText(tv_price);
         }

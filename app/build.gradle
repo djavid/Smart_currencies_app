@@ -87,5 +87,8 @@ dependencies {
     //Lightweight-Stream-API
     compile 'com.annimon:stream:1.1.9'
 
+    //Android In-App Billing v3 Library
+    compile 'com.anjlab.android.iab.v3:library:1.0.44'
+
 }
 apply plugin: 'com.google.gms.google-services'

@@ -64,14 +64,24 @@ public class FirebaseService extends FirebaseMessagingService {
                 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
+        int large_icon = R.mipmap.ic_launcher;
+        try {
+            String trending = remoteMessage.getNotification().getBody().split(" ")[2];
+            if (trending.equals("выросла"))
+                large_icon = R.mipmap.trending_up_notification;
+            else if (trending.equals("упала"))
+                large_icon = R.mipmap.trending_down_notification;
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
         Resources res = context.getResources();
         Notification.Builder builder = new Notification.Builder(context)
                 .setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setLargeIcon(BitmapFactory.decodeResource(res, R.mipmap.ic_launcher_round))
-                //.setTicker(res.getString(R.string.warning)) // текст в строке состояния
-                .setTicker("Последнее китайское предупреждение!")
+                .setLargeIcon(BitmapFactory.decodeResource(res, large_icon))
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 .setContentTitle(remoteMessage.getNotification().getTitle())
@@ -79,7 +89,12 @@ public class FirebaseService extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(NOTIFY_ID, builder.build());
+
+        try {
+            notificationManager.notify(NOTIFY_ID, builder.build());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
     }
 
