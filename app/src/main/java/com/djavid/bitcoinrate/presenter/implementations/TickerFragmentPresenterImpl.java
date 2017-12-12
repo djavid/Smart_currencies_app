@@ -55,15 +55,6 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         tickerFragmentInteractor = new TickerFragmentUseCase();
     }
 
-//    @Override
-//    public RealmResults<TickerItemRealm> getAllTickers() {
-//        tickers = realm.where(TickerItemRealm.class).findAll().sort("createdAt", Sort.ASCENDING);
-//        tickers.addChangeListener((RealmResults<TickerItemRealm> tickerItemRealms) -> {
-//            if (getView() != null) getView().refreshFeed(tickerItemRealms);
-//        });
-//
-//        return tickers;
-//    }
 
     @Override
     public void getAllTickers() {
@@ -84,6 +75,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     setRefreshing(false);
                 });
     }
+
 
     private void getAllSubscribes() {
         setRefreshing(true);

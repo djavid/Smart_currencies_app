@@ -32,15 +32,12 @@ public class FirebaseManager extends FirebaseInstanceIdService {
     }
 
     private void sendTokenToServer(String token) {
-        DataRepository dataRepository = new RestDataRepository();
 
         long id;
-        if (App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
-            id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
-        } else {
-            id = 0;
-        }
+        //if not found preference then is default 0
+        id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
 
+        DataRepository dataRepository = new RestDataRepository();
         dataRepository.registerToken(token, id)
                 .compose(RxUtils.applySingleSchedulers())
                 .subscribe(response -> {
@@ -63,8 +60,6 @@ public class FirebaseManager extends FirebaseInstanceIdService {
                                     .apply();
                         }
                     }
-                }, error -> {
-
                 });
     }
 }

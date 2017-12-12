@@ -5,7 +5,6 @@ import com.djavid.bitcoinrate.core.Router;
 
 
 public interface MainRouter extends Router {
-    void showCreateTickerDialog();
     void showCreateLabelDialog(TickerItem tickerItem);
     TickerItem getSelectedTickerItem();
 }

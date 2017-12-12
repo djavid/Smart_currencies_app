@@ -10,15 +10,31 @@ public class Subscribe {
     private long tokenId;
     private String cryptoId;
     private String countryId;
+    private double change_percent;
 
 
     public Subscribe(boolean isTrendingUp, String value, long tickerId, long tokenId, String cryptoId, String countryId) {
+
         this.isTrendingUp = isTrendingUp;
         this.value = value;
         this.tickerId = tickerId;
         this.tokenId = tokenId;
         this.cryptoId = cryptoId;
         this.countryId = countryId;
+
+        this.change_percent = 0;
+    }
+
+    public Subscribe(String value, long tickerId, long tokenId, String cryptoId, String countryId, double curr_price) {
+
+        this.value = curr_price + "";
+        this.tickerId = tickerId;
+        this.tokenId = tokenId;
+        this.cryptoId = cryptoId;
+        this.countryId = countryId;
+        this.change_percent = Double.parseDouble(value);
+
+        this.isTrendingUp = false;
     }
 
     @Override
@@ -31,6 +47,7 @@ public class Subscribe {
                 ", tokenId=" + tokenId +
                 ", cryptoId='" + cryptoId + '\'' +
                 ", countryId='" + countryId + '\'' +
+                ", change_percent=" + change_percent +
                 '}';
     }
 
@@ -82,5 +99,12 @@ public class Subscribe {
     }
     public void setTokenId(long tokenId) {
         this.tokenId = tokenId;
+    }
+
+    public double getChange_percent() {
+        return change_percent;
+    }
+    public void setChange_percent(double change_percent) {
+        this.change_percent = change_percent;
     }
 }

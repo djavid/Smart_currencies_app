@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#00BCD4</color>
-    <color name="colorPrimaryDark">#0097A7</color>
+    <color name="colorPrimaryDark">#00BCD4</color>
     <color name="colorPrimaryText">#757575</color>
 
     <color name="colorAccent">#f0a311</color>
@@ -22,5 +22,8 @@
 
     <color name="colorEditTextHint">#60000000</color>
     <color name="colorEditTextBorder">#f0a311</color>
+
+    <color name="colorLabelDialogTitle">#ddf0a311</color>
+    <color name="colorCheckBoxButton">#ddf0a311</color>
 
 </resources>

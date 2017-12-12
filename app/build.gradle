@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'io.fabric'
 
 
 android {
@@ -33,11 +34,18 @@ android {
 
 
 dependencies {
-    implementation 'com.google.firebase:firebase-messaging:11.0.4'
+    implementation 'com.google.firebase:firebase-messaging:11.6.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
+    compile 'com.google.firebase:firebase-core:11.6.2'
+
+    apply plugin: 'com.google.gms.google-services'
 
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
@@ -48,12 +56,6 @@ dependencies {
 
     //MpAndroidChart
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-
-    //circle progress view
-    compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
-    testCompile 'junit:junit:4.12'
-
-    apply plugin: 'com.google.gms.google-services'
 
     //util
     compile 'net.danlew:android.joda:2.9.9'
@@ -90,5 +92,7 @@ dependencies {
     //Android In-App Billing v3 Library
     compile 'com.anjlab.android.iab.v3:library:1.0.44'
 
+    //NavigationViewFragmentAdapters
+    compile 'com.patloew.navigationviewfragmentadapters:adapters:0.3.0'
+
 }
-apply plugin: 'com.google.gms.google-services'

@@ -56,21 +56,36 @@ class LabelItem {
     @Resolve
     private void onResolved() {
         if (!labelItemDto.isAddButton()) {
-            tv_ticker_label.setText(labelItemDto.getValue());
 
-            if (labelItemDto.isTrendingUp())
-                iv_label_trending.setImageResource(R.drawable.ic_trending_up_white_24px);
-            else
-                iv_label_trending.setImageResource(R.drawable.ic_trending_down_white_24px);
+            if (labelItemDto.isPercentLabel()) {
 
-            tv_ticker_label.setVisibility(android.view.View.VISIBLE);
-            iv_label_trending.setVisibility(android.view.View.VISIBLE);
-            iv_label_add.setVisibility(android.view.View.GONE);
+                tv_ticker_label.setText(labelItemDto.getChange_percent() + " %");
+
+                tv_ticker_label.setVisibility(android.view.View.VISIBLE);
+                iv_label_trending.setVisibility(android.view.View.GONE);
+                iv_label_add.setVisibility(android.view.View.GONE);
+
+            } else {
+
+                tv_ticker_label.setText(labelItemDto.getValue());
+
+                if (labelItemDto.isTrendingUp())
+                    iv_label_trending.setImageResource(R.drawable.ic_trending_up_white_24px);
+                else
+                    iv_label_trending.setImageResource(R.drawable.ic_trending_down_white_24px);
+
+                tv_ticker_label.setVisibility(android.view.View.VISIBLE);
+                iv_label_trending.setVisibility(android.view.View.VISIBLE);
+                iv_label_add.setVisibility(android.view.View.GONE);
+            }
+
         } else {
+
             tv_ticker_label.setVisibility(android.view.View.VISIBLE);
             tv_ticker_label.setText("");
             iv_label_trending.setVisibility(android.view.View.GONE);
             iv_label_add.setVisibility(android.view.View.VISIBLE);
+
         }
 
     }

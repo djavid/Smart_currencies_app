@@ -13,15 +13,11 @@ import android.widget.TextView;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.util.Codes;
 
-/**
- * Created by djavid on 16.07.17.
- */
-
 
 public class CurrenciesAdapter extends ArrayAdapter<String> {
-    String[] currs;
-    LayoutInflater inflater;
-    int rowItemId;
+    private String[] currs;
+    private LayoutInflater inflater;
+    private int rowItemId;
 
     public CurrenciesAdapter(Context context, int textViewResourceId, String[] objects,
                              LayoutInflater inflater, int rowItemId) {

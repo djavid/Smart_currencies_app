@@ -15,12 +15,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/title_label_dialog_name"
-        android:textColor="#ddf0a311"
+        android:textColor="@color/colorLabelDialogTitle"
         android:lineSpacingExtra="8sp"
         android:textSize="20sp"
         android:fontFamily="sans-serif-medium"
         android:layout_marginStart="25dp"
         android:layout_marginTop="21dp" />
+
 
     <info.hoang8f.android.segmented.SegmentedGroup
         android:id="@+id/segmented_button"
@@ -59,6 +60,7 @@
 
     </info.hoang8f.android.segmented.SegmentedGroup>
 
+
     <EditText
         android:id="@+id/et_price"
         android:layout_width="match_parent"
@@ -67,7 +69,7 @@
         android:layout_marginTop="14dp"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
-        android:hint="@string/title_hint"
+        android:hint="@string/title_hint_price"
         android:textColorHint="@color/colorEditTextHint"
         android:textColorHighlight="@color/colorEditTextBorder"
         android:textColor="@color/colorEditTextHint"
@@ -77,14 +79,27 @@
 
         android:textCursorDrawable="@null"
         android:inputType="numberDecimal"
-        app:backgroundTint="@color/colorEditTextBorder"
-        />
+        app:backgroundTint="@color/colorEditTextBorder" />
+
+
+    <CheckBox
+        android:id="@+id/cb_percent_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_price"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/title_checkbox_percent"
+        android:textColor="@color/colorEditTextHint"
+        app:buttonTint="@color/colorCheckBoxButton" />
+
 
     <LinearLayout
         android:id="@+id/ll_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/et_price"
+        android:layout_below="@id/cb_percent_change"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="12.5dp"
         android:layout_marginTop="24dp"
@@ -122,7 +137,6 @@
             android:fontFamily="sans-serif-medium"
             android:textColor="#00bcd4"
             android:text="@string/title_dialog_add_btn" />
-
 
     </LinearLayout>
 

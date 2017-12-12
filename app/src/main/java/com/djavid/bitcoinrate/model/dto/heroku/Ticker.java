@@ -7,6 +7,7 @@ public class Ticker {
     private long tokenId;
     private String cryptoId;
     private String countryId;
+    private double price;
 
 
     public Ticker(long tokenId, String cryptoId, String countryId) {
@@ -22,12 +23,15 @@ public class Ticker {
         this.countryId = countryId;
     }
 
+
     @Override
     public String toString() {
         return "Ticker{" +
-                "tokenId=" + tokenId +
+                "id=" + id +
+                ", tokenId=" + tokenId +
                 ", cryptoId='" + cryptoId + '\'' +
                 ", countryId='" + countryId + '\'' +
+                ", price=" + price +
                 '}';
     }
 
@@ -58,5 +62,12 @@ public class Ticker {
     }
     public void setCountryId(String countryId) {
         this.countryId = countryId;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

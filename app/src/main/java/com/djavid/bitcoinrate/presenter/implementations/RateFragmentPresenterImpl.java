@@ -10,6 +10,7 @@ import com.djavid.bitcoinrate.interactor.RateFragmentInteractor;
 import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.blockchain.Value;
+import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.functions.Consumer;
 
 
 public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, MainRouter, Object>
@@ -33,9 +35,11 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     private Disposable disposable = Disposables.empty();
     private RateFragmentInteractor rateFragmentInteractor;
 
+
     public RateFragmentPresenterImpl() {
         rateFragmentInteractor = new RateFragmentUseCase();
     }
+
 
     @Override
     public String getId() {
@@ -43,9 +47,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     @Override
-    public void onStart() {
-
-    }
+    public void onStart() { }
 
     @Override
     public void onStop() {
@@ -58,10 +60,9 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     private void setRefreshing(boolean key) {
-        if (getView() != null) {
+        if (getView() != null)
             if (getView().getRefreshLayout() != null)
                 getView().getRefreshLayout().setRefreshing(key);
-        }
     }
 
     @Override
@@ -103,8 +104,10 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
                         long start = end - 86400 * daysAgo;
 
-                        if (update_chart) getHistory(curr1 + curr2, 86400, start);
-                        else setRefreshing(false);
+                        if (update_chart)
+                            getHistory(curr1 + curr2, 86400, start);
+                        else
+                            setRefreshing(false);
                     }
 
                 }, error -> {
@@ -151,6 +154,44 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     @Override
+    public void getHistory(String curr, int periods, long after) {
+        setRefreshing(true);
+
+        disposable = rateFragmentInteractor.getHistory(curr, periods, after)
+                .compose(RxUtils.applySingleSchedulers())
+                .retry(2L)
+                .subscribe(result -> {
+                    List<List<Double>> values = result.getResult().getValues();
+                    if (values.size() == 0) {
+                        getHistory(curr, periods, after);
+                        return;
+                    }
+
+                    List<Entry> entries = new ArrayList<>();
+                    for (int i = 0; i < values.size(); i++) {
+                        //Date x = new Date(tick.getLong("x") * 1000);
+                        long X = values.get(i).get(0).longValue() * 1000;
+                        double y = (values.get(i).get(1) + values.get(i).get(2) +
+                                values.get(i).get(3) + values.get(i).get(4)) / 4;
+
+                        entries.add(new Entry(X, (float) y));
+                    }
+
+                    if (getView() != null) {
+                        int color = App.getContext().getResources().getColor(R.color.colorChart);
+                        getView().getRateChart().initialize(entries, color);
+                    }
+
+                    setRefreshing(false);
+
+                }, error -> {
+                    if (getView() != null)
+                        getView().getRateChart().getChart().clear();
+                    setRefreshing(false);
+                });
+    }
+
+    @Override
     public void showChart(String timespan) {
         setRefreshing(true);
 
@@ -180,84 +221,46 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                 });
     }
 
-    @Override
-    public void getHistory(String curr, int periods, long after) {
-        setRefreshing(true);
-
-        disposable = rateFragmentInteractor.getHistory(curr, periods, after)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
-                .subscribe(result -> {
-                    List<List<Double>> values = result.getResult().getValues();
-
-                    for (List<Double> item : values) {
-                        Double weightened = (item.get(1) + item.get(2) + item.get(3) + item.get(4)) / 4;
-                    }
-
-                    List<Entry> entries = new ArrayList<Entry>();
-                    int color = App.getContext().getResources().getColor(R.color.colorChart);
-
-                    for (int i = 0; i < values.size(); i++) {
-                        //Date x = new Date(tick.getLong("x") * 1000);
-                        long X = values.get(i).get(0).longValue() * 1000;
-                        double y = (values.get(i).get(1) + values.get(i).get(2) +
-                                values.get(i).get(3) + values.get(i).get(4)) / 4;
-
-                        entries.add(new Entry(X, (float)y));
-                    }
-
-                    if (getView() != null) {
-                        getView().getRateChart().initialize(entries, color);
-                        setRefreshing(false);
-                    }
-
-                }, error -> {
-                    setRefreshing(false);
-                });
-    }
-
-    public void sendTokenToServer() {
-
-        String token = FirebaseInstanceId.getInstance().getToken();
-
-        if (token == null || token.isEmpty()) {
-            return;
-        }
-
-        long id;
-
-        if (App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
-            id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
-        } else {
-            id = 0;
-        }
-
-        disposable = rateFragmentInteractor.registerToken(token, id)
-                .compose(RxUtils.applySingleSchedulers())
-                .subscribe(response -> {
-
-                    if (response.error.isEmpty()) {
-
-                        if (response.id != 0) {
-
-                            App.getAppInstance()
-                                    .getPrefencesWrapper()
-                                    .sharedPreferences
-                                    .edit()
-                                    .putLong("token_id", response.id)
-                                    .apply();
-
-                            App.getAppInstance()
-                                    .getPrefencesWrapper()
-                                    .sharedPreferences
-                                    .edit()
-                                    .putString("token", token)
-                                    .apply();
-                        }
-                    }
-                }, error -> {
-
-                });
-    }
+//    public void sendTokenToServer() {
+//
+//        String token = FirebaseInstanceId.getInstance().getToken();
+//        if (token == null || token.isEmpty()) {
+//            return;
+//        }
+//
+//        long id;
+//        if (App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
+//            id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+//        } else {
+//            id = 0;
+//        }
+//
+//        disposable = rateFragmentInteractor.registerToken(token, id)
+//                .compose(RxUtils.applySingleSchedulers())
+//                .subscribe(response -> {
+//
+//                    if (response.error.isEmpty()) {
+//
+//                        if (response.id != 0) {
+//
+//                            App.getAppInstance()
+//                                    .getPrefencesWrapper()
+//                                    .sharedPreferences
+//                                    .edit()
+//                                    .putLong("token_id", response.id)
+//                                    .apply();
+//
+//                            App.getAppInstance()
+//                                    .getPrefencesWrapper()
+//                                    .sharedPreferences
+//                                    .edit()
+//                                    .putString("token", token)
+//                                    .apply();
+//                        }
+//                    }
+//                }, error -> {
+//
+//                });
+//    }
 
 }

@@ -1,38 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingPrefix, ContentDescription"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center_horizontal"
     android:orientation="horizontal">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/curr_icon"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
             android:layout_gravity="center"
-            android:contentDescription=""
-            app:srcCompat="@drawable/ic_home_black_24dp"/>
+            app:srcCompat="@drawable/ic_bitcoin"/>
 
         <TextView
             android:id="@+id/curr_name"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_marginStart="5dp"
             android:textSize="24sp"
-            android:textAlignment="center"
-            android:layout_gravity="center"
             android:textColor="@color/colorPrimaryText"
+            fontPath="revofit-light.ttf"
             android:text="BTC"/>
 
-    </LinearLayout>
 
 </LinearLayout>

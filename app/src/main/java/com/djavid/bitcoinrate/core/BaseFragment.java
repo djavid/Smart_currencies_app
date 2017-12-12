@@ -48,6 +48,7 @@ public abstract class BaseFragment extends Fragment implements com.djavid.bitcoi
     public void onStart() {
         super.onStart();
         loadData();
+        System.out.println("onStart()");
     }
 
     @Override

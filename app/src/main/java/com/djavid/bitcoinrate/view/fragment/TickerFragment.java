@@ -24,8 +24,8 @@ import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
-import com.djavid.bitcoinrate.model.realm.TickerItemRealm;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
+import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.view.dialog.CreateTickerDialog;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 import com.mindorks.placeholderview.PlaceHolderView;
@@ -33,7 +33,6 @@ import com.mindorks.placeholderview.PlaceHolderView;
 import java.util.List;
 
 import butterknife.BindView;
-import io.realm.RealmResults;
 
 
 public class TickerFragment extends BaseFragment implements TickerFragmentView, SwipeRefreshLayout.OnRefreshListener {
@@ -85,9 +84,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @Override
     public void onStop() {
         presenter.setView(null);
-        resetFeed();
-
         presenter.onStop();
+
         super.onStop();
     }
 
@@ -142,7 +140,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     }
 
     public interface OnTickerInteractionListener {
-        void onFragmentInteraction(TickerItemRealm item);
+        void onFragmentInteraction(Ticker item);
     }
 
     @Override
@@ -156,26 +154,13 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     }
 
     @Override
-    public void addView(TickerItemRealm item) {
+    public void addView(Ticker item) {
         rv_ticker_list.addView(item);
     }
 
     @Override
     public void resetFeed() {
         rv_ticker_list.removeAllViews();
-    }
-
-    @Override
-    public void refreshFeed(RealmResults<TickerItemRealm> tickerItemRealms) {
-        List tickers = rv_ticker_list.getAllViewResolvers();
-
-        if (tickerItemRealms.size() - tickers.size() == 1) {
-//            TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, tickerItemRealms.last());
-//            rv_ticker_list.addView(tickerItem);
-//            presenter.loadTickerPrice(tickerItem);
-            //TODO refreshFeed
-            scrollToPosition(tickerItemRealms.size() - 1);
-        }
     }
 
     @Override
@@ -207,12 +192,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     public void addAllTickers(List<Ticker> tickers, List<Subscribe> subscribes) {
         resetFeed();
 
@@ -221,9 +200,12 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                     .filter(s -> s.getTickerId() == item.getId())
                     .toList();
 
+            double price = item.getPrice();
+            String text = DateFormatter.convertPrice(price, item);
+
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
+            tickerItem.setPrice(text);
             rv_ticker_list.addView(tickerItem);
-            presenter.loadTickerPrice(tickerItem);
         }
     }
 

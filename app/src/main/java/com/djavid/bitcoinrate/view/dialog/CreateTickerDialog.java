@@ -73,6 +73,12 @@ public class CreateTickerDialog extends BaseDialogFragment {
         return R.layout.fragment_create_ticker_dialog;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
+
+        //setTargetFragment(null, -1);
+    }
 
     private void sendTicker(Ticker ticker) {
         DataRepository dataRepository = new RestDataRepository();

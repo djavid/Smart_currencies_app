@@ -54,7 +54,8 @@ public class TickerItem {
 
         labels = new ArrayList<>();
         for (Subscribe item : subscribes) {
-            labels.add(new LabelItemDto(item.getId(), item.getValue(), item.isTrendingUp()));
+            labels.add(new LabelItemDto(item.getId(), item.getValue(),
+                    item.isTrendingUp(), item.getChange_percent()));
         }
     }
 
@@ -81,6 +82,7 @@ public class TickerItem {
         }
         label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
     }
+
 
     public Ticker getTickerItem() {
         return tickerItem;

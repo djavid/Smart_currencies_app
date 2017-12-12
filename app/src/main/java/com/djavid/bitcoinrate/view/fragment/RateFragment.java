@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.domain.MainRouter;
@@ -21,13 +19,9 @@ import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.RateChart;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.joda.time.LocalDateTime;
 
-import java.sql.Timestamp;
-
-import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
@@ -44,63 +38,34 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     Spinner rightPanel;
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout swipe_container;
-    @BindView(R.id.circleView)
-    CircleProgressView circleView;
 
+    OnFragmentInteractionListener mListener;
     RateFragmentPresenter presenter;
-
     RateChart chart;
     String timespan;
 
-    private final static String TAG = "MainActivity";
-    private OnFragmentInteractionListener mListener;
-
 
     public RateFragment() { }
-
     public static RateFragment newInstance() {
-        RateFragment fragment = new RateFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+        return new RateFragment();
     }
 
-    @Override
-    public void onStart() {
-        presenter = getPresenter(RateFragmentPresenter.class);
-        presenter.setView(this);
-        presenter.setRouter((MainRouter) getActivity());
-
-        super.onStart();
-    }
 
     @Override
-    public void onStop() {
-        presenter.setView(null);
-        super.onStop();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setHasOptionsMenu(true);
+    public void loadData() {
+//        if (!App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
+//            presenter.sendTokenToServer();
+//        }
     }
 
     @Override
     public View setupView(View view) {
-
-        //rightPanel.setOnClickListener(onRightCurrencySelect);
 
         swipe_container.setOnRefreshListener(this);
         swipe_container.setColorSchemeColors(
                 getResources().getColor(R.color.colorAccent),
                 getResources().getColor(R.color.colorChart),
                 getResources().getColor(R.color.colorLabelBackground));
-
-        //circleView.setSpinSpeed(3);
-        //circleView.setVisibility(View.VISIBLE);
-        //topPanel.setVisibility(View.GONE);
 
         view.findViewById(R.id.optionFirst).setOnClickListener(onChartOptionClick);
         view.findViewById(R.id.optionSecond).setOnClickListener(onChartOptionClick);
@@ -109,33 +74,42 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
         chart = new RateChart(view);
 
-        //spin(true);
         setCurrenciesSpinner();
 
         return view;
     }
 
     @Override
-    public void loadData() {
+    public void setCurrenciesSpinner() {
+        ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row, crypto_coins,
+                getActivity().getLayoutInflater(), R.layout.row_item);
+        leftPanel.setAdapter(adapterLeft);
+        leftPanel.setSelection(0, false);
+        leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
-//        if (!App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
-            presenter.sendTokenToServer();
-//        }
+        ArrayAdapter<String> adapterRight = new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
+                        getActivity().getLayoutInflater(), R.layout.row_item);
+        rightPanel.setAdapter(adapterRight);
+        rightPanel.setSelection(0);
+        rightPanel.setOnItemSelectedListener(itemSelectedListener);
 
-//        presenter.showChart("30days");
-//        timespan = "30days";
-        getChart(30);
+//        leftPanel.setSelection(0);
+//        rightPanel.setSelection(0);
     }
 
-    private void getChart(int daysAgo) {
-        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
-        long start = end - 86400 * daysAgo;
+    private AdapterView.OnItemSelectedListener itemSelectedListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    //TODO decide whether to load chart every time
+                    presenter.showRate(true);
+                }
 
-        String curr = ((String) leftPanel.getSelectedItem()).toLowerCase() +
-                ((String) rightPanel.getSelectedItem()).toLowerCase();
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-        presenter.getHistory(curr, 86400, start);
-    }
+                }
+            };
 
     View.OnClickListener onChartOptionClick = new View.OnClickListener() {
         @Override
@@ -143,34 +117,41 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
             if (v.getId() == R.id.optionFirst) {
                 timespan = "30days";
                 //presenter.showChart(timespan);
-                getChart(getTimespanDays());
+                getChart(getTimespanDays(), 7200);
             } else if (v.getId() == R.id.optionSecond) {
                 timespan = "90days";
                 //presenter.showChart(timespan);
-                getChart(getTimespanDays());
+                getChart(getTimespanDays(), 21600);
             } else if (v.getId() == R.id.optionThird) {
                 timespan = "180days";
                 //presenter.showChart(timespan);
-                getChart(getTimespanDays());
+                getChart(getTimespanDays(), 43200);
             } else if (v.getId() == R.id.optionFourth) {
                 timespan = "1year";
                 //presenter.showChart(timespan);
-                getChart(getTimespanDays());
+                getChart(getTimespanDays(), 86400);
             }
         }
     };
 
+    private void getChart(int daysAgo, int periods) {
+        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
+        long start = end - 86400 * daysAgo;
 
-    private void spin(boolean state) {
-        if (state) {
-            circleView.spin();
-            circleView.setVisibility(View.VISIBLE);
-            topPanel.setVisibility(View.GONE);
-        } else {
-            circleView.stopSpinning();
-            circleView.setVisibility(View.GONE);
-            topPanel.setVisibility(View.VISIBLE);
+        String curr = ((String) leftPanel.getSelectedItem()).toLowerCase() +
+                ((String) rightPanel.getSelectedItem()).toLowerCase();
+
+        presenter.getHistory(curr, periods, start);
+    }
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
         }
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
     }
 
     @Override
@@ -180,16 +161,26 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    public void onStart() {
+        presenter = getPresenter(RateFragmentPresenter.class);
+        presenter.setView(this);
+        presenter.setRouter((MainRouter) getActivity());
+        presenter.onStart();
 
-        return super.onOptionsItemSelected(item);
+        super.onStart();
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onStop() {
+        presenter.setView(null);
+        presenter.onStop();
+
+        super.onStop();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -214,21 +205,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         presenter.refresh();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
     @Override
     public int getLayoutId() {
         return R.layout.fragment_rate;
@@ -238,37 +214,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     public String getPresenterId() {
         return "rate_fragment";
     }
-
-    @Override
-    public void setCurrenciesSpinner() {
-        ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row, crypto_coins,
-                getActivity().getLayoutInflater(), R.layout.row_item);
-        leftPanel.setAdapter(adapterLeft);
-        leftPanel.setOnItemSelectedListener(itemSelectedListener);
-
-        ArrayAdapter<String> adapterRight = new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
-                        getActivity().getLayoutInflater(), R.layout.row_item);
-        rightPanel.setAdapter(adapterRight);
-        rightPanel.setOnItemSelectedListener(itemSelectedListener);
-
-        leftPanel.setSelection(0);
-        rightPanel.setSelection(0);
-    }
-
-    private AdapterView.OnItemSelectedListener itemSelectedListener =
-            new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    //presenter.showRate(true); //TODO decide whether to load chart every time
-                    presenter.showRateCMC(true);
-                    //getChart(getTimespanDays());
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            };
 
     @Override
     public Spinner getLeftSpinner() {

@@ -33,6 +33,8 @@ public class FirebaseService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
+            showNotification(remoteMessage);
+
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 //scheduleJob();
@@ -66,7 +68,9 @@ public class FirebaseService extends FirebaseMessagingService {
 
         int large_icon = R.mipmap.ic_launcher;
         try {
-            String trending = remoteMessage.getNotification().getBody().split(" ")[2];
+            //String trending = remoteMessage.getNotification().getBody().split(" ")[2];
+            String trending = remoteMessage.getData().get("body").split(" ")[2];
+
             if (trending.equals("выросла"))
                 large_icon = R.mipmap.trending_up_notification;
             else if (trending.equals("упала"))
@@ -84,14 +88,19 @@ public class FirebaseService extends FirebaseMessagingService {
                 .setLargeIcon(BitmapFactory.decodeResource(res, large_icon))
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
-                .setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody());
+//                .setContentTitle(remoteMessage.getNotification().getTitle())
+//                .setContentText(remoteMessage.getNotification().getBody());
+                .setContentTitle(remoteMessage.getData().get("title"))
+                .setContentText(remoteMessage.getData().get("body"));
+
+        Notification notification = new Notification.BigTextStyle(builder)
+                .bigText(remoteMessage.getData().get("body")).build();
 
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         try {
-            notificationManager.notify(NOTIFY_ID, builder.build());
+            notificationManager.notify(NOTIFY_ID, notification);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

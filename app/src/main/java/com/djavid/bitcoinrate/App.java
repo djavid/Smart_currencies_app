@@ -57,6 +57,12 @@ public class App extends Application {
 
         appInstance = (App) getApplicationContext();
 
+        if (!getPrefencesWrapper().sharedPreferences.contains("token_id") ||
+                !getPrefencesWrapper().sharedPreferences.contains("token")) {
+            String token = FirebaseInstanceId.getInstance().getToken();
+            sendTokenToServer(token);
+        }
+
     }
 
     public static Context getContext() {
@@ -103,4 +109,37 @@ public class App extends Application {
 
         return retrofit.create(ApiInterface.class);
     }
+
+    private void sendTokenToServer(String token) {
+
+        long id;
+        //if not found preference then is default 0
+        id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+
+        DataRepository dataRepository = new RestDataRepository();
+        dataRepository.registerToken(token, id)
+                .compose(RxUtils.applySingleSchedulers())
+                .subscribe(response -> {
+
+                    if (response.error.isEmpty()) {
+
+                        if (response.id != 0) {
+                            App.getAppInstance()
+                                    .getPrefencesWrapper()
+                                    .sharedPreferences
+                                    .edit()
+                                    .putLong("token_id", response.id)
+                                    .apply();
+
+                            App.getAppInstance()
+                                    .getPrefencesWrapper()
+                                    .sharedPreferences
+                                    .edit()
+                                    .putString("token", token)
+                                    .apply();
+                        }
+                    }
+                });
+    }
+
 }

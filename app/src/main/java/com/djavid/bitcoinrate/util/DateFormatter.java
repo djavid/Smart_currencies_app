@@ -2,6 +2,7 @@ package com.djavid.bitcoinrate.util;
 
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
+import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
@@ -16,8 +17,12 @@ import java.util.Locale;
 public class DateFormatter implements IAxisValueFormatter
 {
 
-    private String[] mMonths = new String[]{
+    private String[] mMonthsEng = new String[]{
             "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+
+    private String[] mMonthsRus = new String[]{
+            "", "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
     };
 
     private BarLineChartBase<?> chart;
@@ -35,9 +40,7 @@ public class DateFormatter implements IAxisValueFormatter
         int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(date));
         int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.US).format(date));
 
-        System.out.println("value " + value);
-        System.out.println("day " + day + " month " + month + " year " + year);
-        String monthName = mMonths[month]; //TODO check
+        String monthName = mMonthsRus[month]; //TODO check
         String yearName = String.valueOf(year);
 
         if ((chart.getVisibleXRange() / 1000 / 3600 / 24) > 30 * 5) {
@@ -47,6 +50,20 @@ public class DateFormatter implements IAxisValueFormatter
 
             return day == 0 ? "" : day + " " + monthName;
         }
+    }
+
+    public static String convertPrice(double price, Ticker ticker) {
+        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+        symbols.setGroupingSeparator(' ');
+        DecimalFormat formatter;
+
+        if (!ticker.getCryptoId().equals("DOGE")) {
+            formatter = new DecimalFormat("###,###.##", symbols);
+        } else {
+            formatter = new DecimalFormat("###,###.####", symbols);
+        }
+
+        return formatter.format(price);
     }
 
     public static String convertPrice(double price, CryptonatorTicker ticker) {
