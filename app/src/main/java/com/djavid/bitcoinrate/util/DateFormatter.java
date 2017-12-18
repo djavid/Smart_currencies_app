@@ -1,8 +1,5 @@
 package com.djavid.bitcoinrate.util;
 
-import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
-import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
@@ -64,7 +61,7 @@ public class DateFormatter implements IAxisValueFormatter
     private static String getPattern(Double price) {
 
         if (price < 1) {
-            return "###,###.#####";
+            return "###,###.######";
         } else
         if (price >= 1 && price < 10) {
             return "###,###.###";

@@ -5,12 +5,11 @@ import android.util.Log;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
-import com.djavid.bitcoinrate.domain.MainRouter;
-import com.djavid.bitcoinrate.interactor.RateFragmentInteractor;
-import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
-import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.core.Router;
+import com.djavid.bitcoinrate.model.DataRepository;
+import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.blockchain.Value;
-import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
+import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
@@ -18,7 +17,6 @@ import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.Entry;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.joda.time.LocalDateTime;
 
@@ -27,18 +25,17 @@ import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
-import io.reactivex.functions.Consumer;
 
 
-public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, MainRouter, RateFragmentInstanceState>
+public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, Router, RateFragmentInstanceState>
         implements RateFragmentPresenter {
 
     private Disposable disposable = Disposables.empty();
-    private RateFragmentInteractor rateFragmentInteractor;
+    private DataRepository dataRepository;
 
 
     public RateFragmentPresenterImpl() {
-        rateFragmentInteractor = new RateFragmentUseCase();
+        dataRepository = new RestDataRepository();
     }
 
 
@@ -95,7 +92,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
         final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
         final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
 
-        disposable = rateFragmentInteractor.getRate(curr1, curr2)
+        disposable = dataRepository.getRate(curr1, curr2)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(ticker -> {
@@ -136,7 +134,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
         final String crypto_full_id = Codes.getCryptoCurrencyId(crypto_id);
         final String country_id = getView().getRightSpinner().getSelectedItem().toString();
 
-        disposable = rateFragmentInteractor.getRateCMC(crypto_full_id, country_id)
+        disposable = dataRepository.getRateCMC(crypto_full_id, country_id)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(array -> {
@@ -187,7 +186,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                 break;
         }
 
-        disposable = rateFragmentInteractor.getHistory(curr, periods, after)
+        disposable = dataRepository.getHistory(curr, periods, after)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(result -> {
@@ -225,7 +225,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     public void showChart(String timespan) {
         setRefreshing(true);
 
-        disposable = rateFragmentInteractor.getChartValues(timespan, true, "json")
+        disposable = dataRepository.getChartValues(timespan, true, "json")
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(response -> {

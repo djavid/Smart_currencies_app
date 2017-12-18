@@ -13,28 +13,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.annimon.stream.Collectors;
 import com.annimon.stream.IntStream;
-import com.annimon.stream.Stream;
-import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
-import com.djavid.bitcoinrate.core.BaseFragment;
-import com.djavid.bitcoinrate.core.BasePresenter;
-import com.djavid.bitcoinrate.domain.MainRouter;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.RateChart;
+import com.djavid.bitcoinrate.core.BaseFragment;
+import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
-import com.djavid.bitcoinrate.util.Codes;
+import com.djavid.bitcoinrate.util.RateChart;
+import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
 import org.joda.time.LocalDateTime;
 
-import java.util.List;
-
 import butterknife.BindView;
 
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
-import static com.djavid.bitcoinrate.util.Codes.crypto_coins;
 import static com.djavid.bitcoinrate.util.Codes.crypto_coins_array;
 
 
@@ -227,7 +220,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     public void onStart() {
         presenter = getPresenter(RateFragmentPresenter.class);
         presenter.setView(this);
-        presenter.setRouter((MainRouter) getActivity());
+        presenter.setRouter((Router) getActivity());
         presenter.onStart();
 
         super.onStart();

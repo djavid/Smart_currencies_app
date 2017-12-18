@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.adapter;
+package com.djavid.bitcoinrate.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;

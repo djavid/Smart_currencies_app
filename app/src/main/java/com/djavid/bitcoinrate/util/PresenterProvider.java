@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.domain;
+package com.djavid.bitcoinrate.util;
 
 import com.djavid.bitcoinrate.core.Presenter;
 import com.djavid.bitcoinrate.presenter.implementations.RateFragmentPresenterImpl;
@@ -6,10 +6,6 @@ import com.djavid.bitcoinrate.presenter.implementations.TickerFragmentPresenterI
 
 import java.util.HashMap;
 import java.util.Map;
-
-/**
- * Created by djavid on 05.08.17.
- */
 
 
 public class PresenterProvider {

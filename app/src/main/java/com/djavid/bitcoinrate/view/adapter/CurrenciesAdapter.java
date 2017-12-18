@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.adapter;
+package com.djavid.bitcoinrate.view.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -41,8 +41,8 @@ public class CurrenciesAdapter extends ArrayAdapter<String> {
     private View getCustomView(int position, View convertView, ViewGroup parent, int resource) {
         View item = inflater.inflate(resource, parent, false);
 
-        TextView name = (TextView) item.findViewById(R.id.curr_name);
-        ImageView icon = (ImageView) item.findViewById(R.id.curr_icon);
+        TextView name = item.findViewById(R.id.curr_name);
+        ImageView icon = item.findViewById(R.id.curr_icon);
 
         name.setText(currs[position]);
         icon.setImageResource(Codes.getCurrencyImage(currs[position]));

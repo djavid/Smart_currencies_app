@@ -1,24 +1,24 @@
 package com.djavid.bitcoinrate.view.activity;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.adapter.NavigationViewAdapter;
-import com.djavid.bitcoinrate.adapter.TickerItem;
-import com.djavid.bitcoinrate.domain.MainRouter;
+import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.view.adapter.NavigationViewAdapter;
+import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.dialog.CreateLabelDialog;
 import com.djavid.bitcoinrate.view.fragment.RateFragment;
 import com.djavid.bitcoinrate.view.fragment.TickerFragment;
@@ -29,7 +29,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class MainActivity extends AppCompatActivity implements RateFragment.OnFragmentInteractionListener,
-        TickerFragment.OnTickerInteractionListener, MainRouter {
+        TickerFragment.OnTickerInteractionListener, Router {
 
     @BindView(R.id.navigation)
     BottomNavigationView navigation;

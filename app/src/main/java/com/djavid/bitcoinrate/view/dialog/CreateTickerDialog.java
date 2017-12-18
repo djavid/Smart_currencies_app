@@ -10,25 +10,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
-import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.RxUtils;
-
-import java.util.List;
+import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
 
 import butterknife.BindView;
 
-import static com.annimon.stream.Collectors.toList;
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
-import static com.djavid.bitcoinrate.util.Codes.crypto_coins;
 import static com.djavid.bitcoinrate.util.Codes.crypto_coins_array;
 
 

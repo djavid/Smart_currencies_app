@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.adapter;
+package com.djavid.bitcoinrate.view.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;

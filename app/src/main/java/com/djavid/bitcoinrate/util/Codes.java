@@ -124,8 +124,12 @@ public class Codes {
                 return R.drawable.ic_novacoin;
             case "PPC":
                 return R.drawable.ic_peercoin;
+
+
             case "XRP":
                 return R.drawable.ic_xrp;
+            case "XVG":
+                return R.drawable.ic_xvg;
 
 
             default:

@@ -1,9 +1,10 @@
 package com.djavid.bitcoinrate.core;
 
-/**
- * Created by djavid on 05.08.17.
- */
+import com.djavid.bitcoinrate.view.adapter.TickerItem;
+
 
 public interface Router {
     void goBack();
+    void showCreateLabelDialog(TickerItem tickerItem);
+    TickerItem getSelectedTickerItem();
 }

@@ -1,4 +1,4 @@
-package com.djavid.bitcoinrate.adapter;
+package com.djavid.bitcoinrate.view.adapter;
 
 import android.os.Bundle;
 import android.support.annotation.IdRes;

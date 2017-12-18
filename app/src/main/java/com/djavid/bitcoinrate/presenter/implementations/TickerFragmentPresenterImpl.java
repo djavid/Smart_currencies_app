@@ -3,11 +3,10 @@ package com.djavid.bitcoinrate.presenter.implementations;
 import android.util.Log;
 
 import com.djavid.bitcoinrate.App;
-import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.core.BasePresenter;
-import com.djavid.bitcoinrate.domain.MainRouter;
-import com.djavid.bitcoinrate.interactor.TickerFragmentInteractor;
-import com.djavid.bitcoinrate.interactor.TickerFragmentUseCase;
+import com.djavid.bitcoinrate.core.Router;
+import com.djavid.bitcoinrate.model.DataRepository;
+import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
@@ -15,6 +14,7 @@ import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
+import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 
 import java.net.SocketTimeoutException;
@@ -24,11 +24,11 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 
 
-public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentView, MainRouter, Object>
+public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentView, Router, Object>
         implements TickerFragmentPresenter {
 
     private Disposable disposable = Disposables.empty();
-    private TickerFragmentInteractor tickerFragmentInteractor;
+    private DataRepository dataRepository;
     private List<Ticker> tickers;
     private List<Subscribe> subscribes;
 
@@ -52,7 +52,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     }
 
     public TickerFragmentPresenterImpl() {
-        tickerFragmentInteractor = new TickerFragmentUseCase();
+        dataRepository = new RestDataRepository();
     }
 
 
@@ -60,8 +60,11 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     public void getAllTickers() {
         setRefreshing(true);
 
+
+
         long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
-        disposable = tickerFragmentInteractor.getTickersByTokenId(token_id)
+        disposable = dataRepository.getTickersByTokenId(token_id)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(tickerList -> {
@@ -81,7 +84,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         setRefreshing(true);
 
         long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
-        disposable = tickerFragmentInteractor.getSubscribesByTokenId(token_id)
+        disposable = dataRepository.getSubscribesByTokenId(token_id)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(subscribeList -> {
@@ -99,7 +103,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
     @Override
     public void deleteTicker(long ticker_id) {
-        disposable = tickerFragmentInteractor.deleteTicker(ticker_id)
+        disposable = dataRepository.deleteTicker(ticker_id)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applyCompletableSchedulers())
                 .retry(2L)
                 .subscribe(() -> {
@@ -121,7 +126,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         String curr1 = tickerItem.getTickerItem().getCryptoId();
         String curr2 = tickerItem.getTickerItem().getCountryId();
 
-        disposable = tickerFragmentInteractor.getRate(curr1, curr2)
+        disposable = dataRepository.getRate(curr1, curr2)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(ticker -> {
@@ -150,7 +156,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         final String code_crypto_full = Codes.getCryptoCurrencyId(code_crypto);
         String code_country = tickerItem.getTickerItem().getCountryId();
 
-        disposable = tickerFragmentInteractor.getRateCMC(code_crypto_full, code_country)
+        disposable = dataRepository.getRateCMC(code_crypto_full, code_country)
+                .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
                 .subscribe(array -> {
@@ -172,6 +179,35 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
             if (getView().getRefreshLayout() != null)
                 getView().getRefreshLayout().setRefreshing(key);
         }
+    }
+
+    private void sendTokenToServer(String token) {
+
+        long id;
+        //if not found preference then is default 0
+        id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+
+        dataRepository.registerToken(token, id)
+                .compose(RxUtils.applySingleSchedulers())
+                .subscribe(response -> {
+
+                    if (response.error.isEmpty()) {
+
+                        if (response.id != 0) {
+                            App.getAppInstance()
+                                    .getSharedPreferences()
+                                    .edit()
+                                    .putLong("token_id", response.id)
+                                    .apply();
+
+                            App.getAppInstance()
+                                    .getSharedPreferences()
+                                    .edit()
+                                    .putString("token", token)
+                                    .apply();
+                        }
+                    }
+                });
     }
 
     @Override

@@ -19,13 +19,13 @@ import android.view.View;
 import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.core.BaseFragment;
-import com.djavid.bitcoinrate.domain.MainRouter;
+import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
 import com.djavid.bitcoinrate.util.DateFormatter;
+import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.dialog.CreateTickerDialog;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 import com.mindorks.placeholderview.PlaceHolderView;
@@ -75,7 +75,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     public void onStart() {
         presenter = getPresenter(TickerFragmentPresenter.class);
         presenter.setView(this);
-        presenter.setRouter((MainRouter) getActivity());
+        presenter.setRouter((Router) getActivity());
         presenter.onStart();
 
         super.onStart();

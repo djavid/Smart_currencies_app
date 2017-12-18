@@ -1,6 +1,5 @@
 package com.djavid.bitcoinrate.presenter.instancestate;
 
-import com.djavid.bitcoinrate.RateChart;
 import com.github.mikephil.charting.charts.LineChart;
 
 

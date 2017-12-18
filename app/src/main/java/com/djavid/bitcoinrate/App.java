@@ -6,9 +6,9 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.djavid.bitcoinrate.model.ApiInterface;
-import com.djavid.bitcoinrate.domain.PresenterProvider;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.util.PresenterProvider;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -58,9 +58,9 @@ public class App extends Application {
 
 //        if (!sharedPreferences.contains("token_id") ||
 //                !sharedPreferences.contains("token")) {
-            String token = FirebaseInstanceId.getInstance().getToken();
+        String token = FirebaseInstanceId.getInstance().getToken();
         System.out.println(token);
-            sendTokenToServer(token);
+        //sendTokenToServer(token);
 //        }
 
     }
@@ -110,6 +110,8 @@ public class App extends Application {
     }
 
     private void sendTokenToServer(String token) {
+
+        if (token.isEmpty()) return;
 
         long id;
         //if not found preference then is default 0

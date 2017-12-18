@@ -4,8 +4,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.djavid.bitcoinrate.RateChart;
 import com.djavid.bitcoinrate.core.View;
+import com.djavid.bitcoinrate.util.RateChart;
 
 
 public interface RateFragmentView extends View {

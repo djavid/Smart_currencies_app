@@ -4,14 +4,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.adapter.TickerItem;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
@@ -19,6 +17,7 @@ import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
+import com.djavid.bitcoinrate.view.adapter.TickerItem;
 
 import butterknife.BindView;
 import info.hoang8f.android.segmented.SegmentedGroup;
