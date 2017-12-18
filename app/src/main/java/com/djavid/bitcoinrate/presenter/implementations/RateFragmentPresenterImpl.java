@@ -11,6 +11,7 @@ import com.djavid.bitcoinrate.interactor.RateFragmentUseCase;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.blockchain.Value;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
+import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
@@ -29,7 +30,7 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
 
 
-public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, MainRouter, Object>
+public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, MainRouter, RateFragmentInstanceState>
         implements RateFragmentPresenter {
 
     private Disposable disposable = Disposables.empty();
@@ -47,7 +48,13 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     @Override
-    public void onStart() { }
+    public void onStart() {
+        if (getInstanceState() != null) {
+            if (getView() != null) {
+                getView().setChartLabelSelected(getInstanceState().getTimespan());
+            }
+        }
+    }
 
     @Override
     public void onStop() {
@@ -55,7 +62,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     @Override
-    public void saveInstanceState(Object instanceState) {
+    public void saveInstanceState(RateFragmentInstanceState instanceState) {
         setInstanceState(instanceState);
     }
 
@@ -72,12 +79,18 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
 
     @Override
     public void showRate(boolean update_chart) {
-        showRateCMC(update_chart);
+        boolean refresh = true;
+
+        if (getInstanceState() != null) {
+            refresh = false;
+        }
+
+        showRateCMC(update_chart, refresh);
     }
 
     @Override
-    public void showRateCryptonator(boolean update_chart) {
-        setRefreshing(true);
+    public void showRateCryptonator(boolean update_chart, boolean refresh) {
+        if (refresh) setRefreshing(true);
 
         final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
         final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
@@ -93,7 +106,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                     }
 
                     double price = ticker.getTicker().getPrice();
-                    String text = DateFormatter.convertPrice(price, ticker) + " " + ticker.getTicker().getTarget();
+                    String text = DateFormatter.convertPrice(price) + " " + ticker.getTicker().getTarget();
 
                     if (getView() != null) {
                         if (!getView().getTopPanel().getText().equals(text)) {
@@ -104,10 +117,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
                         long start = end - 86400 * daysAgo;
 
-                        if (update_chart)
-                            getHistory(curr1 + curr2, 86400, start);
-                        else
-                            setRefreshing(false);
+                        if (update_chart) getHistory(curr1 + curr2, daysAgo, start, refresh);
+                        else setRefreshing(false);
                     }
 
                 }, error -> {
@@ -116,10 +127,10 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     @Override
-    public void showRateCMC(boolean update_chart) {
+    public void showRateCMC(boolean update_chart, boolean refresh) {
         if (getView() == null) return;
 
-        setRefreshing(true);
+        if (refresh) setRefreshing(true);
 
         final String crypto_id = getView().getLeftSpinner().getSelectedItem().toString();
         final String crypto_full_id = Codes.getCryptoCurrencyId(crypto_id);
@@ -133,7 +144,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                     CoinMarketCapTicker ticker = array.get(0);
 
                     double price = ticker.getPrice(country_id);
-                    String text = DateFormatter.convertPrice(price, ticker) + " " + country_id;
+                    String text = DateFormatter.convertPrice(price) + " " + country_id;
 
                     if (getView() != null) {
                         if (!getView().getTopPanel().getText().equals(text)) {
@@ -144,7 +155,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
                         long start = end - 86400 * daysAgo;
 
-                        if (update_chart) getHistory(crypto_id + country_id, 86400, start);
+                        if (update_chart) getHistory(crypto_id + country_id, daysAgo, start, refresh);
                         else setRefreshing(false);
                     }
 
@@ -154,8 +165,27 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
     }
 
     @Override
-    public void getHistory(String curr, int periods, long after) {
-        setRefreshing(true);
+    public void getHistory(String curr, int timespanDays, long after, boolean refresh) {
+        if (refresh) setRefreshing(true);
+
+        int periods;
+        switch (timespanDays) {
+            case 30:
+                periods = 7200;
+                break;
+            case 90:
+                periods = 21600;
+                break;
+            case 180:
+                periods = 43200;
+                break;
+            case 365:
+                periods = 86400;
+                break;
+            default:
+                periods = 86400;
+                break;
+        }
 
         disposable = rateFragmentInteractor.getHistory(curr, periods, after)
                 .compose(RxUtils.applySingleSchedulers())
@@ -163,7 +193,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, M
                 .subscribe(result -> {
                     List<List<Double>> values = result.getResult().getValues();
                     if (values.size() == 0) {
-                        getHistory(curr, periods, after);
+                        getHistory(curr, periods, after, refresh);
                         return;
                     }
 

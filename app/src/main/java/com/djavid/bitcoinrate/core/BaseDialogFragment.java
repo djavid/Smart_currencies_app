@@ -4,15 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.*;
 import android.view.View;
+import android.widget.Toast;
 
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.realm.Realm;
-
-/**
- * Created by djavid on 03.11.17.
- */
 
 
 public abstract class BaseDialogFragment extends DialogFragment {
@@ -50,4 +47,9 @@ public abstract class BaseDialogFragment extends DialogFragment {
         super.onDestroy();
 //        realm.close();
     }
+
+    public void showError(int errorId) {
+        Toast.makeText(getContext(), getString(errorId), Toast.LENGTH_SHORT).show();
+    }
+
 }

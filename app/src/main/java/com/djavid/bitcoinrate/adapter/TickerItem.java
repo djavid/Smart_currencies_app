@@ -68,7 +68,7 @@ public class TickerItem {
 
     @Resolve
     private void onResolved() {
-        tv_ticker_title.setText(Codes.getCurrencyFullName(tickerItem.getCryptoId()).split(";")[1]);
+        tv_ticker_title.setText(Codes.getCryptoCurrencyId(tickerItem.getCryptoId()));
         iv_ticker_icon.setImageResource(Codes.getCurrencyImage(tickerItem.getCryptoId()));
         tickerValue.setText(tv_price);
 

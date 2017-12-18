@@ -24,7 +24,7 @@ public class RateChart {
 
 
     public RateChart(View view) {
-        chart = (LineChart) view.findViewById(R.id.chart);
+        chart = view.findViewById(R.id.chart);
     }
 
 
@@ -33,6 +33,8 @@ public class RateChart {
         dataSet.setColor(color);
         dataSet.setDrawCircles(false);
         dataSet.setDrawValues(false);
+        dataSet.setDrawCircleHole(true);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         dataSet.setLineWidth(2);
 
         LineData lineData = new LineData(dataSet);

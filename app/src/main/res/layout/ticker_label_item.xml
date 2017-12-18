@@ -19,8 +19,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:textColor="@color/colorLabelText"
-            android:text="2450"
+            android:textColor="@color/colorTickerLabelText"
+            android:text=""
             android:visibility="gone"
             fontpath="roboto-regular.ttf" />
 

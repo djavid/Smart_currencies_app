@@ -178,8 +178,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                     String countryId = data.getExtras().getString("countryId");
                     String cryptoId = data.getExtras().getString("cryptoId");
                     long id = data.getExtras().getLong("id");
-                    long token_id = App.getAppInstance().getPrefencesWrapper()
-                            .sharedPreferences.getLong("token_id", 0);
+                    long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
 
                     Ticker ticker = new Ticker(id, token_id, cryptoId, countryId);
                     TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
@@ -201,7 +200,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                     .toList();
 
             double price = item.getPrice();
-            String text = DateFormatter.convertPrice(price, item);
+            String text = DateFormatter.convertPrice(price);
 
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             tickerItem.setPrice(text);

@@ -27,10 +27,10 @@ public class NavigationViewAdapter extends NavigationViewFragmentAdapter {
 
         switch (menuItemId) {
 
-            case R.id.navigation_home:
+            case R.id.navigation_rate:
                 return RateFragment.newInstance();
 
-            case R.id.navigation_cards:
+            case R.id.navigation_tickers:
                 return TickerFragment.newInstance();
 
             //case R.id.navigation_settings:

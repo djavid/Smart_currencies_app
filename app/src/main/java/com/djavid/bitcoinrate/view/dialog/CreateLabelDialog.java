@@ -61,36 +61,44 @@ public class CreateLabelDialog extends BaseDialogFragment {
         });
 
         tv_create_btn.setOnClickListener(v -> {
-            if (et_price.getText().toString().isEmpty()) {
-                //TODO show alert
-            } else {
 
-                String value = et_price.getText().toString();
-                boolean isTrendingUp = btn_trending_up.isChecked();
-                boolean isPercentLabel = cb_percent_change.isChecked();
+            String value = et_price.getText().toString();
+            boolean isTrendingUp = btn_trending_up.isChecked();
+            boolean isPercentLabel = cb_percent_change.isChecked();
 
-                LabelItemDto labelItemDto = new LabelItemDto(value, isTrendingUp, isPercentLabel);
+            if (isValidValue(value, isPercentLabel, isTrendingUp)) {
 
-                long token_id = App.getAppInstance().getPrefencesWrapper()
-                        .sharedPreferences.getLong("token_id", 0);
+                long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
                 TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
                 long ticker_id = selectedTicker.getTickerItem().getId();
                 String cryptoId = selectedTicker.getTickerItem().getCryptoId();
                 String countryId = selectedTicker.getTickerItem().getCountryId();
 
+                LabelItemDto labelItemDto;
                 Subscribe subscribe;
 
                 if (isPercentLabel) {
-                    subscribe = new Subscribe(value, ticker_id, token_id, cryptoId, countryId,
-                            selectedTicker.getTickerItem().getPrice());
+                    try {
+                        String perc = Double.toString(Double.parseDouble(value) / 100);
+                        subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
+                                selectedTicker.getTickerItem().getPrice());
+                        labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
+
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
                 } else {
                     subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
+                    labelItemDto = new LabelItemDto(value, isTrendingUp, false);
                 }
 
                 sendSubscribe(subscribe, labelItemDto, selectedTicker);
 
                 this.dismiss();
             }
+
         });
 
         cb_percent_change.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -104,6 +112,33 @@ public class CreateLabelDialog extends BaseDialogFragment {
         });
 
         return view;
+    }
+
+    private boolean isValidValue(String value, boolean isPercentLabel, boolean isTrendingUp) {
+
+        if (value.isEmpty()) {
+            showError(R.string.empty_value);
+            return false;
+        }
+        if (value.startsWith(".") || value.endsWith(".")) return false;
+        if (value.contains("-") || value.contains(" ")) return false;
+
+        if (isPercentLabel) {
+            try {
+                double perc = Double.parseDouble(value);
+
+                if (perc > 200 || perc <= 0) return false;
+                if (value.contains(".")) {
+                    if (value.split("\\.")[1].length() > 3) return false;
+                }
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void sendSubscribe(Subscribe subscribe, LabelItemDto label, TickerItem tickerItem) {

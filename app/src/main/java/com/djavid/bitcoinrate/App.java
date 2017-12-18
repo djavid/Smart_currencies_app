@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.djavid.bitcoinrate.model.ApiInterface;
-import com.djavid.bitcoinrate.domain.PreferencesWrapper;
 import com.djavid.bitcoinrate.domain.PresenterProvider;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
@@ -44,7 +43,7 @@ public class App extends Application {
                 .build());
 
         getPresenterProvider();
-        getPrefencesWrapper();
+        getSharedPreferences();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         JodaTimeAndroid.init(this);
         Realm.init(this);
@@ -57,11 +56,12 @@ public class App extends Application {
 
         appInstance = (App) getApplicationContext();
 
-        if (!getPrefencesWrapper().sharedPreferences.contains("token_id") ||
-                !getPrefencesWrapper().sharedPreferences.contains("token")) {
+//        if (!sharedPreferences.contains("token_id") ||
+//                !sharedPreferences.contains("token")) {
             String token = FirebaseInstanceId.getInstance().getToken();
+        System.out.println(token);
             sendTokenToServer(token);
-        }
+//        }
 
     }
 
@@ -86,12 +86,11 @@ public class App extends Application {
         return presenterProvider;
     }
 
-    public SharedPreferences getRawPreferences() {
-        return getSharedPreferences(SHARED_PREFERENCES_CODE, MODE_PRIVATE);
-    }
+    public SharedPreferences getSharedPreferences() {
+        if (sharedPreferences == null)
+            sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_CODE, MODE_PRIVATE);
 
-    public PreferencesWrapper getPrefencesWrapper() {
-        return new PreferencesWrapper(getRawPreferences());
+        return sharedPreferences;
     }
 
     private ApiInterface buildApiInterface() {
@@ -114,7 +113,7 @@ public class App extends Application {
 
         long id;
         //if not found preference then is default 0
-        id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+        id = App.getAppInstance().sharedPreferences.getLong("token_id", 0);
 
         DataRepository dataRepository = new RestDataRepository();
         dataRepository.registerToken(token, id)
@@ -125,14 +124,12 @@ public class App extends Application {
 
                         if (response.id != 0) {
                             App.getAppInstance()
-                                    .getPrefencesWrapper()
                                     .sharedPreferences
                                     .edit()
                                     .putLong("token_id", response.id)
                                     .apply();
 
                             App.getAppInstance()
-                                    .getPrefencesWrapper()
                                     .sharedPreferences
                                     .edit()
                                     .putString("token", token)

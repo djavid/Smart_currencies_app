@@ -60,7 +60,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     public void getAllTickers() {
         setRefreshing(true);
 
-        long token_id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+        long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
         disposable = tickerFragmentInteractor.getTickersByTokenId(token_id)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
@@ -80,7 +80,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     private void getAllSubscribes() {
         setRefreshing(true);
 
-        long token_id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
+        long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
         disposable = tickerFragmentInteractor.getSubscribesByTokenId(token_id)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L)
@@ -132,7 +132,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     }
 
                     double price = ticker.getTicker().getPrice();
-                    String text = DateFormatter.convertPrice(price, ticker);
+                    String text = DateFormatter.convertPrice(price);
 
                     tickerItem.setPrice(text);
                     setRefreshing(false);
@@ -157,7 +157,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     CoinMarketCapTicker ticker = array.get(0);
 
                     double price = ticker.getPrice(code_country);
-                    String text = DateFormatter.convertPrice(price, ticker);
+                    String text = DateFormatter.convertPrice(price);
 
                     tickerItem.setPrice(text);
                     setRefreshing(false);

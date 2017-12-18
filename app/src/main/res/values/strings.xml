@@ -47,4 +47,10 @@
     <!-- Chart strings -->
     <string name="no_data_text">Данный график недоступен.</string>
 
+    <!-- label strings -->
+
+
+    <!-- errors -->
+    <string name="empty_value">Пустой текст</string>
+
 </resources>

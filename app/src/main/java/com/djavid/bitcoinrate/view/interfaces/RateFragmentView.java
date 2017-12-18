@@ -18,4 +18,5 @@ public interface RateFragmentView extends View {
     RateChart getRateChart();
     String getSelectedTimespan();
     int getTimespanDays();
+    void setChartLabelSelected(String timespan);
 }

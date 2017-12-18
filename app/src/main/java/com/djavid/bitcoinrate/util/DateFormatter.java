@@ -52,45 +52,37 @@ public class DateFormatter implements IAxisValueFormatter
         }
     }
 
-    public static String convertPrice(double price, Ticker ticker) {
+    public static String convertPrice(double price) {
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
         symbols.setGroupingSeparator(' ');
-        DecimalFormat formatter;
 
-        if (!ticker.getCryptoId().equals("DOGE")) {
-            formatter = new DecimalFormat("###,###.##", symbols);
-        } else {
-            formatter = new DecimalFormat("###,###.####", symbols);
-        }
+        DecimalFormat formatter = new DecimalFormat(getPattern(price), symbols);
 
         return formatter.format(price);
     }
 
-    public static String convertPrice(double price, CryptonatorTicker ticker) {
-        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-        symbols.setGroupingSeparator(' ');
-        DecimalFormat formatter;
+    private static String getPattern(Double price) {
 
-        if (!ticker.getTicker().getBase().equals("DOGE")) {
-            formatter = new DecimalFormat("###,###.##", symbols);
-        } else {
-            formatter = new DecimalFormat("###,###.####", symbols);
+        if (price < 1) {
+            return "###,###.#####";
+        } else
+        if (price >= 1 && price < 10) {
+            return "###,###.###";
+        } else
+        if (price >= 10 && price < 100) {
+            return "###,###.##";
+        } else
+        if (price >= 100 && price < 1000) {
+            return "###,###.##";
+        } else
+        if (price >= 1000 && price < 10000) {
+            return "###,###.##";
+        } else
+        if (price >= 10000 && price < 100000) {
+            return "###,###.#";
+        } else { //if (price > 100000)
+            return "###,###";
         }
-
-        return formatter.format(price);
     }
 
-    public static String convertPrice(double price, CoinMarketCapTicker ticker) {
-        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-        symbols.setGroupingSeparator(' ');
-        DecimalFormat formatter;
-
-        if (!ticker.getSymbol().equals("DOGE")) {
-            formatter = new DecimalFormat("###,###.##", symbols);
-        } else {
-            formatter = new DecimalFormat("###,###.####", symbols);
-        }
-
-        return formatter.format(price);
-    }
 }

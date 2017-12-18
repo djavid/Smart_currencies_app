@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
@@ -59,7 +60,8 @@ class LabelItem {
 
             if (labelItemDto.isPercentLabel()) {
 
-                tv_ticker_label.setText(labelItemDto.getChange_percent() + " %");
+                String text = labelItemDto.getChange_percent() * 100 + " %";
+                tv_ticker_label.setText(text);
 
                 tv_ticker_label.setVisibility(android.view.View.VISIBLE);
                 iv_label_trending.setVisibility(android.view.View.GONE);

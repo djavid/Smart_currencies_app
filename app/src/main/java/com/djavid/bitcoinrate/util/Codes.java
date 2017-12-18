@@ -1,7 +1,9 @@
 package com.djavid.bitcoinrate.util;
 
-
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.R;
+
 
 public class Codes {
 
@@ -25,100 +27,34 @@ public class Codes {
             "ZMW",	"ZWD"
     };
 
-    public static String[] crypto_coins = {"BTC", "BCH", "LTC", "ETH", "NVC", "NMC", "PPC", "DOGE"};
+    public static Coin[] crypto_coins = {
+            new Coin("BTC", "bitcoin"), new Coin("BCH", "bitcoin-cash"), new Coin("XRP", "ripple"),
+            new Coin("LTC", "litecoin"), new Coin("ETH", "ethereum"), new Coin("NVC", "novacoin"),
+            new Coin("NMC", "namecoin"), new Coin("PPC", "peercoin"), new Coin("DOGE", "dogecoin"),
+            new Coin("DASH", "dash"), new Coin("XEM", "nem"), new Coin("XMR", "monero"),
+            new Coin("BTG", "bitcoin-gold"), new Coin("EOS", "eos"), new Coin("NEO", "neo"),
+            new Coin("ETC", "ethereum-classic"), new Coin("ZEC", "zcash"), new Coin("WAVES", "waves"),
+            new Coin("USDT", "tether"), new Coin("NXT", "nxt"), new Coin("XVG", "verge"),
+            new Coin("STEEM", "steem"), new Coin("XLM", "stellar"), new Coin("BCN", "bytecoin-bcn"),
+            new Coin("STRAT", "stratis"), new Coin("TRX", "tron"), new Coin("ADA", "cardano"),
+            new Coin("MIOTA", "iota"), new Coin("BTS", "bitshares"), new Coin("ARDR", "ardor")
+    };
+
+    public static String[] crypto_coins_array = Stream
+            .of(crypto_coins)
+            .map(coin -> coin.symbol)
+            .sorted()
+            .collect(Collectors.toList())
+            .toArray(new String[crypto_coins.length]);
 
     public static String[] country_coins = {"USD", "EUR", "CAD", "CNY", "JPY", "PLN", "GBP", "RUB", "UAH"};
 
-    public static String getCurrencyFullName(String code) {
-        switch (code) {
-            case "RUB":
-                return "Ruble;Рубль";
-            case "USD":
-                return "Dollar;Доллар";
-            case "EUR":
-                return "Euro;Евро";
-            case "ISK":
-                return ";";
-            case "HKD":
-                return ";";
-            case "TWD":
-                return ";";
-            case "CHF":
-                return ";";
-            case "DKK":
-                return ";";
-            case "CLP":
-                return ";";
-            case "CAD":
-                return ";";
-            case "INR":
-                return ";";
-            case "CNY":
-                return ";";
-            case "THB":
-                return ";";
-            case "AUD":
-                return ";";
-            case "SGD":
-                return ";";
-            case "KRW":
-                return ";";
-            case "JPY":
-                return ";";
-            case "PLN":
-                return ";";
-            case "GBP":
-                return ";";
-            case "SEK":
-                return ";";
-            case "NZD":
-                return ";";
-            case "BRL":
-                return ";";
-            case "BTC":
-                return "Bitcoin;Bitcoin";
-            case "BCH":
-                return "Bitcoin Cash;Bitcoin Cash";
-            case "LTC":
-                return "Litecoin;Litecoin";
-            case "NMC":
-                return "Namecoin;Namecoin";
-            case "DOGE":
-                return "DogeCoin;DogeCoin";
-            case "UAH":
-                return ";";
-            case "ETH":
-                return "Ethereum;Ethereum";
-            case "NVC":
-                return "Novacoin;Novacoin";
-            case "PPC":
-                return "Peercoin;Peercoin";
-            default:
-                return ";";
-        }
-    }
+    public static String getCryptoCurrencyId(String symbol) {
 
-    public static String getCryptoCurrencyId(String code) {
-        switch (code) {
-            case "BTC":
-                return "bitcoin";
-            case "LTC":
-                return "litecoin";
-            case "NMC":
-                return "namecoin";
-            case "DOGE":
-                return "dogecoin";
-            case "ETH":
-                return "ethereum";
-            case "NVC":
-                return "novacoin";
-            case "PPC":
-                return "peercoin";
-            case "BCH":
-                return "bitcoin-cash";
-            default:
-                return "";
-        }
+        return Stream.of(crypto_coins)
+                .filter(coin -> coin.symbol.equals(symbol))
+                .findFirst()
+                .get().id;
     }
 
     public static int getCurrencyImage(String code) {
@@ -168,6 +104,10 @@ public class Codes {
                 return R.drawable.ic_new_zealand;
             case "BRL":
                 return R.drawable.ic_brazil;
+            case "UAH":
+                return R.drawable.ic_ukraine;
+
+
             case "BTC":
                 return R.drawable.ic_bitcoin;
             case "BCH":
@@ -178,17 +118,29 @@ public class Codes {
                 return R.drawable.ic_namecoin;
             case "DOGE":
                 return R.drawable.ic_dogecoin;
-            case "UAH":
-                return R.drawable.ic_ukraine;
             case "ETH":
                 return R.drawable.ic_ethereum;
             case "NVC":
                 return R.drawable.ic_novacoin;
             case "PPC":
                 return R.drawable.ic_peercoin;
+            case "XRP":
+                return R.drawable.ic_xrp;
+
+
             default:
                 return R.drawable.ic_european_union;
                 
+        }
+    }
+
+    public static class Coin {
+        public String symbol;
+        public String id;
+
+        Coin(String symbol, String id) {
+            this.symbol = symbol;
+            this.id = id;
         }
     }
 }

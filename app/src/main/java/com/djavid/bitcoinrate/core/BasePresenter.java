@@ -1,9 +1,5 @@
 package com.djavid.bitcoinrate.core;
 
-/**
- * Created by djavid on 05.08.17.
- */
-
 
 public abstract class BasePresenter<V extends View, R extends Router, I> implements Presenter<V, R, I> {
 
@@ -39,10 +35,10 @@ public abstract class BasePresenter<V extends View, R extends Router, I> impleme
         this.router = router;
     }
 
-    protected I getInstanceState(){
+    public I getInstanceState(){
         return instanceState;
     }
-    protected void setInstanceState(I instanceState){
+    public void setInstanceState(I instanceState){
         this.instanceState = instanceState;
     }
 }
