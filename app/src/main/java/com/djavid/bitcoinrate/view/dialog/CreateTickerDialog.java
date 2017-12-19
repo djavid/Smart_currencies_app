@@ -16,7 +16,6 @@ import com.djavid.bitcoinrate.core.BaseDialogFragment;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
-import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
 
 import butterknife.BindView;
@@ -84,7 +83,6 @@ public class CreateTickerDialog extends BaseDialogFragment {
         DataRepository dataRepository = new RestDataRepository();
 
         dataRepository.sendTicker(ticker)
-                .compose(RxUtils.applySingleSchedulers())
                 .subscribe(response -> {
                     if (response.error.isEmpty()) {
                         Log.d("TickerDialog", "Succesfully sent " + ticker.toString());

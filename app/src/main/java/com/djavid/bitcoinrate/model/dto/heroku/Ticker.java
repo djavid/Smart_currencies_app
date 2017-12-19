@@ -1,7 +1,9 @@
 package com.djavid.bitcoinrate.model.dto.heroku;
 
+import io.realm.RealmObject;
 
-public class Ticker {
+
+public class Ticker extends RealmObject {
 
     private long id;
     private long tokenId;
@@ -9,6 +11,8 @@ public class Ticker {
     private String countryId;
     private double price;
 
+
+    public Ticker() { }
 
     public Ticker(long tokenId, String cryptoId, String countryId) {
         this.tokenId = tokenId;
@@ -35,6 +39,33 @@ public class Ticker {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        Ticker ticker = (Ticker) o;
+
+        if (id != ticker.id) return false;
+        if (tokenId != ticker.tokenId) return false;
+        if (Double.compare(ticker.price, price) != 0) return false;
+        if (cryptoId != null ? !cryptoId.equals(ticker.cryptoId) : ticker.cryptoId != null)
+            return false;
+        return countryId != null ? countryId.equals(ticker.countryId) : ticker.countryId == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (tokenId ^ (tokenId >>> 32));
+        result = 31 * result + (cryptoId != null ? cryptoId.hashCode() : 0);
+        result = 31 * result + (countryId != null ? countryId.hashCode() : 0);
+        temp = Double.doubleToLongBits(price);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 
     public long getId() {
         return id;

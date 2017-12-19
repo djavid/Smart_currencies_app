@@ -51,6 +51,8 @@
 
 
     <!-- errors -->
-    <string name="empty_value">Пустой текст</string>
+    <string name="empty_value">Пустой текст!</string>
+    <string name="unable_to_load_from_server">Не удалось загрузить с сервера!</string>
+    <string name="server_error">Ошибка сервера!</string>
 
 </resources>

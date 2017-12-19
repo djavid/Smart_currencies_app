@@ -138,6 +138,7 @@ public class Codes {
         }
     }
 
+
     public static class Coin {
         public String symbol;
         public String id;

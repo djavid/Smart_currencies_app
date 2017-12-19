@@ -12,8 +12,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.annimon.stream.Stream;
@@ -49,6 +51,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     TickerFragmentPresenter presenter;
     private OnTickerInteractionListener mTickerListener;
 
+    private final String TAG = this.getClass().getSimpleName();
     final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
 
 
@@ -72,7 +75,31 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                presenter.getAllTickers(true);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onStart() {
+        Log.i(TAG, "onStart()");
         presenter = getPresenter(TickerFragmentPresenter.class);
         presenter.setView(this);
         presenter.setRouter((Router) getActivity());
@@ -91,6 +118,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     @Override
     public View setupView(View view) {
+        Log.i(TAG, "setupView()");
+
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(rv_ticker_list);
 
@@ -106,7 +135,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             dialog.setTargetFragment(this, 0);
             dialog.show(getFragmentManager(), TAG_CREATE_DIALOG);
 
-            //presenter.getRouter().showCreateTickerDialog();
         });
 
         return view;
@@ -114,17 +142,14 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     @Override
     public void loadData() {
-        presenter.getAllTickers();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+        Log.i(TAG, "loadData()");
+        presenter.getAllTickers(false);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         if (context instanceof OnTickerInteractionListener) {
             mTickerListener = (OnTickerInteractionListener) context;
         } else {
@@ -145,7 +170,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     @Override
     public void onRefresh() {
-        presenter.getAllTickers();
+        presenter.getAllTickers(true);
     }
 
     @Override
@@ -175,15 +200,17 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                         data.getExtras().containsKey("cryptoId") &&
                         data.getExtras().containsKey("id")) {
 
-                    String countryId = data.getExtras().getString("countryId");
-                    String cryptoId = data.getExtras().getString("cryptoId");
                     long id = data.getExtras().getLong("id");
                     long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+                    String countryId = data.getExtras().getString("countryId");
+                    String cryptoId = data.getExtras().getString("cryptoId");
 
                     Ticker ticker = new Ticker(id, token_id, cryptoId, countryId);
                     TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
-                    rv_ticker_list.addView(tickerItem);
+
                     presenter.loadTickerPrice(tickerItem);
+                    //TODO add only after price is loaded
+                    rv_ticker_list.addView(tickerItem);
                     scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
                 }
             }
@@ -192,6 +219,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     @Override
     public void addAllTickers(List<Ticker> tickers, List<Subscribe> subscribes) {
+        Log.i(TAG, "addAllTickers()");
         resetFeed();
 
         for (Ticker item : tickers) {

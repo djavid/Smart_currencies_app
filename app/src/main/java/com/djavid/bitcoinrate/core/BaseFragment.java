@@ -1,11 +1,10 @@
 package com.djavid.bitcoinrate.core;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.djavid.bitcoinrate.App;
@@ -37,8 +36,7 @@ public abstract class BaseFragment extends Fragment implements com.djavid.bitcoi
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                          Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutId(), container, false);
         unbinder = ButterKnife.bind(this, view);
         return setupView(view);
@@ -48,7 +46,6 @@ public abstract class BaseFragment extends Fragment implements com.djavid.bitcoi
     public void onStart() {
         super.onStart();
         loadData();
-        System.out.println("onStart()");
     }
 
     @Override

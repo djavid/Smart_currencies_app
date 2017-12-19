@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     @Override
     public void showCreateLabelDialog(TickerItem tickerItem) {
         selectedTickerItem = tickerItem;
+        System.out.println(tickerItem.getTickerItem());
         CreateLabelDialog dialog = CreateLabelDialog.newInstance();
         dialog.show(fragmentManager, TAG_CREATE_LABEL_DIALOG);
     }

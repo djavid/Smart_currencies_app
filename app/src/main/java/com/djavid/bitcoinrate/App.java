@@ -6,11 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.djavid.bitcoinrate.model.ApiInterface;
-import com.djavid.bitcoinrate.model.DataRepository;
-import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.util.PresenterProvider;
-import com.djavid.bitcoinrate.util.RxUtils;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -27,12 +23,11 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class App extends Application {
 
     private static App appInstance;
-
     private ApiInterface apiInterface;
     private PresenterProvider presenterProvider;
     private SharedPreferences sharedPreferences;
-
     private static String SHARED_PREFERENCES_CODE = "bitcoin_rate_app";
+
 
     @Override
     public void onCreate() {
@@ -46,22 +41,14 @@ public class App extends Application {
         getSharedPreferences();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         JodaTimeAndroid.init(this);
-        Realm.init(this);
 
+        Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
-
         Realm.setDefaultConfiguration(config);
 
         appInstance = (App) getApplicationContext();
-
-//        if (!sharedPreferences.contains("token_id") ||
-//                !sharedPreferences.contains("token")) {
-        String token = FirebaseInstanceId.getInstance().getToken();
-        System.out.println(token);
-        //sendTokenToServer(token);
-//        }
 
     }
 
@@ -107,38 +94,6 @@ public class App extends Application {
                 .build();
 
         return retrofit.create(ApiInterface.class);
-    }
-
-    private void sendTokenToServer(String token) {
-
-        if (token.isEmpty()) return;
-
-        long id;
-        //if not found preference then is default 0
-        id = App.getAppInstance().sharedPreferences.getLong("token_id", 0);
-
-        DataRepository dataRepository = new RestDataRepository();
-        dataRepository.registerToken(token, id)
-                .compose(RxUtils.applySingleSchedulers())
-                .subscribe(response -> {
-
-                    if (response.error.isEmpty()) {
-
-                        if (response.id != 0) {
-                            App.getAppInstance()
-                                    .sharedPreferences
-                                    .edit()
-                                    .putLong("token_id", response.id)
-                                    .apply();
-
-                            App.getAppInstance()
-                                    .sharedPreferences
-                                    .edit()
-                                    .putString("token", token)
-                                    .apply();
-                        }
-                    }
-                });
     }
 
 }

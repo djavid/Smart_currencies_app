@@ -1,17 +1,15 @@
 package com.djavid.bitcoinrate.presenter.instancestate;
 
-import com.github.mikephil.charting.charts.LineChart;
-
 
 public class RateFragmentInstanceState {
 
     private String timespan;
-    private LineChart chart;
+    private String price;
 
 
-    public RateFragmentInstanceState(String timespan, LineChart chart) {
+    public RateFragmentInstanceState(String timespan, String price) {
         this.timespan = timespan;
-        this.chart = chart;
+        this.price = price;
     }
 
     public String getTimespan() {
@@ -21,10 +19,10 @@ public class RateFragmentInstanceState {
         this.timespan = timespan;
     }
 
-    public LineChart getChart() {
-        return chart;
+    public String getPrice() {
+        return price;
     }
-    public void setChart(LineChart chart) {
-        this.chart = chart;
+    public void setPrice(String price) {
+        this.price = price;
     }
 }

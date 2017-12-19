@@ -143,6 +143,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
     private void sendSubscribe(Subscribe subscribe, LabelItemDto label, TickerItem tickerItem) {
         DataRepository dataRepository = new RestDataRepository();
 
+        System.out.println(subscribe);
         dataRepository.sendSubscribe(subscribe)
                 .compose(RxUtils.applySingleSchedulers())
                 .subscribe(response -> {

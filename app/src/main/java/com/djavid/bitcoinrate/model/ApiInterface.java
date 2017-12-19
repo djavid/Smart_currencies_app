@@ -5,8 +5,9 @@ import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.dto.cryptowatch.PairsResult;
 import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 
 import java.util.List;
@@ -19,15 +20,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-/**
- * Created by djavid on 05.08.17.
- */
-
 
 public interface ApiInterface {
 
     String HEROKU_URL = "https://bitcoinrate-server.herokuapp.com";
-    String GOOGLE_CLOUD_URL = "https://second-conquest-186513.appspot.com";
 
     //blockchain
 
@@ -51,12 +47,15 @@ public interface ApiInterface {
 
     //cryptowatch
 
-    @GET("https://api.cryptowat.ch/markets/gdax/{curr}/ohlc")
-    Single<HistoryDataModel> getHistory(@Path("curr") String curr,
+    @GET("https://api.cryptowat.ch/markets/{market}/{curr}/ohlc")
+    Single<HistoryDataModel> getHistory(@Path("market") String market, @Path("curr") String pair,
                                               @Query("periods") int periods,
                                               @Query("after") long after);
 
-    //brb server
+    @GET("https://api.cryptowat.ch/pairs/{pair}")
+    Single<PairsResult> getCryptowatchMarkets(@Path("pair") String pair);
+
+    //heroku server
 
     @GET(HEROKU_URL + "/registerToken")
     Single<ResponseId> registerToken(@Query("token") String token, @Query("id") long id);

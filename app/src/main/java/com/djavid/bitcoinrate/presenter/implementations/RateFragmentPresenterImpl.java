@@ -2,19 +2,20 @@ package com.djavid.bitcoinrate.presenter.implementations;
 
 import android.util.Log;
 
-import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
-import com.djavid.bitcoinrate.model.dto.blockchain.Value;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.cryptowatch.Market;
+import com.djavid.bitcoinrate.model.dto.realm.RealmDoubleList;
+import com.djavid.bitcoinrate.model.dto.realm.RealmHistoryData;
 import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
-import com.djavid.bitcoinrate.util.RxUtils;
+import com.djavid.bitcoinrate.util.RateChart;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.Entry;
 
@@ -25,11 +26,14 @@ import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
+import io.realm.Realm;
+import io.realm.RealmList;
 
 
 public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, Router, RateFragmentInstanceState>
         implements RateFragmentPresenter {
 
+    private final String TAG = this.getClass().getSimpleName();
     private Disposable disposable = Disposables.empty();
     private DataRepository dataRepository;
 
@@ -37,7 +41,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     public RateFragmentPresenterImpl() {
         dataRepository = new RestDataRepository();
     }
-
 
     @Override
     public String getId() {
@@ -49,6 +52,22 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         if (getInstanceState() != null) {
             if (getView() != null) {
                 getView().setChartLabelSelected(getInstanceState().getTimespan());
+                if (!getInstanceState().getPrice().isEmpty())
+                    getView().getTopPanel().setText(getInstanceState().getPrice());
+            }
+        }
+
+        if (getView() != null) {
+            String pair = ((String) getView().getLeftSpinner().getSelectedItem()).toLowerCase() +
+                    ((String) getView().getRightSpinner().getSelectedItem()).toLowerCase();
+
+            final RealmHistoryData realmFound = getValuesFromRealm();
+            if (realmFound != null) {
+                String realm_pair = realmFound.getPair().toLowerCase();
+
+                if (realm_pair.equals(pair))
+                    loadValuesToChart(realmValuesToList(realmFound));
+                else clearValuesFromRealm();
             }
         }
     }
@@ -63,43 +82,28 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         setInstanceState(instanceState);
     }
 
-    private void setRefreshing(boolean key) {
-        if (getView() != null)
-            if (getView().getRefreshLayout() != null)
-                getView().getRefreshLayout().setRefreshing(key);
-    }
-
     @Override
     public void refresh() {
         showRate(true);
     }
 
     @Override
-    public void showRate(boolean update_chart) {
-        boolean refresh = true;
-
-        if (getInstanceState() != null) {
-            refresh = false;
-        }
-
-        showRateCMC(update_chart, refresh);
+    public void showRate(boolean refresh) {
+        showRateCMC(refresh);
     }
 
     @Override
-    public void showRateCryptonator(boolean update_chart, boolean refresh) {
+    public void showRateCryptonator(boolean refresh) {
         if (refresh) setRefreshing(true);
 
         final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
         final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
 
         disposable = dataRepository.getRate(curr1, curr2)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
                 .subscribe(ticker -> {
                     if (!ticker.getError().isEmpty()) {
-                        //TODO
-                        Log.e("showRate():", ticker.getError());
+                        if (getView() != null) getView().showError(R.string.unable_to_load_from_server);
+                        Log.e(TAG, ticker.getError());
                         return;
                     }
 
@@ -115,8 +119,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
                         long start = end - 86400 * daysAgo;
 
-                        if (update_chart) getHistory(curr1 + curr2, daysAgo, start, refresh);
-                        else setRefreshing(false);
+                        showChart(curr1 + curr2, daysAgo, start, refresh);
                     }
 
                 }, error -> {
@@ -125,7 +128,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     }
 
     @Override
-    public void showRateCMC(boolean update_chart, boolean refresh) {
+    public void showRateCMC(boolean refresh) {
         if (getView() == null) return;
 
         if (refresh) setRefreshing(true);
@@ -135,9 +138,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         final String country_id = getView().getRightSpinner().getSelectedItem().toString();
 
         disposable = dataRepository.getRateCMC(crypto_full_id, country_id)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
                 .subscribe(array -> {
 
                     CoinMarketCapTicker ticker = array.get(0);
@@ -154,8 +154,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
                         long start = end - 86400 * daysAgo;
 
-                        if (update_chart) getHistory(crypto_id + country_id, daysAgo, start, refresh);
-                        else setRefreshing(false);
+                        showChart(crypto_id + country_id, daysAgo, start, refresh);
                     }
 
                 }, error -> {
@@ -164,52 +163,48 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     }
 
     @Override
-    public void getHistory(String curr, int timespanDays, long after, boolean refresh) {
-        if (refresh) setRefreshing(true);
+    public void showChart(String pair, int timespanDays, long after, boolean refresh) {
+        Log.i(TAG, "showChart()");
+        //if (refresh) setRefreshing(true);
 
-        int periods;
-        switch (timespanDays) {
-            case 30:
-                periods = 7200;
-                break;
-            case 90:
-                periods = 21600;
-                break;
-            case 180:
-                periods = 43200;
-                break;
-            case 365:
-                periods = 86400;
-                break;
-            default:
-                periods = 86400;
-                break;
-        }
-
-        disposable = dataRepository.getHistory(curr, periods, after)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
+        disposable = dataRepository.getCryptowatchMarkets(pair)
                 .subscribe(result -> {
+
+                    List<Market> markets = result.getResult().getMarkets();
+
+                    if (markets != null && markets.size() != 0) {
+                        getHistory(markets.get(0).getExchange(), pair, timespanDays, after, refresh);
+                    } else {
+                        if (getView() != null) getView().getRateChart().getChart().clear();
+                        setRefreshing(false);
+                    }
+
+                }, error -> {
+                    if (getView() != null) getView().getRateChart().getChart().clear();
+
+                    setRefreshing(false);
+                });
+
+    }
+
+    private void getHistory(String market, String pair, int timespanDays, long after, boolean refresh) {
+        Log.i(TAG, "getHistory()");
+        //if (refresh) setRefreshing(true);
+
+        int periods = RateChart.getChartIntervals(timespanDays);
+
+        disposable = dataRepository.getHistory(market, pair, periods, after)
+                .subscribe(result -> {
+
                     List<List<Double>> values = result.getResult().getValues();
                     if (values.size() == 0) {
-                        getHistory(curr, periods, after, refresh);
+                        getHistory(market, pair, periods, after, refresh);
                         return;
                     }
 
-                    List<Entry> entries = new ArrayList<>();
-                    for (int i = 0; i < values.size(); i++) {
-                        //Date x = new Date(tick.getLong("x") * 1000);
-                        long X = values.get(i).get(0).longValue() * 1000;
-                        double y = (values.get(i).get(1) + values.get(i).get(2) +
-                                values.get(i).get(3) + values.get(i).get(4)) / 4;
-
-                        entries.add(new Entry(X, (float) y));
-                    }
-
-                    if (getView() != null) {
-                        int color = App.getContext().getResources().getColor(R.color.colorChart);
-                        getView().getRateChart().initialize(entries, color);
+                    if (!valuesEqualWithRealm(values)) {
+                        saveValuesToRealm(values, pair);
+                        loadValuesToChart(values);
                     }
 
                     setRefreshing(false);
@@ -221,77 +216,106 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                 });
     }
 
-    @Override
-    public void showChart(String timespan) {
-        setRefreshing(true);
 
-        disposable = dataRepository.getChartValues(timespan, true, "json")
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
-                .subscribe(response -> {
-                    List<Entry> entries = new ArrayList<Entry>();
-                    List<Value> values = response.getValues();
-                    int color = App.getContext().getResources().getColor(R.color.colorChart);
+    private boolean valuesEqualWithRealm(List<List<Double>> values) {
+        Log.i(TAG, "valuesEqualWithRealm()");
 
-                    for (int i = 0; i < values.size(); i++) {
-                        //Date x = new Date(tick.getLong("x") * 1000);
-                        long X = values.get(i).getX() * 1000;
-                        double y = values.get(i).getY();
+        final RealmHistoryData realmFound = getValuesFromRealm();
 
-                        entries.add(new Entry(X, (float)y));
+        if (realmFound != null) {
+            List<List<Double>> savedValues = realmValuesToList(realmFound);
+
+            if (values.size() == savedValues.size()) {
+                for (int i = 0; i < values.size(); i++) {
+                    if (!values.get(i).equals(savedValues.get(i))) {
+                        Log.i(TAG, "Values not equal!");
+                        return false;
                     }
+                }
 
-                    if (getView() != null) {
-                        getView().getRateChart().initialize(entries, color);
-                        setRefreshing(false);
-                    }
+                Log.i(TAG, "Values equal!");
+                return true;
+            }
+        }
 
-                }, error -> {
-                    setRefreshing(false);
-                });
+        Log.i(TAG, "Values not equal!");
+        return false;
     }
 
-//    public void sendTokenToServer() {
-//
-//        String token = FirebaseInstanceId.getInstance().getToken();
-//        if (token == null || token.isEmpty()) {
-//            return;
-//        }
-//
-//        long id;
-//        if (App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
-//            id = App.getAppInstance().getPrefencesWrapper().sharedPreferences.getLong("token_id", 0);
-//        } else {
-//            id = 0;
-//        }
-//
-//        disposable = rateFragmentInteractor.registerToken(token, id)
-//                .compose(RxUtils.applySingleSchedulers())
-//                .subscribe(response -> {
-//
-//                    if (response.error.isEmpty()) {
-//
-//                        if (response.id != 0) {
-//
-//                            App.getAppInstance()
-//                                    .getPrefencesWrapper()
-//                                    .sharedPreferences
-//                                    .edit()
-//                                    .putLong("token_id", response.id)
-//                                    .apply();
-//
-//                            App.getAppInstance()
-//                                    .getPrefencesWrapper()
-//                                    .sharedPreferences
-//                                    .edit()
-//                                    .putString("token", token)
-//                                    .apply();
-//                        }
-//                    }
-//                }, error -> {
-//
-//                });
-//    }
+    private List<List<Double>> realmValuesToList(RealmHistoryData realmHistoryData) {
+        Log.i(TAG, "realmValuesToList()");
+
+        RealmList<RealmDoubleList> realmList = realmHistoryData.getValues();
+
+        List<List<Double>> values = new ArrayList<>();
+        for (int i = 0; i < realmList.size(); i++) {
+            List<Double> list_to_add = new ArrayList<>();
+            list_to_add.addAll(realmList.get(i).getList());
+            values.add(list_to_add);
+        }
+
+        return values;
+    }
+
+    private RealmHistoryData getValuesFromRealm() {
+        Log.i(TAG, "getValuesFromRealm()");
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        final RealmHistoryData realmFound =
+                realm.where(RealmHistoryData.class).findFirst();
+        realm.commitTransaction();
+
+        return realmFound;
+    }
+
+    private void saveValuesToRealm(List<List<Double>> values, String pair) {
+        Log.i(TAG, "saveValuesFromRealm()");
+
+        RealmList<RealmDoubleList> realmList = new RealmList<>();
+        for (List<Double> doubleList : values) {
+            Double[] doubles = doubleList.toArray(new Double[doubleList.size()]);
+            RealmDoubleList realmDoubleList = new RealmDoubleList(doubles);
+            realmList.add(realmDoubleList);
+        }
+        RealmHistoryData realmHistoryData = new RealmHistoryData(realmList, pair);
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.where(RealmHistoryData.class).findAll().deleteAllFromRealm();
+        realm.copyToRealm(realmHistoryData);
+        realm.commitTransaction();
+    }
+
+    private void clearValuesFromRealm() {
+        Log.i(TAG, "clearValuesFromRealm()");
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.where(RealmHistoryData.class).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+    }
+
+    private void loadValuesToChart(List<List<Double>> values) {
+        Log.i(TAG, "loadValuesToChart()");
+
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            long X = values.get(i).get(0).longValue() * 1000;
+            double y = (values.get(i).get(1) + values.get(i).get(2) +
+                    values.get(i).get(3) + values.get(i).get(4)) / 4;
+
+            entries.add(new Entry(X, (float) y));
+        }
+
+        if (getView() != null)
+            getView().getRateChart().setData(entries);
+    }
+
+    private void setRefreshing(boolean key) {
+        if (getView() != null)
+            if (getView().getRefreshLayout() != null)
+                getView().getRefreshLayout().setRefreshing(key);
+    }
 
 }

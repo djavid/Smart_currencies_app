@@ -1,8 +1,10 @@
 package com.djavid.bitcoinrate.util;
 
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -17,6 +19,8 @@ import java.util.List;
 public class RateChart {
 
     private LineChart chart;
+    private int color = App.getContext().getResources().getColor(R.color.colorChart);
+    private final String TAG = this.getClass().getSimpleName();
 
 
     public RateChart(View view) {
@@ -24,18 +28,9 @@ public class RateChart {
     }
 
 
-    public void initialize(List<Entry> entries, int color) {
-        LineDataSet dataSet = new LineDataSet(entries, "");
-        dataSet.setColor(color);
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-        dataSet.setDrawCircleHole(true);
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setLineWidth(2);
+    public void initialize() {
+        Log.i(TAG, "initialize()");
 
-        LineData lineData = new LineData(dataSet);
-
-        chart.setData(lineData);
         Description desc = new Description();
         desc.setText("");
         chart.setNoDataText(chart.getResources().getString(R.string.no_data_text));
@@ -72,6 +67,36 @@ public class RateChart {
         chart.invalidate();
     }
 
+    public void setData(List<Entry> entries) {
+        Log.i(TAG, "setData()");
+
+        LineDataSet dataSet = new LineDataSet(entries, "");
+        dataSet.setColor(color);
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
+        dataSet.setDrawCircleHole(true);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setLineWidth(2);
+
+        LineData lineData = new LineData(dataSet);
+        chart.setData(lineData);
+        chart.invalidate();
+    }
+
+    public static int getChartIntervals(int days) {
+        switch (days) {
+            case 30:
+                return  7200;
+            case 90:
+                return  21600;
+            case 180:
+                return  43200;
+            case 365:
+                return  86400;
+            default:
+                return  86400;
+        }
+    }
 
     public LineChart getChart() {
         return chart;

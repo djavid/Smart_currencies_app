@@ -5,8 +5,9 @@ import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.dto.cryptowatch.PairsResult;
 import com.djavid.bitcoinrate.model.dto.heroku.ResponseId;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 
 import java.util.List;
@@ -19,7 +20,8 @@ public interface DataRepository {
     Single<CryptonatorTicker> getRate(String curr1, String curr2);
     Single<CurrenciesModel> getCurrencies();
     Single<BlockchainModel> getChartValues(String timespan, boolean sampled, String format);
-    Single<HistoryDataModel> getHistory(String curr, int periods, long after);
+    Single<HistoryDataModel> getHistory(String market, String curr, int periods, long after);
+    Single<PairsResult> getCryptowatchMarkets(String pair);
     Single<List<CoinMarketCapTicker>> getRateCMC(String crypto_id, String country_id);
     Single<ResponseId> registerToken(String token, long id);
     Single<ResponseId> sendSubscribe(Subscribe subscribe);

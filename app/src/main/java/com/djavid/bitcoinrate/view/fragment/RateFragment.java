@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -65,9 +66,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public void loadData() {
-//        if (!App.getAppInstance().getPrefencesWrapper().sharedPreferences.contains("token_id")) {
-//            presenter.sendTokenToServer();
-//        }
+
     }
 
     @Override
@@ -85,6 +84,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         view.findViewById(R.id.optionFourth).setOnClickListener(onChartOptionClick);
 
         chart = new RateChart(view);
+        chart.initialize();
 
         setCurrenciesSpinner();
         if (timespan == null)
@@ -115,8 +115,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         rightPanel.setSelection(id_usd);
         rightPanel.setOnItemSelectedListener(itemSelectedListener);
 
-//        leftPanel.setSelection(0);
-//        rightPanel.setSelection(0);
     }
 
     private AdapterView.OnItemSelectedListener itemSelectedListener =
@@ -124,7 +122,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     //TODO decide whether to load chart every time
-                    presenter.showRate(true);
+                    presenter.showRate(false);
                 }
 
                 @Override
@@ -194,10 +192,10 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
         long start = end - 86400 * daysAgo;
 
-        String curr = ((String) leftPanel.getSelectedItem()).toLowerCase() +
+        String pair = ((String) leftPanel.getSelectedItem()).toLowerCase() +
                 ((String) rightPanel.getSelectedItem()).toLowerCase();
 
-        presenter.getHistory(curr, daysAgo, start, true);
+        presenter.showChart(pair, daysAgo, start, true);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -217,6 +215,18 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                presenter.refresh();
+                presenter.showRateCMC(true);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onStart() {
         presenter = getPresenter(RateFragmentPresenter.class);
         presenter.setView(this);
@@ -228,7 +238,12 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public void onStop() {
-        presenter.saveInstanceState(new RateFragmentInstanceState(timespan, chart.getChart()));
+        String price = "";
+        if (topPanel != null) {
+            price = topPanel.getText().toString();
+        }
+
+        presenter.saveInstanceState(new RateFragmentInstanceState(timespan, price));
         presenter.setView(null);
         presenter.onStop();
 
@@ -238,6 +253,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override

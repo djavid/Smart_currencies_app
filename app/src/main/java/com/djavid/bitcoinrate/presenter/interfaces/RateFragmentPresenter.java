@@ -7,11 +7,9 @@ import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
 
 public interface RateFragmentPresenter extends Presenter<RateFragmentView, Router, RateFragmentInstanceState> {
-    void showRate(boolean update_chart);
-    void showRateCryptonator(boolean update_chart, boolean refresh);
-    void showRateCMC(boolean update_chart, boolean refresh);
-    void showChart(String timespan);
+    void showRate(boolean refresh);
+    void showRateCryptonator(boolean refresh);
+    void showRateCMC(boolean refresh);
     void refresh();
-    void getHistory(String curr, int periods, long after, boolean refresh);
-//    void sendTokenToServer();
+    void showChart(String pair, int timespanDays, long after, boolean refresh);
 }

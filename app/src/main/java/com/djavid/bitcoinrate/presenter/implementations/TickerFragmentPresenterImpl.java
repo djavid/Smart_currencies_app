@@ -3,6 +3,7 @@ package com.djavid.bitcoinrate.presenter.implementations;
 import android.util.Log;
 
 import com.djavid.bitcoinrate.App;
+import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.model.DataRepository;
@@ -10,36 +11,53 @@ import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.model.dto.realm.RealmSubscribeList;
+import com.djavid.bitcoinrate.model.dto.realm.RealmTickerList;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
-import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
+import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
+import io.realm.Realm;
 
 
 public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentView, Router, Object>
         implements TickerFragmentPresenter {
 
+    private final String TAG = this.getClass().getSimpleName();
     private Disposable disposable = Disposables.empty();
     private DataRepository dataRepository;
     private List<Ticker> tickers;
     private List<Subscribe> subscribes;
 
 
-    @Override
-    public String getId() {
-        return "ticker_fragment";
+    public TickerFragmentPresenterImpl() {
+        dataRepository = new RestDataRepository();
     }
 
     @Override
-    public void onStart() { }
+    public void onStart() {
+        Log.i(TAG, "onStart()");
+
+        if (getView() != null) {
+            List<Ticker> tickersFromRealm = getTickersFromRealm();
+            List<Subscribe> subscribesFromRealm = getSubscribesFromRealm();
+
+            if (!tickersFromRealm.isEmpty() && !subscribesFromRealm.isEmpty()) {
+                tickers = tickersFromRealm;
+                subscribes = subscribesFromRealm;
+
+                getView().addAllTickers(tickers, subscribes);
+            }
+        }
+    }
 
     @Override
     public void onStop() {
@@ -47,70 +65,62 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     }
 
     @Override
+    public String getId() {
+        return "ticker_fragment";
+    }
+
+    @Override
     public void saveInstanceState(Object instanceState) {
         setInstanceState(instanceState);
     }
 
-    public TickerFragmentPresenterImpl() {
-        dataRepository = new RestDataRepository();
-    }
-
 
     @Override
-    public void getAllTickers() {
-        setRefreshing(true);
-
-
+    public void getAllTickers(boolean refresh) {
+        Log.i(TAG, "getAllTickers()");
+        if (refresh) setRefreshing(true);
 
         long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+        if (token_id == 0) {
+            sendTokenToServer();
+        }
+
         disposable = dataRepository.getTickersByTokenId(token_id)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
                 .subscribe(tickerList -> {
                     tickers = tickerList;
-                    getAllSubscribes();
+                    getAllSubscribes(refresh);
 
                 }, error -> {
-                    if (error.getClass().isInstance(SocketTimeoutException.class)) {
-                        System.out.println("Server problem");
-                    }
+                    if (getView() != null) getView().showError(R.string.unable_to_load_from_server);
                     setRefreshing(false);
                 });
     }
 
-
-    private void getAllSubscribes() {
-        setRefreshing(true);
+    private void getAllSubscribes(boolean refresh) {
+        Log.i(TAG, "getAllSubscribes()");
 
         long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+
         disposable = dataRepository.getSubscribesByTokenId(token_id)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
                 .subscribe(subscribeList -> {
+
                     subscribes = subscribeList;
 
-                    if (getView() != null) {
-                        getView().addAllTickers(tickers, subscribes);
+                    List<Ticker> tickerListRealm = getTickersFromRealm();
+                    List<Subscribe> subscribeListRealm = getSubscribesFromRealm();
+
+                    if (!tickerListRealm.equals(tickers) || !subscribeListRealm.equals(subscribes)){
+                        saveDataToRealm(tickers, subscribes);
+
+                        if (getView() != null) {
+                            getView().addAllTickers(tickers, subscribes);
+                        }
                     }
 
                     setRefreshing(false);
+
                 }, error -> {
                     setRefreshing(false);
-                });
-    }
-
-    @Override
-    public void deleteTicker(long ticker_id) {
-        disposable = dataRepository.deleteTicker(ticker_id)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applyCompletableSchedulers())
-                .retry(2L)
-                .subscribe(() -> {
-                    Log.d("LabelDialog", "Successfully deleted ticker with id = " + ticker_id);
-                }, error -> {
-
                 });
     }
 
@@ -127,20 +137,16 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         String curr2 = tickerItem.getTickerItem().getCountryId();
 
         disposable = dataRepository.getRate(curr1, curr2)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
                 .subscribe(ticker -> {
                     if (!ticker.getError().isEmpty()) {
-                        //TODO
-                        Log.e("showRate():", ticker.getError());
+                        if (getView() != null) getView().showError(R.string.unable_to_load_from_server);
+                        Log.e(TAG, ticker.getError());
                         return;
                     }
 
-                    double price = ticker.getTicker().getPrice();
-                    String text = DateFormatter.convertPrice(price);
+                    String price = DateFormatter.convertPrice(ticker.getTicker().getPrice());
+                    tickerItem.setPrice(price);
 
-                    tickerItem.setPrice(text);
                     setRefreshing(false);
 
                 }, error -> {
@@ -157,9 +163,6 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         String code_country = tickerItem.getTickerItem().getCountryId();
 
         disposable = dataRepository.getRateCMC(code_crypto_full, code_country)
-                .doOnError(Throwable::printStackTrace)
-                .compose(RxUtils.applySingleSchedulers())
-                .retry(2L)
                 .subscribe(array -> {
                     CoinMarketCapTicker ticker = array.get(0);
 
@@ -174,21 +177,16 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                 });
     }
 
-    private void setRefreshing(boolean key) {
-        if (getView() != null) {
-            if (getView().getRefreshLayout() != null)
-                getView().getRefreshLayout().setRefreshing(key);
-        }
-    }
+    private void sendTokenToServer() {
 
-    private void sendTokenToServer(String token) {
+        String token = FirebaseInstanceId.getInstance().getToken();
+        if (token == null || token.isEmpty()) return;
 
         long id;
         //if not found preference then is default 0
         id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
 
         dataRepository.registerToken(token, id)
-                .compose(RxUtils.applySingleSchedulers())
                 .subscribe(response -> {
 
                     if (response.error.isEmpty()) {
@@ -205,13 +203,86 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                                     .edit()
                                     .putString("token", token)
                                     .apply();
+
+                            getAllTickers(false);
                         }
                     }
                 });
     }
 
     @Override
+    public void deleteTicker(long ticker_id) {
+
+        disposable = dataRepository.deleteTicker(ticker_id)
+                .subscribe(() -> {
+                    Log.i(TAG, "Successfully deleted ticker with id = " + ticker_id);
+                }, error -> {
+                    if (getView() != null) getView().showError(R.string.server_error);
+                });
+    }
+
+    @Override
     public List<Ticker> getTickersLocal() {
         return tickers;
+    }
+
+
+    private List<Ticker> getTickersFromRealm() {
+        Log.i(TAG, "getTickersFromRealm()");
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmTickerList list = realm.where(RealmTickerList.class).findFirst();
+        realm.commitTransaction();
+
+        List<Ticker> res = new ArrayList<>();
+        if (list != null) {
+            res.addAll(list.getList());
+        }
+
+        return res;
+    }
+
+    private List<Subscribe> getSubscribesFromRealm() {
+        Log.i(TAG, "getSubscribesFromRealm()");
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmSubscribeList list = realm.where(RealmSubscribeList.class).findFirst();
+        realm.commitTransaction();
+
+        List<Subscribe> res = new ArrayList<>();
+        if (list != null) {
+            res.addAll(list.getList());
+        }
+
+        return res;
+    }
+
+    private void saveDataToRealm(List<Ticker> tickers, List<Subscribe> subscribes) {
+        Log.i(TAG, "saveDataToRealm()");
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        realm.where(RealmTickerList.class).findAll().deleteAllFromRealm();
+        realm.where(RealmSubscribeList.class).findAll().deleteAllFromRealm();
+
+        RealmTickerList realmTickerList = new RealmTickerList(tickers);
+        RealmSubscribeList realmSubscribeList = new RealmSubscribeList(subscribes);
+        realm.copyToRealm(realmTickerList);
+        realm.copyToRealm(realmSubscribeList);
+
+        realm.commitTransaction();
+
+        System.out.println(getTickersFromRealm());
+        System.out.println(getSubscribesFromRealm());
+    }
+
+    private void setRefreshing(boolean key) {
+        if (getView() != null) {
+            if (getView().getRefreshLayout() != null)
+                getView().getRefreshLayout().setRefreshing(key);
+        }
     }
 }

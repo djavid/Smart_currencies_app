@@ -5,7 +5,7 @@
         android:id="@+id/refresh"
         android:title="@string/main_menu_item_1"
         app:showAsAction="always"
-        android:visible="false"
-        android:icon="@drawable/ic_toys_white_24dp">
+        android:visible="true"
+        android:icon="@drawable/ic_refresh_white_24dp">
     </item>
 </menu>
