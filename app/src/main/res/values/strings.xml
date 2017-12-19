@@ -15,7 +15,8 @@
     <string name="option_four">1 год</string>
 
     <!-- Action bar strings -->
-    <string name="main_menu_item_1">Refresh rate</string>
+    <string name="menu_item_refresh">Обновить курс</string>
+    <string name="menu_item_sort">Сортировать</string>
 
     <!-- Currencies titles -->
     <string name="title_btc">Bitcoin</string>

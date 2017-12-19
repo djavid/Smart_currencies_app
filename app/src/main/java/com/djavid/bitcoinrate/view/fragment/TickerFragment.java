@@ -83,7 +83,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.menu_tickers, menu);
     }
 
     @Override
@@ -233,6 +233,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             tickerItem.setPrice(text);
             rv_ticker_list.addView(tickerItem);
+
+            presenter.loadTickerPriceChange(tickerItem);
         }
     }
 

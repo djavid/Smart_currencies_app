@@ -95,5 +95,4 @@ dependencies {
 
     //NavigationViewFragmentAdapters
     compile 'com.patloew.navigationviewfragmentadapters:adapters:0.3.0'
-
 }

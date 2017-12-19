@@ -16,5 +16,6 @@ public interface TickerFragmentPresenter extends Presenter<TickerFragmentView, R
     void loadTickerPrice(TickerItem tickerItem);
     void loadTickerPriceCMC(TickerItem tickerItem);
     void loadTickerPriceCryptonator(TickerItem tickerItem);
+    void loadTickerPriceChange(TickerItem tickerItem);
 
 }

@@ -133,7 +133,7 @@ public class Codes {
 
 
             default:
-                return R.drawable.ic_european_union;
+                return 0;
                 
         }
     }

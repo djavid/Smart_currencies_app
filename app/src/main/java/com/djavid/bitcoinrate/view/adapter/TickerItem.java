@@ -2,9 +2,11 @@ package com.djavid.bitcoinrate.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
@@ -29,6 +31,8 @@ public class TickerItem {
 
     @View(R.id.tv_ticker_title)
     private TextView tv_ticker_title;
+    @View(R.id.tv_price_change)
+    private TextView tv_price_change;
     @View(R.id.iv_ticker_icon)
     private ImageView iv_ticker_icon;
     @View(R.id.tickerValue)
@@ -39,10 +43,12 @@ public class TickerItem {
     private Ticker tickerItem;
     private List<LabelItemDto> labels;
 
-
+    private final String TAG = this.getClass().getSimpleName();
     private Context mContext;
     private PlaceHolderView mPlaceHolderView;
     private String tv_price;
+    private int price_change_color;
+    private String price_change;
     Subject<String> mObservable = PublishSubject.create();
 
 
@@ -69,9 +75,11 @@ public class TickerItem {
     @Resolve
     private void onResolved() {
         tv_ticker_title.setText(Codes.getCryptoCurrencyId(tickerItem.getCryptoId()));
+
         iv_ticker_icon.setImageResource(Codes.getCurrencyImage(tickerItem.getCryptoId()));
         tickerValue.setText(tv_price);
-
+        tv_price_change.setTextColor(price_change_color);
+        tv_price_change.setText(price_change);
 
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
@@ -127,7 +135,22 @@ public class TickerItem {
         }
     }
 
+    public void setPriceChange(double change) {
 
+        Log.i(TAG, "setPriceChange(" + change + ")");
 
+        if (change > 0) {
+            price_change = "+" + change + "%";
+            price_change_color = App.getContext().getResources().getColor(R.color.colorPriceChangePos);
+        } else {
+            price_change = change + "%";
+            price_change_color = App.getContext().getResources().getColor(R.color.colorPriceChangeNeg);
+        }
+
+        if (tv_price_change != null) {
+            tv_price_change.setTextColor(price_change_color);
+            tv_price_change.setText(price_change);
+        }
+    }
 
 }

@@ -20,8 +20,10 @@
     <color name="colorChartLabelSelectedText">#757575</color>
     <color name="colorChartLabelUnselectedText">#FFFFFF</color>
 
-    <!-- ticker label -->
+    <!-- ticker -->
     <color name="colorTickerLabelText">#FFFFFF</color>
+    <color name="colorPriceChangePos">#aeea00</color>
+    <color name="colorPriceChangeNeg">#ff6e40</color>
 
     <!-- dialog -->
     <color name="colorSpinnerBorder">#979797</color>

@@ -41,6 +41,17 @@
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/tv_ticker_title"/>
 
+            <TextView
+                android:id="@+id/tv_price_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                fontpath="revofit-light.ttf"
+                />
+
         </RelativeLayout>
 
         <View
@@ -73,9 +84,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/v_divider2"
-            android:paddingTop="7dp"
-            android:paddingBottom="7dp"
             tools:listitem="@layout/ticker_label_item" />
+
+        <!--android:paddingTop="7dp"-->
+        <!--android:paddingBottom="7dp"-->
 
     </RelativeLayout>
 

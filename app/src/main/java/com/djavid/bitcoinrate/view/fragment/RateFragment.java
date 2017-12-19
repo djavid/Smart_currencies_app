@@ -211,7 +211,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.menu_rate, menu);
     }
 
     @Override

@@ -177,6 +177,22 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                 });
     }
 
+    public void loadTickerPriceChange(TickerItem tickerItem) {
+
+        String code_crypto = tickerItem.getTickerItem().getCryptoId();
+        final String code_crypto_full = Codes.getCryptoCurrencyId(code_crypto);
+        String code_country = tickerItem.getTickerItem().getCountryId();
+
+        disposable = dataRepository.getRateCMC(code_crypto_full, code_country)
+                .subscribe(array -> {
+                    CoinMarketCapTicker ticker = array.get(0);
+
+                    tickerItem.setPriceChange(ticker.getPercent_change_24h());
+                }, error -> {
+                    setRefreshing(false);
+                });
+    }
+
     private void sendTokenToServer() {
 
         String token = FirebaseInstanceId.getInstance().getToken();
