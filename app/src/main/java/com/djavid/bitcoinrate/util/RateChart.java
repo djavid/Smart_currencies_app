@@ -83,21 +83,6 @@ public class RateChart {
         chart.invalidate();
     }
 
-    public static int getChartIntervals(int days) {
-        switch (days) {
-            case 30:
-                return  7200;
-            case 90:
-                return  21600;
-            case 180:
-                return  43200;
-            case 365:
-                return  86400;
-            default:
-                return  86400;
-        }
-    }
-
     public LineChart getChart() {
         return chart;
     }

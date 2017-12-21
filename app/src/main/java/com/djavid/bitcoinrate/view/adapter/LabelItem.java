@@ -6,12 +6,13 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
-import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.mindorks.placeholderview.PlaceHolderView;
 import com.mindorks.placeholderview.annotations.Click;
@@ -39,7 +40,7 @@ class LabelItem {
 
     private Context mContext;
     private PlaceHolderView mPlaceHolderView;
-    public LabelItemDto labelItemDto;
+    LabelItemDto labelItemDto;
 
 
     LabelItem(Context mContext, PlaceHolderView mPlaceHolderView, LabelItemDto labelItemDto,
@@ -102,7 +103,6 @@ class LabelItem {
 
             alert.setPositiveButton("Да", (dialog, which) -> {
                 deleteSubscribe(labelItemDto.getId());
-                tickerItem.deleteLabel(this);
             });
 
             alert.setNegativeButton("Нет", ((dialog, which) -> {
@@ -117,13 +117,17 @@ class LabelItem {
         DataRepository dataRepository = new RestDataRepository();
 
         dataRepository.deleteSubscribe(id)
-                .compose(RxUtils.applyCompletableSchedulers())
-                .doOnError(Throwable::printStackTrace)
                 .subscribe(() -> {
+                    tickerItem.deleteLabel(this);
                     Log.d("LabelDialog", "Successfully deleted subscribe with id = " + id);
                 }, error -> {
-
+                    showError(R.string.error_deleting_subscribe);
                 });
+    }
+
+    private void showError(int errorId) {
+        Toast.makeText(App.getContext(),
+                App.getContext().getString(errorId), Toast.LENGTH_SHORT).show();
     }
 
 }

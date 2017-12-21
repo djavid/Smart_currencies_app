@@ -40,6 +40,13 @@ public class Codes {
             new Coin("MIOTA", "iota"), new Coin("BTS", "bitshares"), new Coin("ARDR", "ardor")
     };
 
+    public static ChartOption[] chart_options = {
+            new ChartOption("1day", 1, 900),
+            new ChartOption("1week", 7, 3600),
+            new ChartOption("1month", 30, 7200),
+            new ChartOption("1year", 365, 86400)
+    };
+
     public static String[] crypto_coins_array = Stream
             .of(crypto_coins)
             .map(coin -> coin.symbol)
@@ -146,6 +153,18 @@ public class Codes {
         Coin(String symbol, String id) {
             this.symbol = symbol;
             this.id = id;
+        }
+    }
+
+    public static class ChartOption {
+        public String timespan;
+        public int days;
+        public int intervals;
+
+        public ChartOption(String timespan, int days, int intervals) {
+            this.timespan = timespan;
+            this.days = days;
+            this.intervals = intervals;
         }
     }
 }

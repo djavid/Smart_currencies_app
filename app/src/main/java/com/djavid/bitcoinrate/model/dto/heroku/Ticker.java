@@ -9,7 +9,7 @@ public class Ticker extends RealmObject {
     private long tokenId;
     private String cryptoId;
     private String countryId;
-    private double price;
+    private CurrencyUpdate ticker;
 
 
     public Ticker() { }
@@ -35,35 +35,34 @@ public class Ticker extends RealmObject {
                 ", tokenId=" + tokenId +
                 ", cryptoId='" + cryptoId + '\'' +
                 ", countryId='" + countryId + '\'' +
-                ", price=" + price +
+                ", ticker=" + ticker +
                 '}';
     }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
 
-        Ticker ticker = (Ticker) o;
+        Ticker ticker1 = (Ticker) o;
 
-        if (id != ticker.id) return false;
-        if (tokenId != ticker.tokenId) return false;
-        if (Double.compare(ticker.price, price) != 0) return false;
-        if (cryptoId != null ? !cryptoId.equals(ticker.cryptoId) : ticker.cryptoId != null)
+        if (id != ticker1.id) return false;
+        if (tokenId != ticker1.tokenId) return false;
+        if (cryptoId != null ? !cryptoId.equals(ticker1.cryptoId) : ticker1.cryptoId != null)
             return false;
-        return countryId != null ? countryId.equals(ticker.countryId) : ticker.countryId == null;
+        if (countryId != null ? !countryId.equals(ticker1.countryId) : ticker1.countryId != null)
+            return false;
+        return ticker != null ? ticker.equals(ticker1.ticker) : ticker1.ticker == null;
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = (int) (id ^ (id >>> 32));
+        int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (int) (tokenId ^ (tokenId >>> 32));
         result = 31 * result + (cryptoId != null ? cryptoId.hashCode() : 0);
         result = 31 * result + (countryId != null ? countryId.hashCode() : 0);
-        temp = Double.doubleToLongBits(price);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (ticker != null ? ticker.hashCode() : 0);
         return result;
     }
 
@@ -95,10 +94,11 @@ public class Ticker extends RealmObject {
         this.countryId = countryId;
     }
 
-    public double getPrice() {
-        return price;
+    public CurrencyUpdate getTicker() {
+        return ticker;
     }
-    public void setPrice(double price) {
-        this.price = price;
+    public void setTicker(CurrencyUpdate ticker) {
+        this.ticker = ticker;
     }
+
 }

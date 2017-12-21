@@ -28,6 +28,7 @@ public interface DataRepository {
     Completable deleteSubscribe(long id);
     Single<ResponseId> sendTicker(Ticker ticker);
     Single<List<Ticker>> getTickersByTokenId(long token_id);
+    Single<Ticker> getTickerByTokenIdAndTickerId(long token_id, long ticker_id);
     Single<List<Subscribe>> getSubscribesByTokenId(long token_id);
     Completable deleteTicker(long id);
 }

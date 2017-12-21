@@ -40,8 +40,6 @@ public class CreateLabelDialog extends BaseDialogFragment {
     @BindView(R.id.cb_percent_change)
     CheckBox cb_percent_change;
 
-    private TickerItem tickerItem;
-
 
     public CreateLabelDialog() { }
 
@@ -80,7 +78,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
                     try {
                         String perc = Double.toString(Double.parseDouble(value) / 100);
                         subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
-                                selectedTicker.getTickerItem().getPrice());
+                                selectedTicker.getTickerItem().getTicker().getPrice());
                         labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
 
                     } catch (NumberFormatException e) {
@@ -94,8 +92,6 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 }
 
                 sendSubscribe(subscribe, labelItemDto, selectedTicker);
-
-                this.dismiss();
             }
 
         });
@@ -147,18 +143,23 @@ public class CreateLabelDialog extends BaseDialogFragment {
         dataRepository.sendSubscribe(subscribe)
                 .compose(RxUtils.applySingleSchedulers())
                 .subscribe(response -> {
+
                     if (response.error.isEmpty()) {
                         Log.d("LabelDialog", "Successfully sent " + subscribe.toString());
 
                         if (response.id != 0) {
                             label.setId(response.id);
                             tickerItem.addLabelItem(label);
+
+                            this.dismiss();
                         }
                     } else {
                         Log.e("LabelDialog", response.error);
+                        showError(R.string.connection_error);
                     }
-                }, error -> {
 
+                }, error -> {
+                    showError(R.string.connection_error);
                 });
     }
 

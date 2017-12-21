@@ -9,14 +9,16 @@
     <string name="left_value_fragment">BTC</string>
     <string name="right_value_fragment">USD</string>
     <string name="switch_imagebutton">Switch currencies</string>
-    <string name="option_one">30 дней</string>
-    <string name="option_two">3 месяца</string>
-    <string name="option_three">6 месяцев</string>
-    <string name="option_four">1 год</string>
+
+    <string name="option_one">день</string>
+    <string name="option_two">неделя</string>
+    <string name="option_three">месяц</string>
+    <string name="option_four">год</string>
 
     <!-- Action bar strings -->
     <string name="menu_item_refresh">Обновить курс</string>
     <string name="menu_item_sort">Сортировать</string>
+    <string name="menu_item_hide">Скрыть панель подписок</string>
 
     <!-- Currencies titles -->
     <string name="title_btc">Bitcoin</string>
@@ -54,6 +56,10 @@
     <!-- errors -->
     <string name="empty_value">Пустой текст!</string>
     <string name="unable_to_load_from_server">Не удалось загрузить с сервера!</string>
-    <string name="server_error">Ошибка сервера!</string>
+    <string name="connection_error">Ошибка подлючения. Попробуйте позже.</string>
+    <string name="server_error">Ошибка сервера! Попробуйте позже.</string>
+    <string name="error_loading_ticker">Не удалось отправить тикер. Попробуйте позже.</string>
+    <string name="error_deleting_ticker">Не удалось удалить тикер. Попробуйте позже.</string>
+    <string name="error_deleting_subscribe">Не удалось удалить подписку. Попробуйте позже.</string>
 
 </resources>

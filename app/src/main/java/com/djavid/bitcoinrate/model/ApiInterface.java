@@ -72,6 +72,10 @@ public interface ApiInterface {
     @GET(HEROKU_URL + "/getTickers")
     Single<List<Ticker>> getTickersByTokenId(@Query("token_id") long token_id);
 
+    @GET(HEROKU_URL + "/getTicker")
+    Single<Ticker> getTickerByTokenIdAndTickerId(@Query("token_id") long token_id,
+                                                 @Query("ticker_id") long ticker_id);
+
     @GET(HEROKU_URL + "/getSubscribes")
     Single<List<Subscribe>> getSubscribesByTokenId(@Query("token_id") long token_id);
 

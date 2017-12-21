@@ -72,26 +72,17 @@ public class CreateTickerDialog extends BaseDialogFragment {
         return R.layout.fragment_create_ticker_dialog;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        //super.onSaveInstanceState(outState);
-
-        //setTargetFragment(null, -1);
-    }
 
     private void sendTicker(Ticker ticker) {
         DataRepository dataRepository = new RestDataRepository();
 
         dataRepository.sendTicker(ticker)
                 .subscribe(response -> {
+
                     if (response.error.isEmpty()) {
                         Log.d("TickerDialog", "Succesfully sent " + ticker.toString());
 
                         if (response.id != 0) {
-                            //label.setId(response.id);
-                            //tickerItem.addLabelItem(label);
-
-                            //ticker.setId(response.id);
 
                             Bundle bundle = new Bundle();
                             bundle.putString("cryptoId", ticker.getCryptoId());
@@ -103,11 +94,14 @@ public class CreateTickerDialog extends BaseDialogFragment {
 
                             dismiss();
                         }
+
                     } else {
                         Log.e("TickerDialog", response.error);
+                        showError(R.string.connection_error);
                     }
-                }, error -> {
 
+                }, error -> {
+                    showError(R.string.connection_error);
                 });
     }
 

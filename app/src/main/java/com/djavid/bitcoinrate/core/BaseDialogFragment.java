@@ -2,19 +2,19 @@ package com.djavid.bitcoinrate.core;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.*;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.djavid.bitcoinrate.App;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.realm.Realm;
 
 
 public abstract class BaseDialogFragment extends DialogFragment {
 
-//    protected Realm realm;
     private Unbinder unbinder;
 
     public abstract int getLayoutId();
@@ -25,7 +25,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        realm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -45,11 +44,10 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        realm.close();
     }
 
     public void showError(int errorId) {
-        Toast.makeText(getContext(), getString(errorId), Toast.LENGTH_SHORT).show();
+        Toast.makeText(App.getContext(), getString(errorId), Toast.LENGTH_SHORT).show();
     }
 
 }

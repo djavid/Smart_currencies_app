@@ -89,6 +89,7 @@ public class RestDataRepository implements DataRepository {
     @Override
     public Completable deleteSubscribe(long id) {
         return apiInterface.deleteSubscribe(id)
+                .compose(RxUtils.applyCompletableSchedulers())
                 .doOnError(Throwable::printStackTrace);
     }
 
@@ -102,6 +103,14 @@ public class RestDataRepository implements DataRepository {
     @Override
     public Single<List<Ticker>> getTickersByTokenId(long token_id) {
         return apiInterface.getTickersByTokenId(token_id)
+                .doOnError(Throwable::printStackTrace)
+                .compose(RxUtils.applySingleSchedulers())
+                .retry(2L);
+    }
+
+    @Override
+    public Single<Ticker> getTickerByTokenIdAndTickerId(long token_id, long ticker_id) {
+        return apiInterface.getTickerByTokenIdAndTickerId(token_id, ticker_id)
                 .doOnError(Throwable::printStackTrace)
                 .compose(RxUtils.applySingleSchedulers())
                 .retry(2L);

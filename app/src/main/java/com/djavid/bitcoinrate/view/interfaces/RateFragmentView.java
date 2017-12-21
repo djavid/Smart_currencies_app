@@ -5,6 +5,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.djavid.bitcoinrate.core.View;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.RateChart;
 
 
@@ -16,7 +17,11 @@ public interface RateFragmentView extends View {
     TextView getTopPanel();
     SwipeRefreshLayout getRefreshLayout();
     RateChart getRateChart();
-    String getSelectedTimespan();
-    int getTimespanDays();
-    void setChartLabelSelected(String timespan);
+
+    void setSelectedChartOption(Codes.ChartOption chartOption);
+    Codes.ChartOption getSelectedChartOption();
+    TextView getSelectedChartLabelView();
+
+    void setChartLabelSelected(android.view.View view);
+    void setAllChartLabelsUnselected();
 }

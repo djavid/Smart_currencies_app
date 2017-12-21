@@ -20,10 +20,12 @@ import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.RateChart;
 import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
 import butterknife.BindView;
@@ -54,7 +56,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     OnFragmentInteractionListener mListener;
     RateFragmentPresenter presenter;
     RateChart chart;
-    String timespan;
+    Codes.ChartOption selectedChartOption;
 
 
     public RateFragment() { }
@@ -87,8 +89,9 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         chart.initialize();
 
         setCurrenciesSpinner();
-        if (timespan == null)
-            setChartLabelSelected(optionFirst);
+
+        getSelectedChartOption();
+        setChartLabelSelected(getSelectedChartLabelView());
 
         return view;
     }
@@ -137,43 +140,35 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         setChartLabelUnselected(getSelectedChartLabelView());
         //set new one selected
         setChartLabelSelected(v);
-        getChart(getTimespanDays());
+        getChart(getSelectedChartOption());
 
     };
 
-    public void setChartLabelSelected(String timespan) {
-
-        switch (timespan) {
-            case "30days":
-                setChartLabelSelected(optionFirst);
-                break;
-            case "90days":
-                setChartLabelSelected(optionSecond);
-                break;
-            case "180days":
-                setChartLabelSelected(optionThird);
-                break;
-            case "1year":
-                setChartLabelSelected(optionFourth);
-                break;
-        }
-
+    public void setAllChartLabelsUnselected() {
+        setChartLabelUnselected(optionFirst);
+        setChartLabelUnselected(optionSecond);
+        setChartLabelUnselected(optionThird);
+        setChartLabelUnselected(optionFourth);
     }
 
-    private void setChartLabelSelected(View view) {
+    public void setSelectedChartOption(Codes.ChartOption chartOption) {
+        selectedChartOption = chartOption;
+    }
+
+    public void setChartLabelSelected(View view) {
 
         switch (view.getId()) {
             case R.id.optionFirst:
-                timespan = "30days";
+                selectedChartOption = Codes.chart_options[0];
                 break;
             case R.id.optionSecond:
-                timespan = "90days";
+                selectedChartOption = Codes.chart_options[1];
                 break;
             case R.id.optionThird:
-                timespan = "180days";
+                selectedChartOption = Codes.chart_options[2];
                 break;
             case R.id.optionFourth:
-                timespan = "1year";
+                selectedChartOption = Codes.chart_options[3];
                 break;
         }
 
@@ -188,14 +183,15 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         ((TextView) view).setTypeface(((TextView) view).getTypeface(), Typeface.BOLD);
     }
 
-    private void getChart(int daysAgo) {
-        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
-        long start = end - 86400 * daysAgo;
+    private void getChart(Codes.ChartOption chartOption) {
+
+        long end = LocalDateTime.now(DateTimeZone.UTC).toDateTime().getMillis() / 1000;
+        long start = end - chartOption.days * 86400;
 
         String pair = ((String) leftPanel.getSelectedItem()).toLowerCase() +
                 ((String) rightPanel.getSelectedItem()).toLowerCase();
 
-        presenter.showChart(pair, daysAgo, start, true);
+        presenter.showChart(pair, chartOption.intervals, start, true);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -243,7 +239,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
             price = topPanel.getText().toString();
         }
 
-        presenter.saveInstanceState(new RateFragmentInstanceState(timespan, price));
+        presenter.saveInstanceState(new RateFragmentInstanceState(selectedChartOption, price));
         presenter.setView(null);
         presenter.onStop();
 
@@ -325,44 +321,28 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         return chart;
     }
 
-    @Override
-    public String getSelectedTimespan() {
-        return timespan;
+
+    public Codes.ChartOption getSelectedChartOption() {
+        if (selectedChartOption == null) selectedChartOption = Codes.chart_options[0];
+
+        return selectedChartOption;
     }
 
-    @Override
-    public int getTimespanDays() {
-        if (timespan == null) timespan = "30days";
+    public TextView getSelectedChartLabelView() {
 
-        switch (timespan) {
-            case "30days":
-                return 30;
-            case "90days":
-                return 90;
-            case "180days":
-                return 180;
-            case "1year":
-                return 365;
-            default:
-                return 0;
-        }
-    }
+        if (selectedChartOption.equals(Codes.chart_options[0]))
+            return optionFirst;
 
-    private TextView getSelectedChartLabelView() {
-        int selected_label = getTimespanDays();
+        else if (selectedChartOption.equals(Codes.chart_options[1]))
+            return optionSecond;
 
-        switch (selected_label) {
-            case 30:
-                return optionFirst;
-            case 90:
-                return optionSecond;
-            case 180:
-                return optionThird;
-            case 365:
-                return optionFourth;
-            default:
-                return null;
-        }
+        else if (selectedChartOption.equals(Codes.chart_options[2]))
+            return optionThird;
+
+        else if (selectedChartOption.equals(Codes.chart_options[3]))
+            return optionFourth;
+
+        else return null;
     }
 }
 

@@ -15,10 +15,10 @@ import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
-import com.djavid.bitcoinrate.util.RateChart;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.Entry;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -51,7 +51,12 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     public void onStart() {
         if (getInstanceState() != null) {
             if (getView() != null) {
-                getView().setChartLabelSelected(getInstanceState().getTimespan());
+
+                getView().setAllChartLabelsUnselected();
+                getView().setSelectedChartOption(getInstanceState().getChart_option());
+                if (getView().getSelectedChartLabelView() != null)
+                    getView().setChartLabelSelected(getView().getSelectedChartLabelView());
+
                 if (!getInstanceState().getPrice().isEmpty())
                     getView().getTopPanel().setText(getInstanceState().getPrice());
             }
@@ -101,9 +106,12 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
         disposable = dataRepository.getRate(curr1, curr2)
                 .subscribe(ticker -> {
+
                     if (!ticker.getError().isEmpty()) {
-                        if (getView() != null) getView().showError(R.string.unable_to_load_from_server);
+                        if (getView() != null)
+                            getView().showError(R.string.server_error);
                         Log.e(TAG, ticker.getError());
+
                         return;
                     }
 
@@ -115,14 +123,16 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                             getView().getTopPanel().setText(text);
                         }
 
-                        int daysAgo = getView().getTimespanDays();
-                        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
-                        long start = end - 86400 * daysAgo;
+                        int daysAgo = getView().getSelectedChartOption().days;
+                        int intervals = getView().getSelectedChartOption().intervals;
+                        long end = LocalDateTime.now(DateTimeZone.UTC).toDateTime().getMillis() / 1000;
+                        long start = end - daysAgo * 86400;
 
-                        showChart(curr1 + curr2, daysAgo, start, refresh);
+                        showChart(curr1 + curr2, intervals, start, refresh);
                     }
 
                 }, error -> {
+                    if (getView() != null) getView().showError(R.string.connection_error);
                     setRefreshing(false);
                 });
     }
@@ -150,20 +160,22 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                             getView().getTopPanel().setText(text);
                         }
 
-                        int daysAgo = getView().getTimespanDays();
-                        long end = LocalDateTime.now().withHourOfDay(3).plusDays(1).toDateTime().getMillis() / 1000;
-                        long start = end - 86400 * daysAgo;
+                        int daysAgo = getView().getSelectedChartOption().days;
+                        int intervals = getView().getSelectedChartOption().intervals;
+                        long end = LocalDateTime.now(DateTimeZone.UTC).toDateTime().getMillis() / 1000;
+                        long start = end - daysAgo * 86400;
 
-                        showChart(crypto_id + country_id, daysAgo, start, refresh);
+                        showChart(crypto_id + country_id, intervals, start, refresh);
                     }
 
                 }, error -> {
+                    if (getView() != null) getView().showError(R.string.connection_error);
                     setRefreshing(false);
                 });
     }
 
     @Override
-    public void showChart(String pair, int timespanDays, long after, boolean refresh) {
+    public void showChart(String pair, int periods, long after, boolean refresh) {
         Log.i(TAG, "showChart()");
         //if (refresh) setRefreshing(true);
 
@@ -173,25 +185,26 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                     List<Market> markets = result.getResult().getMarkets();
 
                     if (markets != null && markets.size() != 0) {
-                        getHistory(markets.get(0).getExchange(), pair, timespanDays, after, refresh);
+                        getHistory(markets.get(0).getExchange(), pair, periods, after, refresh);
                     } else {
                         if (getView() != null) getView().getRateChart().getChart().clear();
                         setRefreshing(false);
                     }
 
                 }, error -> {
-                    if (getView() != null) getView().getRateChart().getChart().clear();
+                    if (getView() != null) {
+                        getView().getRateChart().getChart().clear();
+                        getView().showError(R.string.connection_error);
+                    }
 
                     setRefreshing(false);
                 });
 
     }
 
-    private void getHistory(String market, String pair, int timespanDays, long after, boolean refresh) {
+    private void getHistory(String market, String pair, int periods, long after, boolean refresh) {
         Log.i(TAG, "getHistory()");
         //if (refresh) setRefreshing(true);
-
-        int periods = RateChart.getChartIntervals(timespanDays);
 
         disposable = dataRepository.getHistory(market, pair, periods, after)
                 .subscribe(result -> {
@@ -210,8 +223,10 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                     setRefreshing(false);
 
                 }, error -> {
-                    if (getView() != null)
+                    if (getView() != null) {
                         getView().getRateChart().getChart().clear();
+                        getView().showError(R.string.server_error);
+                    }
                     setRefreshing(false);
                 });
     }

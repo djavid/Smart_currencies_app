@@ -39,6 +39,8 @@ public class TickerItem {
     private TextView tickerValue;
     @View(R.id.label_container)
     private PlaceHolderView label_container;
+    @View(R.id.v_divider2)
+    private android.view.View v_divider2;
 
     private Ticker tickerItem;
     private List<LabelItemDto> labels;
@@ -100,6 +102,18 @@ public class TickerItem {
     }
 
 
+//    public void hideLabelItem() {
+//        label_container.setVisibility(android.view.View.GONE);
+//        v_divider2.setVisibility(android.view.View.GONE);
+//        tickerValue.setPaddingRelative(0,0,0,10);
+//    }
+//
+//    public void showLabelItem() {
+//        label_container.setVisibility(android.view.View.VISIBLE);
+//        v_divider2.setVisibility(android.view.View.VISIBLE);
+//        tickerValue.setPaddingRelative(0,0,0,0);
+//    }
+
     public void addLabelItem(LabelItemDto new_item) {
 
         labels.add(new_item);
@@ -110,15 +124,6 @@ public class TickerItem {
         }
         label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
 
-    }
-
-    public void refreshLabels() {
-        label_container.removeAllViews();
-
-        for (LabelItemDto item : labels) {
-            label_container.addView(new LabelItem(mContext, label_container, item, this));
-        }
-        label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
     }
 
     void deleteLabel(LabelItem labelItem) {

@@ -1,22 +1,24 @@
 package com.djavid.bitcoinrate.presenter.instancestate;
 
+import com.djavid.bitcoinrate.util.Codes;
+
 
 public class RateFragmentInstanceState {
 
-    private String timespan;
+    private Codes.ChartOption chart_option;
     private String price;
 
 
-    public RateFragmentInstanceState(String timespan, String price) {
-        this.timespan = timespan;
+    public RateFragmentInstanceState(Codes.ChartOption chart_option, String price) {
+        this.chart_option = chart_option;
         this.price = price;
     }
 
-    public String getTimespan() {
-        return timespan;
+    public Codes.ChartOption getChart_option() {
+        return chart_option;
     }
-    public void setTimespan(String timespan) {
-        this.timespan = timespan;
+    public void setChart_option(Codes.ChartOption chart_option) {
+        this.chart_option = chart_option;
     }
 
     public String getPrice() {

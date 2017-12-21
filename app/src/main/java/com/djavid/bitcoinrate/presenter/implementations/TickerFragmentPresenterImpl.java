@@ -47,10 +47,11 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         Log.i(TAG, "onStart()");
 
         if (getView() != null) {
+
             List<Ticker> tickersFromRealm = getTickersFromRealm();
             List<Subscribe> subscribesFromRealm = getSubscribesFromRealm();
 
-            if (!tickersFromRealm.isEmpty() && !subscribesFromRealm.isEmpty()) {
+            if (!tickersFromRealm.isEmpty()) {
                 tickers = tickersFromRealm;
                 subscribes = subscribesFromRealm;
 
@@ -76,27 +77,46 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
 
     @Override
+    public void addTickerFromServer(long token_id, long ticker_id) {
+        Log.i(TAG, "addTickerFromServer(" + token_id + ", " + ticker_id +")");
+
+        disposable = dataRepository.getTickerByTokenIdAndTickerId(token_id, ticker_id)
+                .subscribe(ticker -> {
+
+                    tickers.add(ticker);
+                    if (getView() != null) getView().addTickerToAdapter(ticker);
+
+                }, error -> {
+                    if (getView() != null)
+                        getView().showError(R.string.error_loading_ticker);
+                });
+    }
+
+    @Override
     public void getAllTickers(boolean refresh) {
-        Log.i(TAG, "getAllTickers()");
+        Log.i(TAG, "getAllTickers(" + refresh + ")");
         if (refresh) setRefreshing(true);
 
         long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
         if (token_id == 0) {
             sendTokenToServer();
+        } else {
+
+            disposable = dataRepository.getTickersByTokenId(token_id)
+                    .subscribe(tickerList -> {
+
+                        tickers = tickerList;
+                        getAllSubscribes();
+
+                    }, error -> {
+                        if (getView() != null)
+                            getView().showError(R.string.unable_to_load_from_server);
+                        setRefreshing(false);
+                    });
         }
-
-        disposable = dataRepository.getTickersByTokenId(token_id)
-                .subscribe(tickerList -> {
-                    tickers = tickerList;
-                    getAllSubscribes(refresh);
-
-                }, error -> {
-                    if (getView() != null) getView().showError(R.string.unable_to_load_from_server);
-                    setRefreshing(false);
-                });
     }
 
-    private void getAllSubscribes(boolean refresh) {
+    private void getAllSubscribes() {
         Log.i(TAG, "getAllSubscribes()");
 
         long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
@@ -110,11 +130,14 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     List<Subscribe> subscribeListRealm = getSubscribesFromRealm();
 
                     if (!tickerListRealm.equals(tickers) || !subscribeListRealm.equals(subscribes)){
+                        Log.i(TAG, "tickers and subscribes are NOT EQUAL");
                         saveDataToRealm(tickers, subscribes);
 
                         if (getView() != null) {
                             getView().addAllTickers(tickers, subscribes);
                         }
+                    } else {
+                        Log.i(TAG, "tickers and subscribes are EQUAL");
                     }
 
                     setRefreshing(false);
@@ -123,6 +146,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     setRefreshing(false);
                 });
     }
+
+
 
     @Override
     public void loadTickerPrice(TickerItem tickerItem) {
@@ -193,6 +218,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                 });
     }
 
+
+
     private void sendTokenToServer() {
 
         String token = FirebaseInstanceId.getInstance().getToken();
@@ -206,24 +233,37 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                 .subscribe(response -> {
 
                     if (response.error.isEmpty()) {
-
+                        //success
                         if (response.id != 0) {
-                            App.getAppInstance()
-                                    .getSharedPreferences()
-                                    .edit()
-                                    .putLong("token_id", response.id)
-                                    .apply();
-
-                            App.getAppInstance()
-                                    .getSharedPreferences()
-                                    .edit()
-                                    .putString("token", token)
-                                    .apply();
-
+                            saveToPreferences(response.id, token);
                             getAllTickers(false);
                         }
+
+                    } else if (!response.error.isEmpty() && response.id != 0) {
+                        //device id was already registered
+                        saveToPreferences(response.id, token);
+                        getAllTickers(false);
+
+                    } else {
+                        //something gone wrong
+                        setRefreshing(false);
+                        if (getView() != null) getView().showError(R.string.connection_error);
                     }
                 });
+    }
+
+    private void saveToPreferences(long token_id, String token) {
+        App.getAppInstance()
+                .getSharedPreferences()
+                .edit()
+                .putLong("token_id", token_id)
+                .apply();
+
+        App.getAppInstance()
+                .getSharedPreferences()
+                .edit()
+                .putString("token", token)
+                .apply();
     }
 
     @Override
@@ -233,7 +273,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                 .subscribe(() -> {
                     Log.i(TAG, "Successfully deleted ticker with id = " + ticker_id);
                 }, error -> {
-                    if (getView() != null) getView().showError(R.string.server_error);
+                    if (getView() != null) getView().showError(R.string.error_deleting_ticker);
                 });
     }
 
@@ -290,9 +330,6 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         realm.copyToRealm(realmSubscribeList);
 
         realm.commitTransaction();
-
-        System.out.println(getTickersFromRealm());
-        System.out.println(getSubscribesFromRealm());
     }
 
     private void setRefreshing(boolean key) {

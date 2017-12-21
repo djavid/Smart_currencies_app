@@ -92,10 +92,21 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             case R.id.refresh:
                 presenter.getAllTickers(true);
                 break;
+            case R.id.sort:
+
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+//    private void hideAllLabels() {
+//        List<Object> tickerItemList = rv_ticker_list.getAllViewResolvers();
+//
+//        for (Object item : tickerItemList) {
+//            ((TickerItem) item).hideLabelItem();
+//        }
+//    }
 
     @Override
     public void onStart() {
@@ -196,25 +207,31 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
             if (resultCode == Activity.RESULT_OK) {
 
-                if (data.getExtras().containsKey("countryId") &&
-                        data.getExtras().containsKey("cryptoId") &&
-                        data.getExtras().containsKey("id")) {
+                if (data.getExtras() != null && data.getExtras().containsKey("countryId") &&
+                        data.getExtras().containsKey("cryptoId") && data.getExtras().containsKey("id")) {
 
-                    long id = data.getExtras().getLong("id");
+                    long ticker_id = data.getExtras().getLong("id");
                     long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
-                    String countryId = data.getExtras().getString("countryId");
-                    String cryptoId = data.getExtras().getString("cryptoId");
 
-                    Ticker ticker = new Ticker(id, token_id, cryptoId, countryId);
-                    TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
-
-                    presenter.loadTickerPrice(tickerItem);
-                    //TODO add only after price is loaded
-                    rv_ticker_list.addView(tickerItem);
-                    scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
+                    presenter.addTickerFromServer(token_id, ticker_id);
                 }
             }
         }
+    }
+
+    @Override
+    public void addTickerToAdapter(Ticker ticker) {
+        Log.i(TAG, "addTickerToAdapter()");
+
+        double price = ticker.getTicker().getPrice();
+        String text = DateFormatter.convertPrice(price);
+
+        TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
+        tickerItem.setPrice(text);
+        tickerItem.setPriceChange(ticker.getTicker().getPercent_change_24h()); //TODO
+
+        rv_ticker_list.addView(tickerItem);
+        scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
     }
 
     @Override
@@ -227,14 +244,14 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                     .filter(s -> s.getTickerId() == item.getId())
                     .toList();
 
-            double price = item.getPrice();
+            double price = item.getTicker().getPrice();
             String text = DateFormatter.convertPrice(price);
 
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             tickerItem.setPrice(text);
-            rv_ticker_list.addView(tickerItem);
+            tickerItem.setPriceChange(item.getTicker().getPercent_change_24h()); //TODO
 
-            presenter.loadTickerPriceChange(tickerItem);
+            rv_ticker_list.addView(tickerItem);
         }
     }
 
