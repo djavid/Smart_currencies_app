@@ -86,6 +86,21 @@ public class CurrencyUpdate extends RealmObject {
         return result;
     }
 
+
+    public double getPercentChange(String setting) {
+        switch (setting) {
+            case "hour":
+                return getPercent_change_1h();
+            case "day":
+                return getPercent_change_24h();
+            case "week":
+                return getPercent_change_7d();
+            default:
+                return getPercent_change_24h();
+        }
+    }
+
+
     public long getId() {
         return id;
     }

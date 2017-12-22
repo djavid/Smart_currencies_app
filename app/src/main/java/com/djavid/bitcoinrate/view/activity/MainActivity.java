@@ -17,10 +17,10 @@ import android.view.MenuItem;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
-import com.djavid.bitcoinrate.view.adapter.NavigationViewAdapter;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.dialog.CreateLabelDialog;
 import com.djavid.bitcoinrate.view.fragment.RateFragment;
+import com.djavid.bitcoinrate.view.fragment.SettingsFragment;
 import com.djavid.bitcoinrate.view.fragment.TickerFragment;
 
 import butterknife.BindView;
@@ -35,12 +35,12 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
     BottomNavigationView navigation;
 
     private FragmentManager fragmentManager;
-    Fragment rateFragment, tickerFragment;
-    NavigationViewAdapter navigationViewAdapter;
+    Fragment rateFragment, tickerFragment, settingsFragment;
 
     final String TAG = getClass().getSimpleName();
     final String TAG_RATE = "TAG_RATE";
     final String TAG_TICKER = "TAG_TICKER";
+    final String TAG_SETTINGS = "TAG_SETTINGS";
     final String TAG_CREATE_LABEL_DIALOG = "TAG_CREATE_LABEL_DIALOG";
 
 
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
                     return true;
 
                 case R.id.navigation_settings:
+                    changeFragment(settingsFragment, TAG_SETTINGS, true);
                     return true;
             }
 
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
 
         rateFragment = RateFragment.newInstance();
         tickerFragment = TickerFragment.newInstance();
+        settingsFragment = SettingsFragment.newInstance();
         fragmentManager = getSupportFragmentManager();
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -182,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
                 case TAG_TICKER:
                     navigation.setSelectedItemId(R.id.navigation_tickers);
                     break;
+                case TAG_SETTINGS:
+                    navigation.setSelectedItemId(R.id.navigation_settings);
+                    break;
             }
 
             return;
@@ -193,8 +198,9 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
 
     @Override
     public void showCreateLabelDialog(TickerItem tickerItem) {
+        Log.i(TAG, "showCreateLabelDialog(" + tickerItem + ")");
+
         selectedTickerItem = tickerItem;
-        System.out.println(tickerItem.getTickerItem());
         CreateLabelDialog dialog = CreateLabelDialog.newInstance();
         dialog.show(fragmentManager, TAG_CREATE_LABEL_DIALOG);
     }

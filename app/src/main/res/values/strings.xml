@@ -59,7 +59,21 @@
     <string name="connection_error">Ошибка подлючения. Попробуйте позже.</string>
     <string name="server_error">Ошибка сервера! Попробуйте позже.</string>
     <string name="error_loading_ticker">Не удалось отправить тикер. Попробуйте позже.</string>
+    <string name="error_loading_ticker_try_again">Не удалось отправить тикер. Попробуйте еще раз.</string>
     <string name="error_deleting_ticker">Не удалось удалить тикер. Попробуйте позже.</string>
     <string name="error_deleting_subscribe">Не удалось удалить подписку. Попробуйте позже.</string>
+
+    <!-- SettingsFragment -->
+    <string name="title_crypto_display">Отображение криптовалют</string>
+    <string name="title_default_pair">Пара по умолчанию на главном экране</string>
+    <string name="title_display_price_change">Отображать процент изменения</string>
+    <string name="title_about_developer">О разработчике</string>
+
+    <string name="title_display_codes">коды</string>
+    <string name="title_display_titles">названия</string>
+
+    <string name="title_price_change_hour">1 час</string>
+    <string name="title_price_change_day">24 часа</string>
+    <string name="title_price_change_week">7 дней</string>
 
 </resources>

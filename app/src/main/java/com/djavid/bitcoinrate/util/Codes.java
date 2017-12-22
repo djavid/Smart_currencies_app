@@ -4,6 +4,9 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.R;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+
 
 public class Codes {
 
@@ -62,6 +65,15 @@ public class Codes {
                 .filter(coin -> coin.symbol.equals(symbol))
                 .findFirst()
                 .get().id;
+    }
+
+    public static long getChartStartDate(ChartOption chartOption) {
+
+        //TODO think about values
+        long end = LocalDateTime.now(DateTimeZone.UTC).toDateTime().getMillis() / 1000;
+        long start = end - chartOption.days * 86400;
+
+        return start;
     }
 
     public static int getCurrencyImage(String code) {

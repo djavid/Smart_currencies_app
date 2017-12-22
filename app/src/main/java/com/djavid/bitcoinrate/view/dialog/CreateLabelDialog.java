@@ -67,31 +67,38 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
                 long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
                 TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
-                long ticker_id = selectedTicker.getTickerItem().getId();
-                String cryptoId = selectedTicker.getTickerItem().getCryptoId();
-                String countryId = selectedTicker.getTickerItem().getCountryId();
 
-                LabelItemDto labelItemDto;
-                Subscribe subscribe;
+                if (selectedTicker != null && selectedTicker.getTickerItem() != null) {
+                    long ticker_id = selectedTicker.getTickerItem().getId();
+                    String cryptoId = selectedTicker.getTickerItem().getCryptoId();
+                    String countryId = selectedTicker.getTickerItem().getCountryId();
 
-                if (isPercentLabel) {
-                    try {
-                        String perc = Double.toString(Double.parseDouble(value) / 100);
-                        subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
-                                selectedTicker.getTickerItem().getTicker().getPrice());
-                        labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
+                    LabelItemDto labelItemDto;
+                    Subscribe subscribe;
 
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                        return;
+                    if (isPercentLabel) {
+                        try {
+                            String perc = Double.toString(Double.parseDouble(value) / 100);
+                            subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
+                                    selectedTicker.getTickerItem().getTicker().getPrice());
+                            labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
+
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+
+                    } else {
+                        subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
+                        labelItemDto = new LabelItemDto(value, isTrendingUp, false);
                     }
 
+                    sendSubscribe(subscribe, labelItemDto, selectedTicker);
                 } else {
-                    subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
-                    labelItemDto = new LabelItemDto(value, isTrendingUp, false);
+                    //todo
+                    showError(R.string.error_loading_ticker_try_again);
+                    dismiss();
                 }
-
-                sendSubscribe(subscribe, labelItemDto, selectedTicker);
             }
 
         });

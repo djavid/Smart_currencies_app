@@ -84,7 +84,7 @@ public class FirebaseService extends FirebaseMessagingService {
         Notification.Builder builder = new Notification.Builder(context)
                 .setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true)
                 .setContentIntent(contentIntent)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon(BitmapFactory.decodeResource(res, large_icon))
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)

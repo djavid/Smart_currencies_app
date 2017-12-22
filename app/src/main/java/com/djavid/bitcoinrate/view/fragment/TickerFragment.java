@@ -228,7 +228,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
         TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
         tickerItem.setPrice(text);
-        tickerItem.setPriceChange(ticker.getTicker().getPercent_change_24h()); //TODO
+        tickerItem.setPriceChange(ticker.getTicker().getPercentChange(App.getAppInstance()
+                .getSavedPercentChange()));
 
         rv_ticker_list.addView(tickerItem);
         scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
@@ -249,7 +250,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             tickerItem.setPrice(text);
-            tickerItem.setPriceChange(item.getTicker().getPercent_change_24h()); //TODO
+            tickerItem.setPriceChange(item.getTicker().getPercentChange(App.getAppInstance()
+                    .getSavedPercentChange()));
 
             rv_ticker_list.addView(tickerItem);
         }

@@ -18,9 +18,6 @@ import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.Entry;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +60,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         }
 
         if (getView() != null) {
+            getView().setCurrenciesSpinner();
+
             String pair = ((String) getView().getLeftSpinner().getSelectedItem()).toLowerCase() +
                     ((String) getView().getRightSpinner().getSelectedItem()).toLowerCase();
 
@@ -123,10 +122,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                             getView().getTopPanel().setText(text);
                         }
 
-                        int daysAgo = getView().getSelectedChartOption().days;
                         int intervals = getView().getSelectedChartOption().intervals;
-                        long end = LocalDateTime.now(DateTimeZone.UTC).toDateTime().getMillis() / 1000;
-                        long start = end - daysAgo * 86400;
+                        long start = Codes.getChartStartDate(getView().getSelectedChartOption());
 
                         showChart(curr1 + curr2, intervals, start, refresh);
                     }
@@ -160,10 +157,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                             getView().getTopPanel().setText(text);
                         }
 
-                        int daysAgo = getView().getSelectedChartOption().days;
                         int intervals = getView().getSelectedChartOption().intervals;
-                        long end = LocalDateTime.now(DateTimeZone.UTC).toDateTime().getMillis() / 1000;
-                        long start = end - daysAgo * 86400;
+                        long start = Codes.getChartStartDate(getView().getSelectedChartOption());
 
                         showChart(crypto_id + country_id, intervals, start, refresh);
                     }

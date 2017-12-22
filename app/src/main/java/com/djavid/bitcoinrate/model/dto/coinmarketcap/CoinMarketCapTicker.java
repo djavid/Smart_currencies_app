@@ -53,6 +53,19 @@ public class CoinMarketCapTicker {
         }
     }
 
+    public double getPercentChange(String setting) {
+        switch (setting) {
+            case "hour":
+                return getPercent_change_1h();
+            case "day":
+                return getPercent_change_24h();
+            case "week":
+                return getPercent_change_7d();
+            default:
+                return getPercent_change_24h();
+        }
+    }
+
 
     public String getId() {
         return id;
