@@ -1,7 +1,9 @@
 package com.djavid.bitcoinrate.util;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.IntStream;
 import com.annimon.stream.Stream;
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 
 import org.joda.time.DateTimeZone;
@@ -50,22 +52,81 @@ public class Codes {
             new ChartOption("1year", 365, 86400)
     };
 
-    public static String[] crypto_coins_array = Stream
+    public static String[] crypto_coins_array_code = Stream
             .of(crypto_coins)
             .map(coin -> coin.symbol)
             .sorted()
             .collect(Collectors.toList())
             .toArray(new String[crypto_coins.length]);
 
-    public static String[] country_coins = {"USD", "EUR", "CAD", "CNY", "JPY", "PLN", "GBP", "RUB", "UAH"};
+    public static String[] crypto_coins_array_titles = Stream
+            .of(crypto_coins)
+            .map(coin -> coin.id)
+            .sorted()
+            .collect(Collectors.toList())
+            .toArray(new String[crypto_coins.length]);
 
-    public static String getCryptoCurrencyId(String symbol) {
+    public static String[] getCryptoCoinsArrayFormatted() {
+
+        if (App.getAppInstance().getSavedTitleFormat().equals("codes"))
+            return crypto_coins_array_code;
+        else
+            return crypto_coins_array_titles;
+    }
+
+    public static int getSelectedCryptoCoinIndex() {
+
+        String code = App.getAppInstance().getSavedLeftSpinnerValue();
+
+        if (App.getAppInstance().getSavedTitleFormat().equals("codes")) {
+            String found = Stream.of(crypto_coins)
+                    .filter(i -> i.id.equals(code) | i.symbol.equals(code))
+                    .findFirst()
+                    .get()
+                    .symbol;
+
+            return IntStream.range(0, crypto_coins_array_code.length)
+                    .filter(i -> crypto_coins_array_code[i].equals(found))
+                    .findFirst()
+                    .getAsInt();
+
+        } else {
+            String found = Stream.of(crypto_coins)
+                    .filter(i -> i.id.equals(code) | i.symbol.equals(code))
+                    .findFirst()
+                    .get()
+                    .id;
+
+            return IntStream.range(0, crypto_coins_array_titles.length)
+                    .filter(i -> crypto_coins_array_titles[i].equals(found))
+                    .findFirst()
+                    .getAsInt();
+        }
+    }
+
+    public static String getCryptoCurrencyId(String code) {
 
         return Stream.of(crypto_coins)
-                .filter(coin -> coin.symbol.equals(symbol))
+                .filter(coin -> coin.symbol.equals(code) | coin.id.equals(code))
                 .findFirst()
                 .get().id;
     }
+
+    public static boolean isCryptoCurrencyId(String code) {
+        return !(Stream.of(crypto_coins)
+                .filter(coin -> coin.id.equals(code))
+                .count() == 0);
+    }
+
+    public static String getCryptoCurrencySymbol(String code) {
+
+        return Stream.of(crypto_coins)
+                .filter(coin -> coin.symbol.equals(code) | coin.id.equals(code))
+                .findFirst()
+                .get().symbol;
+    }
+
+    public static String[] country_coins = {"USD", "EUR", "CAD", "CNY", "JPY", "PLN", "GBP", "RUB", "UAH"};
 
     public static long getChartStartDate(ChartOption chartOption) {
 
@@ -127,28 +188,125 @@ public class Codes {
                 return R.drawable.ic_ukraine;
 
 
-            case "BTC":
-                return R.drawable.ic_bitcoin;
-            case "BCH":
-                return R.drawable.ic_bitcoin_cash;
-            case "LTC":
-                return R.drawable.ic_litecoin;
-            case "NMC":
-                return R.drawable.ic_namecoin;
-            case "DOGE":
-                return R.drawable.ic_dogecoin;
-            case "ETH":
-                return R.drawable.ic_ethereum;
-            case "NVC":
-                return R.drawable.ic_novacoin;
-            case "PPC":
-                return R.drawable.ic_peercoin;
+            case "ARDR":
+            case "ardor":
+                return R.drawable.ic_ardr;
 
+            case "BCN":
+            case "bytecoin-bcn":
+                return R.drawable.ic_bcn;
+
+            case "BTS":
+            case "bitshares":
+                return R.drawable.ic_bts;
+
+            case "DASH":
+            case "dash":
+                return R.drawable.ic_dash;
+
+            case "ETC":
+            case "ethereum-classic":
+                return R.drawable.ic_etc;
+
+            case "MIOTA":
+            case "iota":
+                return R.drawable.ic_iota;
+
+            case "NXT":
+            case "nxt":
+                return R.drawable.ic_nxt;
+
+            case "STEEM":
+            case "steem":
+                return R.drawable.ic_steem;
+
+            case "STRAT":
+            case "stratis":
+                return R.drawable.ic_strat;
+
+            case "USDT":
+            case "tether":
+                return R.drawable.ic_usdt;
+
+            case "WAVES":
+            case "waves":
+                return R.drawable.ic_waves;
+
+            case "XEM":
+            case "nem":
+                return R.drawable.ic_xem;
+
+            case "XMR":
+            case "monero":
+                return R.drawable.ic_xmr;
 
             case "XRP":
+            case "ripple":
                 return R.drawable.ic_xrp;
+
             case "XVG":
+            case "verge":
                 return R.drawable.ic_xvg;
+
+            case "ZEC":
+            case "zcash":
+                return R.drawable.ic_zec;
+
+            case "BTC":
+            case "bitcoin":
+                return R.drawable.ic_bitcoin;
+
+            case "BCH":
+            case "bitcoin-cash":
+                return R.drawable.ic_bitcoin_cash;
+
+            case "LTC":
+            case "litecoin":
+                return R.drawable.ic_ltc;
+
+            case "NMC":
+            case "namecoin":
+                return R.drawable.ic_namecoin;
+
+            case "DOGE":
+            case "dogecoin":
+                return R.drawable.ic_dogecoin;
+
+            case "ETH":
+            case "ethereum":
+                return R.drawable.ic_eth;
+
+            case "NVC":
+            case "novacoin":
+                return R.drawable.ic_novacoin;
+
+            case "PPC":
+            case "peercoin":
+                return R.drawable.ic_peercoin;
+
+            case "ADA":
+            case "cardano":
+                return R.drawable.ic_ada;
+
+            case "BTG":
+            case "bitcoin-gold":
+                return R.drawable.ic_btg;
+
+            case "EOS":
+            case "eos":
+                return R.drawable.ic_eos;
+
+            case "NEO":
+            case "neo":
+                return R.drawable.ic_neo;
+
+            case "TRX":
+            case "tron":
+                return R.drawable.ic_trx;
+
+            case "XLM":
+            case "stellar":
+                return R.drawable.ic_xlm;
 
 
             default:

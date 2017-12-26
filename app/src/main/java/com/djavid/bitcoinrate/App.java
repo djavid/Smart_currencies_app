@@ -96,25 +96,21 @@ public class App extends Application {
         return retrofit.create(ApiInterface.class);
     }
 
-    private void setDefaultPair() {
 
-        if (!getSharedPreferences().contains("left_spinner_value")) {
-            getSharedPreferences()
-                    .edit()
-                    .putString("left_spinner_value", "BTC")
-                    .apply();
-        }
+    public String getSavedLeftSpinnerValue() {
+        return getSharedPreferences().getString("left_spinner_value", "BTC");
+    }
 
-        if (!getSharedPreferences().contains("right_spinner_value")) {
-            getSharedPreferences()
-                    .edit()
-                    .putString("right_spinner_value", "USD")
-                    .apply();
-        }
+    public String getSavedRightSpinnerValue() {
+        return getSharedPreferences().getString("right_spinner_value", "USD");
     }
 
     public String getSavedPercentChange() {
         return getSharedPreferences().getString("display_price_change", "hour");
+    }
+
+    public String getSavedTitleFormat() {
+        return getSharedPreferences().getString("title_format", "codes");
     }
 
 }

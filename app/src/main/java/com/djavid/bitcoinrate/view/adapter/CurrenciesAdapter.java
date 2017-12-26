@@ -10,11 +10,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.util.Codes;
 
 
 public class CurrenciesAdapter extends ArrayAdapter<String> {
+
     private String[] currs;
     private LayoutInflater inflater;
     private int rowItemId;
@@ -35,16 +37,24 @@ public class CurrenciesAdapter extends ArrayAdapter<String> {
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        return getCustomView(position, convertView, parent, R.layout.row);
+        if (App.getAppInstance().getSavedTitleFormat().equals("titles"))
+            return getCustomView(position, convertView, parent, R.layout.row_long);
+        else
+            return getCustomView(position, convertView, parent, R.layout.row);
     }
 
     private View getCustomView(int position, View convertView, ViewGroup parent, int resource) {
+
         View item = inflater.inflate(resource, parent, false);
 
         TextView name = item.findViewById(R.id.curr_name);
         ImageView icon = item.findViewById(R.id.curr_icon);
 
-        name.setText(currs[position]);
+        if ((resource == R.layout.row_item || resource == R.layout.ticker_row_item)
+                && Codes.isCryptoCurrencyId(currs[position]))
+            name.setText(Codes.getCryptoCurrencySymbol(currs[position]));
+        else
+            name.setText(currs[position]);
         icon.setImageResource(Codes.getCurrencyImage(currs[position]));
 
         return item;

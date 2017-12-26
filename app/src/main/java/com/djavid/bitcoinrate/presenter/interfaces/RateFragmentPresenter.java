@@ -11,5 +11,5 @@ public interface RateFragmentPresenter extends Presenter<RateFragmentView, Route
     void showRateCryptonator(boolean refresh);
     void showRateCMC(boolean refresh);
     void refresh();
-    void showChart(String pair, int timespanDays, long after, boolean refresh);
+    void showChart(String crypto, String country, int timespanDays, long after, boolean refresh);
 }

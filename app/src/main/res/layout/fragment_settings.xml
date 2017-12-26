@@ -5,6 +5,7 @@
     tools:context="com.djavid.bitcoinrate.view.fragment.SettingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorCardBackground"
     android:orientation="vertical">
 
 
@@ -16,9 +17,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
 
-        android:textSize="20sp"
-        fontPath="revofit-light.ttf"
-
+        android:textColor="@color/colorSettingsText"
+        android:textSize="15sp"
         android:text="@string/title_crypto_display"
         />
 
@@ -30,33 +30,32 @@
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:orientation="horizontal"
-        segmentedgroup:sc_tint_color="@color/colorTint"
+        segmentedgroup:sc_tint_color="@color/colorSettingsAccent"
         segmentedgroup:sc_border_width="1dp"
-        segmentedgroup:sc_corner_radius="0dp">
+        segmentedgroup:sc_corner_radius="10dp">
 
         <RadioButton
             android:id="@+id/btn_codes"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:textSize="20sp"
             android:checked="true"
             android:text="@string/title_display_codes"
             style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
+            />
 
         <RadioButton
             android:id="@+id/btn_titles"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:textSize="20sp"
             android:text="@string/title_display_titles"
             style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
+            />
 
     </info.hoang8f.android.segmented.SegmentedGroup>
-
 
     <TextView
         android:id="@+id/tv_default_pair"
@@ -66,9 +65,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
 
-        android:textSize="20sp"
-        fontPath="revofit-light.ttf"
-
+        android:textColor="@color/colorSettingsText"
+        android:textSize="15sp"
         android:text="@string/title_default_pair"
         />
 
@@ -85,7 +83,7 @@
             android:id="@+id/leftSpinner"
             android:layout_width="0dp"
             android:layout_height="35dp"
-            android:background="@drawable/border_spinner"
+            android:background="@drawable/border_spinner_settings"
             android:spinnerMode="dialog"
             android:layout_marginEnd="7dp"
             android:layout_weight="1"
@@ -96,7 +94,7 @@
             android:id="@+id/rightSpinner"
             android:layout_width="0dp"
             android:layout_height="35dp"
-            android:background="@drawable/border_spinner"
+            android:background="@drawable/border_spinner_settings"
             android:spinnerMode="dialog"
             android:layout_marginStart="7dp"
             android:layout_weight="1"
@@ -114,9 +112,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
 
-        android:textSize="20sp"
-        fontPath="revofit-light.ttf"
-
+        android:textColor="@color/colorSettingsText"
+        android:textSize="15sp"
         android:text="@string/title_display_price_change"
         />
 
@@ -128,9 +125,9 @@
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:orientation="horizontal"
-        segmentedgroup:sc_tint_color="@color/colorTint"
+        segmentedgroup:sc_tint_color="@color/colorSettingsAccent"
         segmentedgroup:sc_border_width="1dp"
-        segmentedgroup:sc_corner_radius="0dp">
+        segmentedgroup:sc_corner_radius="10dp">
 
         <RadioButton
             android:id="@+id/btn_hour"
@@ -141,7 +138,7 @@
             android:checked="true"
             android:text="@string/title_price_change_hour"
             style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
+             />
 
         <RadioButton
             android:id="@+id/btn_day"
@@ -151,7 +148,7 @@
             android:textSize="20sp"
             android:text="@string/title_price_change_day"
             style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
+             />
 
         <RadioButton
             android:id="@+id/btn_week"
@@ -161,21 +158,22 @@
             android:textSize="20sp"
             android:text="@string/title_price_change_week"
             style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
+            />
 
     </info.hoang8f.android.segmented.SegmentedGroup>
 
 
     <Button
         android:id="@+id/btn_about_developer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="20dp"
-
-        android:textSize="15sp"
-        fontPath="revofit-light.ttf"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/about_btn_bg"
+        android:textSize="16sp"
+        android:textColor="@color/colorCardTitleBackground"
 
         android:text="@string/title_about_developer"
         />

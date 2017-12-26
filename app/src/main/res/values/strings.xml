@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Курс биткоин</string>
+    <string name="app_name">Крипто Курсы</string>
     <string name="title_home">Курс</string>
     <string name="title_cards">Тикеры</string>
     <string name="title_settings">Настройки</string>
@@ -75,5 +75,13 @@
     <string name="title_price_change_hour">1 час</string>
     <string name="title_price_change_day">24 часа</string>
     <string name="title_price_change_week">7 дней</string>
+
+    <!-- Popup window -->
+    <string name="string_rbtn_title">по названию</string>
+    <string name="string_rbtn_price">по цене</string>
+    <string name="string_rbtn_market_cap">по капитализации</string>
+    <string name="string_rbtn_growth_percent">по % роста</string>
+
+    <string name="string_popup_ok">OK</string>
 
 </resources>

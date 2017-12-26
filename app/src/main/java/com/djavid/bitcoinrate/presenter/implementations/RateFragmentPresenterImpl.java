@@ -60,14 +60,14 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         }
 
         if (getView() != null) {
-            getView().setCurrenciesSpinner();
 
-            String pair = ((String) getView().getLeftSpinner().getSelectedItem()).toLowerCase() +
-                    ((String) getView().getRightSpinner().getSelectedItem()).toLowerCase();
+            String curr1 = Codes.getCryptoCurrencySymbol(getView().getLeftSpinner().getSelectedItem().toString());
+            String curr2 = getView().getRightSpinner().getSelectedItem().toString();
+            String pair = curr1 + curr2;
 
             final RealmHistoryData realmFound = getValuesFromRealm();
             if (realmFound != null) {
-                String realm_pair = realmFound.getPair().toLowerCase();
+                String realm_pair = realmFound.getPair();
 
                 if (realm_pair.equals(pair))
                     loadValuesToChart(realmValuesToList(realmFound));
@@ -125,7 +125,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                         int intervals = getView().getSelectedChartOption().intervals;
                         long start = Codes.getChartStartDate(getView().getSelectedChartOption());
 
-                        showChart(curr1 + curr2, intervals, start, refresh);
+                        showChart(curr1, curr2, intervals, start, refresh);
                     }
 
                 }, error -> {
@@ -160,7 +160,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                         int intervals = getView().getSelectedChartOption().intervals;
                         long start = Codes.getChartStartDate(getView().getSelectedChartOption());
 
-                        showChart(crypto_id + country_id, intervals, start, refresh);
+                        showChart(crypto_id, country_id, intervals, start, refresh);
                     }
 
                 }, error -> {
@@ -170,9 +170,11 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     }
 
     @Override
-    public void showChart(String pair, int periods, long after, boolean refresh) {
+    public void showChart(String crypto, String country, int periods, long after, boolean refresh) {
         Log.i(TAG, "showChart()");
         //if (refresh) setRefreshing(true);
+
+        String pair = Codes.getCryptoCurrencySymbol(crypto) + country;
 
         disposable = dataRepository.getCryptowatchMarkets(pair)
                 .subscribe(result -> {
@@ -203,6 +205,13 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
         disposable = dataRepository.getHistory(market, pair, periods, after)
                 .subscribe(result -> {
+
+                    if (result == null ||
+                            result.getResult() == null ||
+                            result.getResult().getValues() == null) {
+                        setRefreshing(false);
+                        return;
+                    }
 
                     List<List<Double>> values = result.getResult().getValues();
                     if (values.size() == 0) {

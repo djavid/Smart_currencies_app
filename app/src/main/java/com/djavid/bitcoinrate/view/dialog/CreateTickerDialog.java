@@ -16,12 +16,12 @@ import com.djavid.bitcoinrate.core.BaseDialogFragment;
 import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
 
 import butterknife.BindView;
 
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
-import static com.djavid.bitcoinrate.util.Codes.crypto_coins_array;
 
 
 public class CreateTickerDialog extends BaseDialogFragment {
@@ -54,7 +54,7 @@ public class CreateTickerDialog extends BaseDialogFragment {
         });
 
         tv_create_btn.setOnClickListener(v -> {
-            String code_crypto = leftSpinner.getSelectedItem().toString();
+            String code_crypto = Codes.getCryptoCurrencySymbol(leftSpinner.getSelectedItem().toString());
             String code_country = rightSpinner.getSelectedItem().toString();
             long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
 
@@ -108,7 +108,7 @@ public class CreateTickerDialog extends BaseDialogFragment {
     public void setCurrenciesSpinner() {
 
         ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row,
-                crypto_coins_array, getActivity().getLayoutInflater(), R.layout.ticker_row_item);
+                Codes.getCryptoCoinsArrayFormatted(), getActivity().getLayoutInflater(), R.layout.ticker_row_item);
         leftSpinner.setAdapter(adapterLeft);
         leftSpinner.setOnItemSelectedListener(itemSelectedListener);
 

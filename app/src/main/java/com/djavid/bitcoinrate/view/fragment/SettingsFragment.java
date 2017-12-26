@@ -2,6 +2,7 @@ package com.djavid.bitcoinrate.view.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
-import static com.djavid.bitcoinrate.util.Codes.crypto_coins_array;
+import static com.djavid.bitcoinrate.util.Codes.crypto_coins_array_code;
 
 
 public class SettingsFragment extends Fragment {
@@ -65,6 +66,14 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null)
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_settings);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -75,12 +84,16 @@ public class SettingsFragment extends Fragment {
         btn_day.setOnClickListener(percentOnClickListener);
         btn_week.setOnClickListener(percentOnClickListener);
 
+        btn_titles.setOnClickListener(titleFormatOnClickListener);
+        btn_codes.setOnClickListener(titleFormatOnClickListener);
+
         setCheckedRadioButton();
 
         return view;
     }
 
     private void setCheckedRadioButton() {
+
         switch (App.getAppInstance().getSavedPercentChange()) {
             case "hour":
                 btn_hour.setChecked(true);
@@ -90,6 +103,15 @@ public class SettingsFragment extends Fragment {
                 break;
             case "week":
                 btn_week.setChecked(true);
+                break;
+        }
+
+        switch (App.getAppInstance().getSavedTitleFormat()) {
+            case "codes":
+                btn_codes.setChecked(true);
+                break;
+            case "titles":
+                btn_titles.setChecked(true);
                 break;
         }
     }
@@ -118,6 +140,24 @@ public class SettingsFragment extends Fragment {
         }
     };
 
+    View.OnClickListener titleFormatOnClickListener = v -> {
+
+        switch (v.getId()) {
+            case R.id.btn_codes:
+                App.getAppInstance().getSharedPreferences()
+                        .edit()
+                        .putString("title_format", "codes")
+                        .apply();
+                break;
+            case R.id.btn_titles:
+                App.getAppInstance().getSharedPreferences()
+                        .edit()
+                        .putString("title_format", "titles")
+                        .apply();
+                break;
+        }
+    };
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -136,11 +176,11 @@ public class SettingsFragment extends Fragment {
                 .getString("right_spinner_value", "USD");
 
         ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row,
-                crypto_coins_array, getActivity().getLayoutInflater(), R.layout.ticker_row_item);
+                crypto_coins_array_code, getActivity().getLayoutInflater(), R.layout.ticker_row_item);
         leftSpinner.setAdapter(adapterLeft);
 
-        int id_left = IntStream.range(0, crypto_coins_array.length)
-                .filter(i -> crypto_coins_array[i].equals(left_default)).findFirst().getAsInt();
+        int id_left = IntStream.range(0, crypto_coins_array_code.length)
+                .filter(i -> crypto_coins_array_code[i].equals(left_default)).findFirst().getAsInt();
         leftSpinner.setSelection(id_left, false);
         leftSpinner.setOnItemSelectedListener(itemSelectedListener);
 

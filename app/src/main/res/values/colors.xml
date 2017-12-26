@@ -37,4 +37,8 @@
     <color name="colorLabelDialogTitle">#ddf0a311</color>
     <color name="colorCheckBoxButton">#ddf0a311</color>
 
+    <color name="colorSettingsText">#757575</color>
+    <color name="colorSettingsAccent">#ddf0a311</color>
+    <color name="colorAboutBtn">#00BCD4</color>
+
 </resources>

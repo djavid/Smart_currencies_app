@@ -10,6 +10,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
@@ -17,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
 
 import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
@@ -48,8 +51,10 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout swipe_container;
 
+
     TickerFragmentPresenter presenter;
     private OnTickerInteractionListener mTickerListener;
+    PopupWindow popup;
 
     private final String TAG = this.getClass().getSimpleName();
     final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
@@ -94,6 +99,26 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                 break;
             case R.id.sort:
 
+                if (popup != null && popup.isShowing()) {
+                    System.out.println("dismiss");
+                    popup.dismiss();
+                    break;
+                }
+
+                View customView = getLayoutInflater().inflate(R.layout.popup_layout,null);
+
+                popup = new PopupWindow(
+                        customView,
+                        WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+
+                View menuItemView = getActivity().findViewById(R.id.sort);
+                popup.showAsDropDown(menuItemView);
+
+//                popup.setFocusable(true);
+                popup.setOutsideTouchable(true);
+
                 break;
         }
 
@@ -117,6 +142,9 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         presenter.onStart();
 
         super.onStart();
+
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null)
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_cards);
     }
 
     @Override

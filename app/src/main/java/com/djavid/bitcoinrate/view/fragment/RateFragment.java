@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,7 +30,6 @@ import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import butterknife.BindView;
 
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
-import static com.djavid.bitcoinrate.util.Codes.crypto_coins_array;
 
 
 public class RateFragment extends BaseFragment implements RateFragmentView, SwipeRefreshLayout.OnRefreshListener {
@@ -86,7 +86,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         chart = new RateChart(view);
         chart.initialize();
 
-        //setCurrenciesSpinner();
+        setCurrenciesSpinner();
 
         getSelectedChartOption();
         setChartLabelSelected(getSelectedChartLabelView());
@@ -97,18 +97,10 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public void setCurrenciesSpinner() {
 
-        String left_default = App.getAppInstance().getSharedPreferences()
-                .getString("left_spinner_value", "BTC");
-        String right_default = App.getAppInstance().getSharedPreferences()
-                .getString("right_spinner_value", "USD");
-
         ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row,
-                crypto_coins_array, getActivity().getLayoutInflater(), R.layout.row_item);
+                Codes.getCryptoCoinsArrayFormatted(), getActivity().getLayoutInflater(), R.layout.row_item);
         leftPanel.setAdapter(adapterLeft);
-
-        int id_left = IntStream.range(0, crypto_coins_array.length)
-                .filter(i -> crypto_coins_array[i].equals(left_default)).findFirst().getAsInt();
-        leftPanel.setSelection(id_left, false);
+        leftPanel.setSelection(Codes.getSelectedCryptoCoinIndex(), false);
         leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
 
@@ -116,6 +108,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
                         getActivity().getLayoutInflater(), R.layout.row_item);
         rightPanel.setAdapter(adapterRight);
 
+        String right_default = App.getAppInstance().getSavedRightSpinnerValue();
         int id_right = IntStream.range(0, country_coins.length)
                 .filter(i -> country_coins[i].equals(right_default)).findFirst().getAsInt();
         rightPanel.setSelection(id_right);
@@ -190,10 +183,9 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
         long start = Codes.getChartStartDate(chartOption);
 
-        String pair = ((String) leftPanel.getSelectedItem()).toLowerCase() +
-                ((String) rightPanel.getSelectedItem()).toLowerCase();
-
-        presenter.showChart(pair, chartOption.intervals, start, true);
+        String curr1 = (String) leftPanel.getSelectedItem();
+        String curr2 = ((String) rightPanel.getSelectedItem());
+        presenter.showChart(curr1, curr2, chartOption.intervals, start, true);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -232,6 +224,9 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         presenter.onStart();
 
         super.onStart();
+
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null)
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
     }
 
     @Override
