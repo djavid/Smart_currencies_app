@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -17,6 +19,9 @@ import com.annimon.stream.IntStream;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
+import com.zyyoona7.lib.EasyPopup;
+import com.zyyoona7.lib.HorizontalGravity;
+import com.zyyoona7.lib.VerticalGravity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +49,11 @@ public class SettingsFragment extends Fragment {
     RadioButton btn_codes;
     @BindView(R.id.btn_titles)
     RadioButton btn_titles;
+
+    @BindView(R.id.btn_about_developer)
+    Button btn_about_developer;
+    @BindView(R.id.ll_parent)
+    LinearLayout ll_parent;
 
 
     private Unbinder unbinder;
@@ -87,6 +97,8 @@ public class SettingsFragment extends Fragment {
         btn_titles.setOnClickListener(titleFormatOnClickListener);
         btn_codes.setOnClickListener(titleFormatOnClickListener);
 
+        btn_about_developer.setOnClickListener(aboutBtnOnClickListener);
+
         setCheckedRadioButton();
 
         return view;
@@ -115,6 +127,19 @@ public class SettingsFragment extends Fragment {
                 break;
         }
     }
+
+    View.OnClickListener aboutBtnOnClickListener = v -> {
+
+        EasyPopup popup_window = new EasyPopup(getContext())
+                .setContentView(R.layout.about_developer)
+                .setFocusAndOutsideEnable(true)
+                .setBackgroundDimEnable(true)
+                .setDimValue(0.3f)
+                .createPopup();
+
+        popup_window.showAtAnchorView(ll_parent, VerticalGravity.CENTER, HorizontalGravity.CENTER);
+
+    };
 
     View.OnClickListener percentOnClickListener = v -> {
 

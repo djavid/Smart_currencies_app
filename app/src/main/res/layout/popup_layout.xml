@@ -6,62 +6,63 @@
     tools:ignore="MissingPrefix, ContentDescription"
     android:id="@+id/rl_custom_layout"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/popup_background"
-    android:padding="10dp">
+    android:padding="20dp">
 
 
     <RadioGroup
         android:id="@+id/rg_popup"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <RadioButton
             android:id="@+id/rbtn_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText"
-            android:text="@string/string_rbtn_title"
-            />
+            android:textColor="@color/colorPopupText"
+            android:textSize="18sp"
+            fontPath="roboto-regular.ttf"
+            android:text="@string/string_rbtn_title" />
 
         <RadioButton
             android:id="@+id/rbtn_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText"
-            android:text="@string/string_rbtn_price"
-            />
+            android:textColor="@color/colorPopupText"
+            android:textSize="18sp"
+            fontPath="roboto-regular.ttf"
+            android:text="@string/string_rbtn_price" />
 
         <RadioButton
             android:id="@+id/rbtn_market_cap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText"
-            android:text="@string/string_rbtn_market_cap"
-            />
+            android:textColor="@color/colorPopupText"
+            android:textSize="18sp"
+            fontPath="roboto-regular.ttf"
+            android:text="@string/string_rbtn_market_cap" />
 
         <RadioButton
             android:id="@+id/rbtn_growth_percent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText"
-            android:text="@string/string_rbtn_growth_percent"
-            />
+            android:textColor="@color/colorPopupText"
+            android:textSize="18sp"
+            fontPath="roboto-regular.ttf"
+            android:text="@string/string_rbtn_growth_percent" />
 
     </RadioGroup>
-
 
 
     <info.hoang8f.android.segmented.SegmentedGroup
         android:id="@+id/segmented_btn_price_change"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@id/rg_popup"
         android:orientation="horizontal"
-        app:sc_tint_color="@color/colorSettingsAccent"
+        app:sc_tint_color="@color/colorPopupBtnUnselected"
         segmentedgroup:sc_border_width="1dp"
         segmentedgroup:sc_corner_radius="10dp">
 
@@ -72,8 +73,8 @@
             android:textSize="15sp"
             android:checked="true"
             android:text="@string/title_price_change_hour"
-            style="@style/RadioButton"
-            />
+            fontPath="roboto-regular.ttf"
+            style="@style/RadioButton" />
 
         <RadioButton
             android:id="@+id/btn_day"
@@ -81,8 +82,8 @@
             android:layout_width="wrap_content"
             android:textSize="15sp"
             android:text="@string/title_price_change_day"
-            style="@style/RadioButton"
-            />
+            fontPath="roboto-regular.ttf"
+            style="@style/RadioButton" />
 
         <RadioButton
             android:id="@+id/btn_week"
@@ -90,8 +91,8 @@
             android:layout_width="wrap_content"
             android:textSize="15sp"
             android:text="@string/title_price_change_week"
-            style="@style/RadioButton"
-            />
+            fontPath="roboto-regular.ttf"
+            style="@style/RadioButton" />
 
     </info.hoang8f.android.segmented.SegmentedGroup>
 
@@ -101,10 +102,9 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_below="@id/segmented_btn_price_change"
-        android:layout_marginTop="10dp"
-        app:backgroundTint="@color/colorPriceChangePos"
-        app:srcCompat="@drawable/ic_keyboard_arrow_up_white_24px"
-        />
+        android:layout_marginTop="20dp"
+        app:backgroundTint="@color/colorPopupBtnSelected"
+        app:srcCompat="@drawable/ic_keyboard_arrow_up_white_24px" />
 
     <ImageButton
         android:id="@+id/imagebutton_down"
@@ -112,9 +112,9 @@
         android:layout_height="45dp"
         android:layout_toEndOf="@id/imagebutton_up"
         android:layout_alignBottom="@id/imagebutton_up"
-        app:backgroundTint="@color/colorPriceChangeNeg"
-        app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24px"
-        />
+        app:backgroundTint="@color/colorPopupBtnUnselected"
+        app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24px" />
+
 
     <Button
         android:id="@+id/btn_ok"
@@ -124,9 +124,7 @@
         android:layout_alignEnd="@id/segmented_btn_price_change"
         app:backgroundTint="@color/colorPrimary"
         android:text="@string/string_popup_ok"
-        android:textColor="@color/colorTickerLabelText"
-        />
-
+        android:textColor="@color/colorTickerLabelText" />
 
 
 </RelativeLayout>

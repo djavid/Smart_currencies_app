@@ -37,8 +37,16 @@
     <color name="colorLabelDialogTitle">#ddf0a311</color>
     <color name="colorCheckBoxButton">#ddf0a311</color>
 
+    <!-- settings -->
     <color name="colorSettingsText">#757575</color>
     <color name="colorSettingsAccent">#ddf0a311</color>
     <color name="colorAboutBtn">#00BCD4</color>
+
+    <!-- popup cardview -->
+    <color name="colorPopupCardBackground">#FAFAFA</color>
+    <color name="colorPopupBtnUnselected">#979797</color>
+    <color name="colorPopupBtnSelected">#00BCD4</color>
+    <color name="colorPopupSelectedSegmentedBtn">#f0a311</color>
+    <color name="colorPopupText">#757575</color>
 
 </resources>

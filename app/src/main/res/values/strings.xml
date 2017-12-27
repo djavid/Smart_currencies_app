@@ -80,8 +80,12 @@
     <string name="string_rbtn_title">по названию</string>
     <string name="string_rbtn_price">по цене</string>
     <string name="string_rbtn_market_cap">по капитализации</string>
-    <string name="string_rbtn_growth_percent">по % роста</string>
+    <string name="string_rbtn_growth_percent">по % роста за</string>
 
     <string name="string_popup_ok">OK</string>
+
+    <!-- About gorgeous developer -->
+    <string name="my_name">Джавид Халилов</string>
+    <string name="my_email">djavid10@yandex.ru</string>
 
 </resources>

@@ -1,11 +1,13 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cl_ticker"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".view.fragment.TickerFragment"
+    android:id="@+id/cl_ticker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context=".view.fragment.TickerFragment">
+    android:orientation="vertical">
+
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
@@ -21,6 +23,7 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -28,13 +31,16 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_add_white_24px"
+        android:focusable="true"
         android:clickable="true"
         app:fabSize="normal"
         app:elevation="6dp"
         app:backgroundTint="@color/colorPrimary"
         app:pressedTranslationZ="12dp" />
 
+
     <include layout="@layout/view_progressbar"
         android:visibility="invisible"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

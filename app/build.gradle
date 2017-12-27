@@ -95,4 +95,7 @@ dependencies {
 
     //NavigationViewFragmentAdapters
     compile 'com.patloew.navigationviewfragmentadapters:adapters:0.3.0'
+
+    //made in china
+    compile 'com.github.zyyoona7:EasyPopup:1.0.2'
 }

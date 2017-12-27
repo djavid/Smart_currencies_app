@@ -3,6 +3,7 @@
     xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
     tools:ignore="MissingPrefix, ContentDescription"
     tools:context="com.djavid.bitcoinrate.view.fragment.SettingsFragment"
+    android:id="@+id/ll_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorCardBackground"
