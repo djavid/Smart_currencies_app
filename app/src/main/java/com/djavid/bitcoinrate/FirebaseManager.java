@@ -30,26 +30,16 @@ public class FirebaseManager extends FirebaseInstanceIdService {
 
         long id;
         //if not found preference then is default 0
-        id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+        id = App.getAppInstance().getPreferences().getTokenId();
 
         DataRepository dataRepository = new RestDataRepository();
         dataRepository.registerToken(token, id)
                 .subscribe(response -> {
 
                     if (response.error.isEmpty()) {
-
                         if (response.id != 0) {
-                            App.getAppInstance()
-                                    .getSharedPreferences()
-                                    .edit()
-                                    .putLong("token_id", response.id)
-                                    .apply();
-
-                            App.getAppInstance()
-                                    .getSharedPreferences()
-                                    .edit()
-                                    .putString("token", token)
-                                    .apply();
+                            App.getAppInstance().getPreferences().setTokenId(response.id);
+                            App.getAppInstance().getPreferences().setToken(token);
                         }
                     }
                 });

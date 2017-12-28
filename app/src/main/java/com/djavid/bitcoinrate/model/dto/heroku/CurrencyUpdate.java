@@ -88,6 +88,7 @@ public class CurrencyUpdate extends RealmObject {
 
 
     public double getPercentChange(String setting) {
+
         switch (setting) {
             case "hour":
                 return getPercent_change_1h();

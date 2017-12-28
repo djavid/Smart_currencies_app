@@ -172,17 +172,14 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                             getResources().getColor(R.color.colorPopupSelectedSegmentedBtn));
                 });
 
-                imagebutton_up.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                imagebutton_up.setOnClickListener(v -> {
 
-                        Drawable bg = DrawableCompat.wrap(imagebutton_up.getBackground());
-                        DrawableCompat.setTint(bg, TickerFragment.this.getResources().getColor(R.color.colorPopupBtnSelected));
+                    Drawable bg = DrawableCompat.wrap(imagebutton_up.getBackground());
+                    DrawableCompat.setTint(bg, TickerFragment.this.getResources().getColor(R.color.colorPopupBtnSelected));
 
-                        bg = DrawableCompat.wrap(imagebutton_down.getBackground());
-                        DrawableCompat.setTint(bg, TickerFragment.this.getResources().getColor(R.color.colorPopupBtnUnselected));
+                    bg = DrawableCompat.wrap(imagebutton_down.getBackground());
+                    DrawableCompat.setTint(bg, TickerFragment.this.getResources().getColor(R.color.colorPopupBtnUnselected));
 
-                    }
                 });
 
                 imagebutton_down.setOnClickListener(v -> {
@@ -211,13 +208,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         return super.onOptionsItemSelected(item);
     }
 
-//    private void hideAllLabels() {
-//        List<Object> tickerItemList = rv_ticker_list.getAllViewResolvers();
-//
-//        for (Object item : tickerItemList) {
-//            ((TickerItem) item).hideLabelItem();
-//        }
-//    }
 
     @Override
     public void onStart() {
@@ -325,7 +315,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                         data.getExtras().containsKey("cryptoId") && data.getExtras().containsKey("id")) {
 
                     long ticker_id = data.getExtras().getLong("id");
-                    long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+                    long token_id = App.getAppInstance().getPreferences().getTokenId();
 
                     presenter.addTickerFromServer(token_id, ticker_id);
                 }
@@ -342,8 +332,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
         TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
         tickerItem.setPrice(text);
-        tickerItem.setPriceChange(ticker.getTicker().getPercentChange(App.getAppInstance()
-                .getSavedPercentChange()));
+        tickerItem.setPriceChange(ticker.getTicker().getPercentChange(
+                App.getAppInstance().getPreferences().getShowedPriceChange()));
 
         rv_ticker_list.addView(tickerItem);
         scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
@@ -354,7 +344,10 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         Log.i(TAG, "addAllTickers()");
         resetFeed();
 
+        //todo sort here
+
         for (Ticker item : tickers) {
+
             List<Subscribe> itemSubs = Stream.of(subscribes)
                     .filter(s -> s.getTickerId() == item.getId())
                     .toList();
@@ -364,8 +357,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             tickerItem.setPrice(text);
-            tickerItem.setPriceChange(item.getTicker().getPercentChange(App.getAppInstance()
-                    .getSavedPercentChange()));
+            tickerItem.setPriceChange(item.getTicker().getPercentChange(
+                    App.getAppInstance().getPreferences().getShowedPriceChange()));
 
             rv_ticker_list.addView(tickerItem);
         }

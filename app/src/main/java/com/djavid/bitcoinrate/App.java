@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatDelegate;
 
 import com.djavid.bitcoinrate.model.ApiInterface;
 import com.djavid.bitcoinrate.util.PresenterProvider;
+import com.djavid.bitcoinrate.util.SavedPreferences;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -26,6 +27,7 @@ public class App extends Application {
     private ApiInterface apiInterface;
     private PresenterProvider presenterProvider;
     private SharedPreferences sharedPreferences;
+    private SavedPreferences savedPreferences;
     private static String SHARED_PREFERENCES_CODE = "bitcoin_rate_app";
 
 
@@ -39,6 +41,7 @@ public class App extends Application {
 
         getPresenterProvider();
         getSharedPreferences();
+        getPreferences();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         JodaTimeAndroid.init(this);
 
@@ -73,11 +76,18 @@ public class App extends Application {
         return presenterProvider;
     }
 
-    public SharedPreferences getSharedPreferences() {
+    private SharedPreferences getSharedPreferences() {
         if (sharedPreferences == null)
             sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_CODE, MODE_PRIVATE);
 
         return sharedPreferences;
+    }
+
+    public SavedPreferences getPreferences() {
+        if (savedPreferences == null)
+            savedPreferences = new SavedPreferences(getSharedPreferences());
+
+        return savedPreferences;
     }
 
     private ApiInterface buildApiInterface() {
@@ -94,23 +104,6 @@ public class App extends Application {
                 .build();
 
         return retrofit.create(ApiInterface.class);
-    }
-
-
-    public String getSavedLeftSpinnerValue() {
-        return getSharedPreferences().getString("left_spinner_value", "BTC");
-    }
-
-    public String getSavedRightSpinnerValue() {
-        return getSharedPreferences().getString("right_spinner_value", "USD");
-    }
-
-    public String getSavedPercentChange() {
-        return getSharedPreferences().getString("display_price_change", "hour");
-    }
-
-    public String getSavedTitleFormat() {
-        return getSharedPreferences().getString("title_format", "codes");
     }
 
 }

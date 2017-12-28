@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -51,6 +52,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @BindView(R.id.optionFourth)
     TextView optionFourth;
 
+    private final String TAG = this.getClass().getSimpleName();
     OnFragmentInteractionListener mListener;
     RateFragmentPresenter presenter;
     RateChart chart;
@@ -71,6 +73,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public View setupView(View view) {
+        Log.i(TAG, "setupView()");
 
         swipe_container.setOnRefreshListener(this);
         swipe_container.setColorSchemeColors(
@@ -97,22 +100,23 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public void setCurrenciesSpinner() {
 
+        ArrayAdapter<String> adapterRight = new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
+                getActivity().getLayoutInflater(), R.layout.row_item);
+        rightPanel.setAdapter(adapterRight);
+
+        String right_default = App.getAppInstance().getPreferences().getRightSpinnerValue();
+        int id_right = IntStream.range(0, country_coins.length)
+                .filter(i -> country_coins[i].equals(right_default)).findFirst().getAsInt();
+        rightPanel.setSelection(id_right, false);
+        rightPanel.setOnItemSelectedListener(itemSelectedListener);
+
         ArrayAdapter<String> adapterLeft = new CurrenciesAdapter(getActivity(), R.layout.row,
                 Codes.getCryptoCoinsArrayFormatted(), getActivity().getLayoutInflater(), R.layout.row_item);
         leftPanel.setAdapter(adapterLeft);
-        leftPanel.setSelection(Codes.getSelectedCryptoCoinIndex(), false);
+        leftPanel.setSelection(Codes.getSelectedCryptoCoinIndex());
         leftPanel.setOnItemSelectedListener(itemSelectedListener);
 
-
-        ArrayAdapter<String> adapterRight = new CurrenciesAdapter(getActivity(), R.layout.row, country_coins,
-                        getActivity().getLayoutInflater(), R.layout.row_item);
-        rightPanel.setAdapter(adapterRight);
-
-        String right_default = App.getAppInstance().getSavedRightSpinnerValue();
-        int id_right = IntStream.range(0, country_coins.length)
-                .filter(i -> country_coins[i].equals(right_default)).findFirst().getAsInt();
-        rightPanel.setSelection(id_right);
-        rightPanel.setOnItemSelectedListener(itemSelectedListener);
+        //todo problem with setSelection when in settings change title format.
 
     }
 
@@ -120,7 +124,18 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    //TODO decide whether to load chart every time
+                    Log.i(TAG, "Selected spinner item '" + parent.getSelectedItem() + "'");
+
+                    if (parent.getId() == R.id.leftPanel) {
+                        App.getAppInstance().getPreferences()
+                                .setLeftSpinnerValue(parent.getSelectedItem().toString());
+                    }
+
+                    if (parent.getId() == R.id.rightPanel) {
+                        App.getAppInstance().getPreferences()
+                                .setRightSpinnerValue(parent.getSelectedItem().toString());
+                    }
+
                     presenter.showRate(false);
                 }
 

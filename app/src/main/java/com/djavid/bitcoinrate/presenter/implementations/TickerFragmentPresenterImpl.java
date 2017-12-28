@@ -97,11 +97,12 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
         Log.i(TAG, "getAllTickers(" + refresh + ")");
         if (refresh) setRefreshing(true);
 
-        long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+        long token_id = App.getAppInstance().getPreferences().getTokenId();
+
         if (token_id == 0) {
             sendTokenToServer();
-        } else {
 
+        } else {
             disposable = dataRepository.getTickersByTokenId(token_id)
                     .subscribe(tickerList -> {
 
@@ -119,7 +120,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     private void getAllSubscribes() {
         Log.i(TAG, "getAllSubscribes()");
 
-        long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+        long token_id = App.getAppInstance().getPreferences().getTokenId();
 
         disposable = dataRepository.getSubscribesByTokenId(token_id)
                 .subscribe(subscribeList -> {
@@ -211,12 +212,13 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
         long id;
         //if not found preference then is default 0
-        id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+        id = App.getAppInstance().getPreferences().getTokenId();
 
         dataRepository.registerToken(token, id)
                 .subscribe(response -> {
 
                     if (response.error.isEmpty()) {
+
                         //success
                         if (response.id != 0) {
                             saveToPreferences(response.id, token);
@@ -224,6 +226,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                         }
 
                     } else if (!response.error.isEmpty() && response.id != 0) {
+
                         //device id was already registered
                         saveToPreferences(response.id, token);
                         getAllTickers(false);
@@ -237,17 +240,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     }
 
     private void saveToPreferences(long token_id, String token) {
-        App.getAppInstance()
-                .getSharedPreferences()
-                .edit()
-                .putLong("token_id", token_id)
-                .apply();
-
-        App.getAppInstance()
-                .getSharedPreferences()
-                .edit()
-                .putString("token", token)
-                .apply();
+        App.getAppInstance().getPreferences().setTokenId(token_id);
+        App.getAppInstance().getPreferences().setToken(token);
     }
 
     @Override

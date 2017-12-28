@@ -46,20 +46,22 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
     @Override
     public void onStart() {
-        if (getInstanceState() != null) {
-            if (getView() != null) {
 
-                getView().setAllChartLabelsUnselected();
-                getView().setSelectedChartOption(getInstanceState().getChart_option());
-                if (getView().getSelectedChartLabelView() != null)
-                    getView().setChartLabelSelected(getView().getSelectedChartLabelView());
+        if (getInstanceState() != null && getView() != null) {
 
-                if (!getInstanceState().getPrice().isEmpty())
-                    getView().getTopPanel().setText(getInstanceState().getPrice());
-            }
+            getView().setAllChartLabelsUnselected();
+            getView().setSelectedChartOption(getInstanceState().getChart_option());
+
+            if (getView().getSelectedChartLabelView() != null)
+                getView().setChartLabelSelected(getView().getSelectedChartLabelView());
+
+            if (!getInstanceState().getPrice().isEmpty())
+                getView().getTopPanel().setText(getInstanceState().getPrice());
         }
 
         if (getView() != null) {
+
+            //getView().setCurrenciesSpinner();
 
             String curr1 = Codes.getCryptoCurrencySymbol(getView().getLeftSpinner().getSelectedItem().toString());
             String curr2 = getView().getRightSpinner().getSelectedItem().toString();

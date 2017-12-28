@@ -9,6 +9,8 @@ import com.djavid.bitcoinrate.R;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
+import java.util.Arrays;
+
 
 public class Codes {
 
@@ -68,7 +70,7 @@ public class Codes {
 
     public static String[] getCryptoCoinsArrayFormatted() {
 
-        if (App.getAppInstance().getSavedTitleFormat().equals("codes"))
+        if (App.getAppInstance().getPreferences().getTitleFormat().equals("codes"))
             return crypto_coins_array_code;
         else
             return crypto_coins_array_titles;
@@ -76,14 +78,23 @@ public class Codes {
 
     public static int getSelectedCryptoCoinIndex() {
 
-        String code = App.getAppInstance().getSavedLeftSpinnerValue();
+        String code = App.getAppInstance().getPreferences().getLeftSpinnerValue();
+        System.out.println(code);
 
-        if (App.getAppInstance().getSavedTitleFormat().equals("codes")) {
+        if (App.getAppInstance().getPreferences().getTitleFormat().equals("codes")) {
+
             String found = Stream.of(crypto_coins)
                     .filter(i -> i.id.equals(code) | i.symbol.equals(code))
                     .findFirst()
                     .get()
                     .symbol;
+
+            System.out.println(found);
+            System.out.println(IntStream.range(0, crypto_coins_array_code.length)
+                    .filter(i -> crypto_coins_array_code[i].equals(found))
+                    .findFirst()
+                    .getAsInt());
+            System.out.println(Arrays.toString(crypto_coins_array_code));
 
             return IntStream.range(0, crypto_coins_array_code.length)
                     .filter(i -> crypto_coins_array_code[i].equals(found))
@@ -91,11 +102,19 @@ public class Codes {
                     .getAsInt();
 
         } else {
+
             String found = Stream.of(crypto_coins)
                     .filter(i -> i.id.equals(code) | i.symbol.equals(code))
                     .findFirst()
                     .get()
                     .id;
+
+            System.out.println(found);
+            System.out.println(IntStream.range(0, crypto_coins_array_titles.length)
+                    .filter(i -> crypto_coins_array_titles[i].equals(found))
+                    .findFirst()
+                    .getAsInt());
+            System.out.println(Arrays.toString(crypto_coins_array_titles));
 
             return IntStream.range(0, crypto_coins_array_titles.length)
                     .filter(i -> crypto_coins_array_titles[i].equals(found))

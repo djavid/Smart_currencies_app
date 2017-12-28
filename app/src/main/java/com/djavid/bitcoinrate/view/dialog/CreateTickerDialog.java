@@ -56,7 +56,7 @@ public class CreateTickerDialog extends BaseDialogFragment {
         tv_create_btn.setOnClickListener(v -> {
             String code_crypto = Codes.getCryptoCurrencySymbol(leftSpinner.getSelectedItem().toString());
             String code_country = rightSpinner.getSelectedItem().toString();
-            long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+            long token_id = App.getAppInstance().getPreferences().getTokenId();
 
             Ticker ticker = new Ticker(token_id, code_crypto, code_country);
             sendTicker(ticker);

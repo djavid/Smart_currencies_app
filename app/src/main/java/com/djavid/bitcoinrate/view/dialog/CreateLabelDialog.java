@@ -65,7 +65,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
             if (isValidValue(value, isPercentLabel, isTrendingUp)) {
 
-                long token_id = App.getAppInstance().getSharedPreferences().getLong("token_id", 0);
+                long token_id = App.getAppInstance().getPreferences().getTokenId();
                 TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
 
                 if (selectedTicker != null && selectedTicker.getTickerItem() != null) {

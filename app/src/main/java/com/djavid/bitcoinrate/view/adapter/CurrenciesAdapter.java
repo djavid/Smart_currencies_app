@@ -37,7 +37,8 @@ public class CurrenciesAdapter extends ArrayAdapter<String> {
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        if (App.getAppInstance().getSavedTitleFormat().equals("titles"))
+
+        if (App.getAppInstance().getPreferences().getTitleFormat().equals("titles"))
             return getCustomView(position, convertView, parent, R.layout.row_long);
         else
             return getCustomView(position, convertView, parent, R.layout.row);
