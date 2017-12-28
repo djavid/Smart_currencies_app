@@ -2,6 +2,7 @@ package com.djavid.bitcoinrate.presenter.implementations;
 
 import android.util.Log;
 
+import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
@@ -54,14 +55,14 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
             if (getView().getSelectedChartLabelView() != null)
                 getView().setChartLabelSelected(getView().getSelectedChartLabelView());
-
-            if (!getInstanceState().getPrice().isEmpty())
-                getView().getTopPanel().setText(getInstanceState().getPrice());
         }
 
         if (getView() != null) {
 
             //getView().setCurrenciesSpinner();
+
+            if (!App.getAppInstance().getPreferences().getPrice().isEmpty())
+                getView().getTopPanel().setText(App.getAppInstance().getPreferences().getPrice());
 
             String curr1 = Codes.getCryptoCurrencySymbol(getView().getLeftSpinner().getSelectedItem().toString());
             String curr2 = getView().getRightSpinner().getSelectedItem().toString();
@@ -100,9 +101,10 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
     @Override
     public void showRateCryptonator(boolean refresh) {
+        Log.i(TAG, "showRateCryptonator("+ refresh+ ")");
         if (refresh) setRefreshing(true);
 
-        final String curr1 = getView().getLeftSpinner().getSelectedItem().toString();
+        final String curr1 = Codes.getCryptoCurrencySymbol(getView().getLeftSpinner().getSelectedItem().toString());
         final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
 
         disposable = dataRepository.getRate(curr1, curr2)
@@ -122,6 +124,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                     if (getView() != null) {
                         if (!getView().getTopPanel().getText().equals(text)) {
                             getView().getTopPanel().setText(text);
+                            App.getAppInstance().getPreferences().setPrice(text);
                         }
 
                         int intervals = getView().getSelectedChartOption().intervals;
@@ -138,6 +141,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
     @Override
     public void showRateCMC(boolean refresh) {
+        Log.i(TAG, "showRateCMC("+ refresh+ ")");
         if (getView() == null) return;
 
         if (refresh) setRefreshing(true);
@@ -157,6 +161,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                     if (getView() != null) {
                         if (!getView().getTopPanel().getText().equals(text)) {
                             getView().getTopPanel().setText(text);
+                            App.getAppInstance().getPreferences().setPrice(text);
                         }
 
                         int intervals = getView().getSelectedChartOption().intervals;
@@ -166,7 +171,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                     }
 
                 }, error -> {
-                    if (getView() != null) getView().showError(R.string.connection_error);
+                    //if (getView() != null) getView().showError(R.string.connection_error);
+                    showRateCryptonator(refresh);
                     setRefreshing(false);
                 });
     }

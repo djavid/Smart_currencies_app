@@ -102,23 +102,11 @@ public class TickerItem {
     }
 
 
-//    public void hideLabelItem() {
-//        label_container.setVisibility(android.view.View.GONE);
-//        v_divider2.setVisibility(android.view.View.GONE);
-//        tickerValue.setPaddingRelative(0,0,0,10);
-//    }
-//
-//    public void showLabelItem() {
-//        label_container.setVisibility(android.view.View.VISIBLE);
-//        v_divider2.setVisibility(android.view.View.VISIBLE);
-//        tickerValue.setPaddingRelative(0,0,0,0);
-//    }
-
     public void addLabelItem(LabelItemDto new_item) {
 
         labels.add(new_item);
 
-        label_container.removeAllViews(); //TODO is it needed?
+        label_container.removeAllViews(); //is it needed?
         for (LabelItemDto item : labels) {
             label_container.addView(new LabelItem(mContext, label_container, item, this));
         }

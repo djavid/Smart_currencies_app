@@ -2,6 +2,8 @@ package com.djavid.bitcoinrate.presenter.implementations;
 
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
@@ -21,6 +23,7 @@ import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
@@ -315,5 +318,84 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
             if (getView().getRefreshLayout() != null)
                 getView().getRefreshLayout().setRefreshing(key);
         }
+    }
+
+    public List<Ticker> sortTickers(List<Ticker> tickers) {
+
+        String direction = App.getAppInstance().getPreferences().getSortingDirection();
+        String parameter = App.getAppInstance().getPreferences().getSortingParameter();
+
+        List<Ticker> sorted_tickers;
+
+        switch (parameter) {
+
+            case "title":
+                sorted_tickers = Stream.of(tickers)
+                        .sorted((a, b) -> {
+                            String a_title = Codes.getCryptoCurrencyId(a.getCryptoId());
+                            String b_title = Codes.getCryptoCurrencyId(b.getCryptoId());
+
+                            return a_title.compareTo(b_title);
+                        })
+                        .collect(Collectors.toList());
+                break;
+
+            case "price":
+                sorted_tickers = Stream.of(tickers)
+                        .sorted((a, b) -> Double.compare(
+                                a.getTicker().getPrice(),
+                                b.getTicker().getPrice()))
+                        .collect(Collectors.toList());
+                break;
+
+            case "market_cap":
+                sorted_tickers = Stream.of(tickers)
+                        .sorted((a, b) -> Double.compare(
+                                a.getTicker().getMarket_cap_usd(),
+                                b.getTicker().getMarket_cap_usd()))
+                        .collect(Collectors.toList());
+                break;
+
+            case "hour":
+                sorted_tickers = Stream.of(tickers)
+                        .sorted((a, b) -> Double.compare(
+                                a.getTicker().getPercent_change_1h(),
+                                b.getTicker().getPercent_change_1h()))
+                        .collect(Collectors.toList());
+                break;
+
+            case "day":
+                sorted_tickers = Stream.of(tickers)
+                        .sorted((a, b) -> Double.compare(
+                                a.getTicker().getPercent_change_24h(),
+                                b.getTicker().getPercent_change_24h()))
+                        .collect(Collectors.toList());
+                break;
+
+            case "week":
+                sorted_tickers = Stream.of(tickers)
+                        .sorted((a, b) -> Double.compare(
+                                a.getTicker().getPercent_change_7d(),
+                                b.getTicker().getPercent_change_7d()))
+                        .collect(Collectors.toList());
+                break;
+
+            default:
+                sorted_tickers = tickers;
+                break;
+        }
+
+        if (direction.equals("descending"))
+            Collections.reverse(sorted_tickers);
+
+        return sorted_tickers;
+    }
+
+    public List<Ticker> getTickers() {
+        return tickers;
+    }
+
+    public List<Subscribe> getSubscribes() {
+        return subscribes;
     }
 }

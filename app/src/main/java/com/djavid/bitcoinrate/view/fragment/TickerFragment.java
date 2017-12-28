@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -20,9 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
 
 import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
@@ -35,16 +30,13 @@ import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.dialog.CreateTickerDialog;
+import com.djavid.bitcoinrate.view.dialog.TickerPopupWindow;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 import com.mindorks.placeholderview.PlaceHolderView;
-import com.zyyoona7.lib.EasyPopup;
-import com.zyyoona7.lib.HorizontalGravity;
-import com.zyyoona7.lib.VerticalGravity;
 
 import java.util.List;
 
 import butterknife.BindView;
-import info.hoang8f.android.segmented.SegmentedGroup;
 
 
 public class TickerFragment extends BaseFragment implements TickerFragmentView, SwipeRefreshLayout.OnRefreshListener {
@@ -60,8 +52,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
 
     TickerFragmentPresenter presenter;
+    TickerPopupWindow tickerPopupWindow;
     private OnTickerInteractionListener mTickerListener;
-    EasyPopup popup_window;
 
     private final String TAG = this.getClass().getSimpleName();
     final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
@@ -75,6 +67,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public int getLayoutId() {
@@ -104,110 +97,17 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             case R.id.refresh:
                 presenter.getAllTickers(true);
                 break;
+
             case R.id.sort:
 
                 View menuItemView = getActivity().findViewById(R.id.sort);
-                popup_window = new EasyPopup(getContext())
-                        .setContentView(R.layout.popup_layout)
-                        .setFocusAndOutsideEnable(true)
-                        .setBackgroundDimEnable(true)
-                        .setDimValue(0.3f)
-                        .createPopup();
-                popup_window.showAtAnchorView(menuItemView, VerticalGravity.BELOW,
-                        HorizontalGravity.ALIGN_RIGHT);
-
-
-                RadioButton rbtn_title = popup_window.getView(R.id.rbtn_title);
-                RadioButton rbtn_price = popup_window.getView(R.id.rbtn_price);
-                RadioButton rbtn_market_cap = popup_window.getView(R.id.rbtn_market_cap);
-                RadioButton rbtn_growth_percent = popup_window.getView(R.id.rbtn_growth_percent);
-
-                SegmentedGroup segmented_btn_price_change = popup_window.
-                        getView(R.id.segmented_btn_price_change);
-                RadioButton btn_hour = popup_window.getView(R.id.btn_hour);
-                RadioButton btn_day = popup_window.getView(R.id.btn_day);
-                RadioButton btn_week = popup_window.getView(R.id.btn_week);
-
-                ImageButton imagebutton_up = popup_window.getView(R.id.imagebutton_up);
-                ImageButton imagebutton_down = popup_window.getView(R.id.imagebutton_down);
-                Button btn_ok = popup_window.getView(R.id.btn_ok);
-
-
-                rbtn_title.setOnClickListener(v -> {
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupBtnUnselected));
-                });
-
-                rbtn_price.setOnClickListener(v -> {
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupBtnUnselected));
-                });
-
-                rbtn_market_cap.setOnClickListener(v -> {
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupBtnUnselected));
-                });
-
-                rbtn_growth_percent.setOnClickListener(v -> {
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupSelectedSegmentedBtn));
-                });
-
-
-                btn_hour.setOnClickListener(v -> {
-                    rbtn_growth_percent.setChecked(true);
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupSelectedSegmentedBtn));
-                });
-
-                btn_day.setOnClickListener(v -> {
-                    rbtn_growth_percent.setChecked(true);
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupSelectedSegmentedBtn));
-                });
-
-                btn_week.setOnClickListener(v -> {
-                    rbtn_growth_percent.setChecked(true);
-                    segmented_btn_price_change.setTintColor(
-                            getResources().getColor(R.color.colorPopupSelectedSegmentedBtn));
-                });
-
-                imagebutton_up.setOnClickListener(v -> {
-
-                    Drawable bg = DrawableCompat.wrap(imagebutton_up.getBackground());
-                    DrawableCompat.setTint(bg, TickerFragment.this.getResources().getColor(R.color.colorPopupBtnSelected));
-
-                    bg = DrawableCompat.wrap(imagebutton_down.getBackground());
-                    DrawableCompat.setTint(bg, TickerFragment.this.getResources().getColor(R.color.colorPopupBtnUnselected));
-
-                });
-
-                imagebutton_down.setOnClickListener(v -> {
-
-                    Drawable bg = DrawableCompat.wrap(imagebutton_down.getBackground());
-                    DrawableCompat.setTint(bg, getResources().getColor(R.color.colorPopupBtnSelected));
-
-                    bg = DrawableCompat.wrap(imagebutton_up.getBackground());
-                    DrawableCompat.setTint(bg, getResources().getColor(R.color.colorPopupBtnUnselected));
-
-                });
-
-
-                btn_ok.setOnClickListener(v -> {
-                    //todo sorting
-
-                    popup_window.dismiss();
-                });
-
-                rbtn_title.setChecked(true);
-
+                tickerPopupWindow = new TickerPopupWindow(menuItemView, getContext(), this);
 
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onStart() {
@@ -344,7 +244,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         Log.i(TAG, "addAllTickers()");
         resetFeed();
 
-        //todo sort here
+        tickers = presenter.sortTickers(tickers);
 
         for (Ticker item : tickers) {
 
@@ -434,5 +334,9 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @Override
     public SwipeRefreshLayout getRefreshLayout() {
         return swipe_container;
+    }
+
+    public TickerFragmentPresenter getPresenter() {
+        return presenter;
     }
 }

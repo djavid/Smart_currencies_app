@@ -75,4 +75,36 @@ public class SavedPreferences {
                 .apply();
     }
 
+    public String getSortingDirection() {
+        return sharedPreferences.getString("sorting_direction", "ascending");
+    }
+    public void setSortingDirection(String value) {
+        //value = 'ascending', 'descending'
+        sharedPreferences
+                .edit()
+                .putString("sorting_direction", value)
+                .apply();
+    }
+
+    public String getSortingParameter() {
+        return sharedPreferences.getString("sorting_parameter", "title");
+    }
+    public void setSortingParameter(String value) {
+        //value = 'title', 'price', 'market_cap', 'hour', 'day', 'week'
+        sharedPreferences
+                .edit()
+                .putString("sorting_parameter", value)
+                .apply();
+    }
+
+    public String getPrice() {
+        return sharedPreferences.getString("price", "");
+    }
+    public void setPrice(String value) {
+        sharedPreferences
+                .edit()
+                .putString("price", value)
+                .apply();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.djavid.bitcoinrate.presenter.interfaces;
 
 import com.djavid.bitcoinrate.core.Presenter;
 import com.djavid.bitcoinrate.core.Router;
+import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
@@ -18,5 +19,7 @@ public interface TickerFragmentPresenter extends Presenter<TickerFragmentView, R
     void loadTickerPrice(TickerItem tickerItem);
     void loadTickerPriceCMC(TickerItem tickerItem);
     void loadTickerPriceCryptonator(TickerItem tickerItem);
-
+    List<Ticker> sortTickers(List<Ticker> tickers);
+    List<Ticker> getTickers();
+    List<Subscribe> getSubscribes();
 }

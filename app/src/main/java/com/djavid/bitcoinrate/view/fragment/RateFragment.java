@@ -246,12 +246,7 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
 
     @Override
     public void onStop() {
-        String price = "";
-        if (topPanel != null) {
-            price = topPanel.getText().toString();
-        }
-
-        presenter.saveInstanceState(new RateFragmentInstanceState(selectedChartOption, price));
+        presenter.saveInstanceState(new RateFragmentInstanceState(selectedChartOption));
         presenter.setView(null);
         presenter.onStop();
 
