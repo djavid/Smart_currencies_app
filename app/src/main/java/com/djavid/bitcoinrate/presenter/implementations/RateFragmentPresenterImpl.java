@@ -180,7 +180,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     @Override
     public void showChart(String crypto, String country, int periods, long after, boolean refresh) {
         Log.i(TAG, "showChart()");
-        //if (refresh) setRefreshing(true);
 
         String pair = Codes.getCryptoCurrencySymbol(crypto) + country;
 
@@ -209,7 +208,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
     private void getHistory(String market, String pair, int periods, long after, boolean refresh) {
         Log.i(TAG, "getHistory()");
-        //if (refresh) setRefreshing(true);
 
         disposable = dataRepository.getHistory(market, pair, periods, after)
                 .subscribe(result -> {

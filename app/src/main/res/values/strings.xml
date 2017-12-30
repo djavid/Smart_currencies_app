@@ -32,6 +32,7 @@
     <!-- Dialogs -->
     <string name="title_create_dialog_name">Выберите пару</string>
     <string name="title_label_dialog_name">Уведомить при</string>
+    <string name="title_current_price">Текущая цена:</string>
 
     <string name="title_dialog_rise_btn">увеличении</string>
     <string name="title_dialog_decline_btn">уменьшении</string>
@@ -62,6 +63,7 @@
     <string name="error_loading_ticker_try_again">Не удалось отправить тикер. Попробуйте еще раз.</string>
     <string name="error_deleting_ticker">Не удалось удалить тикер. Попробуйте позже.</string>
     <string name="error_deleting_subscribe">Не удалось удалить подписку. Попробуйте позже.</string>
+    <string name="error_occurred">Произошла ошибка!</string>
 
     <!-- SettingsFragment -->
     <string name="title_crypto_display">Отображение криптовалют</string>

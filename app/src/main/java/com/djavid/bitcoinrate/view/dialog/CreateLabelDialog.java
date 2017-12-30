@@ -15,6 +15,7 @@ import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
@@ -39,6 +40,8 @@ public class CreateLabelDialog extends BaseDialogFragment {
     TextView tv_create_btn;
     @BindView(R.id.cb_percent_change)
     CheckBox cb_percent_change;
+    @BindView(R.id.tv_price)
+    TextView tv_price;
 
 
     public CreateLabelDialog() { }
@@ -53,52 +56,71 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
     @Override
     public View setupView(View view) {
+
+        TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
+
+        try {
+
+            String price = DateFormatter.convertPrice(selectedTicker.getTickerItem()
+                    .getTicker().getPrice()) + " " + selectedTicker.getTickerItem().getCountryId();
+            tv_price.setText(price);
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+
         tv_cancel_btn.setOnClickListener(v -> {
             this.dismiss();
         });
 
         tv_create_btn.setOnClickListener(v -> {
 
-            String value = et_price.getText().toString();
-            boolean isTrendingUp = btn_trending_up.isChecked();
-            boolean isPercentLabel = cb_percent_change.isChecked();
+            try {
+                String value = et_price.getText().toString();
+                boolean isTrendingUp = btn_trending_up.isChecked();
+                boolean isPercentLabel = cb_percent_change.isChecked();
 
-            if (isValidValue(value, isPercentLabel, isTrendingUp)) {
+                if (isValidValue(value, isPercentLabel, isTrendingUp)) {
 
-                long token_id = App.getAppInstance().getPreferences().getTokenId();
-                TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
+                    long token_id = App.getAppInstance().getPreferences().getTokenId();
+                    //TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
 
-                if (selectedTicker != null && selectedTicker.getTickerItem() != null) {
-                    long ticker_id = selectedTicker.getTickerItem().getId();
-                    String cryptoId = selectedTicker.getTickerItem().getCryptoId();
-                    String countryId = selectedTicker.getTickerItem().getCountryId();
+                    if (selectedTicker != null && selectedTicker.getTickerItem() != null) {
+                        long ticker_id = selectedTicker.getTickerItem().getId();
+                        String cryptoId = selectedTicker.getTickerItem().getCryptoId();
+                        String countryId = selectedTicker.getTickerItem().getCountryId();
 
-                    LabelItemDto labelItemDto;
-                    Subscribe subscribe;
+                        LabelItemDto labelItemDto;
+                        Subscribe subscribe;
 
-                    if (isPercentLabel) {
-                        try {
-                            String perc = Double.toString(Double.parseDouble(value) / 100);
-                            subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
-                                    selectedTicker.getTickerItem().getTicker().getPrice());
-                            labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
+                        if (isPercentLabel) {
+                            try {
+                                String perc = Double.toString(Double.parseDouble(value) / 100);
+                                subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
+                                        selectedTicker.getTickerItem().getTicker().getPrice());
+                                labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
 
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            return;
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                                return;
+                            }
+
+                        } else {
+                            subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
+                            labelItemDto = new LabelItemDto(value, isTrendingUp, false);
                         }
 
-                    } else {
-                        subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
-                        labelItemDto = new LabelItemDto(value, isTrendingUp, false);
-                    }
+                        sendSubscribe(subscribe, labelItemDto, selectedTicker);
 
-                    sendSubscribe(subscribe, labelItemDto, selectedTicker);
-                } else {
-                    //todo
-                    showError(R.string.error_loading_ticker_try_again);
-                    dismiss();
+                    } else {
+                        showError(R.string.error_loading_ticker_try_again);
+                        dismiss();
+                    }
                 }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         });
