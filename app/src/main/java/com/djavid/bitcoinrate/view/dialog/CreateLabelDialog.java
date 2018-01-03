@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
-import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
@@ -47,6 +46,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
     public CreateLabelDialog() { }
 
     public static CreateLabelDialog newInstance() {
+
         CreateLabelDialog fragment = new CreateLabelDialog();
         Bundle args = new Bundle();
 
@@ -61,8 +61,9 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
         try {
 
-            String price = DateFormatter.convertPrice(selectedTicker.getTickerItem()
-                    .getTicker().getPrice()) + " " + selectedTicker.getTickerItem().getCountryId();
+            String price = DateFormatter.convertPrice(
+                    selectedTicker.getTickerItem().getTicker().getPrice()) + " "
+                    + selectedTicker.getTickerItem().getCountryId();
             tv_price.setText(price);
 
         } catch (NullPointerException e) {
@@ -84,9 +85,9 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 if (isValidValue(value, isPercentLabel, isTrendingUp)) {
 
                     long token_id = App.getAppInstance().getPreferences().getTokenId();
-                    //TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
 
                     if (selectedTicker != null && selectedTicker.getTickerItem() != null) {
+
                         long ticker_id = selectedTicker.getTickerItem().getId();
                         String cryptoId = selectedTicker.getTickerItem().getCryptoId();
                         String countryId = selectedTicker.getTickerItem().getCountryId();
@@ -112,6 +113,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
                         }
 
                         sendSubscribe(subscribe, labelItemDto, selectedTicker);
+                        dismiss();
 
                     } else {
                         showError(R.string.error_loading_ticker_try_again);
@@ -166,7 +168,8 @@ public class CreateLabelDialog extends BaseDialogFragment {
     }
 
     private void sendSubscribe(Subscribe subscribe, LabelItemDto label, TickerItem tickerItem) {
-        DataRepository dataRepository = new RestDataRepository();
+
+        RestDataRepository dataRepository = new RestDataRepository();
 
         System.out.println(subscribe);
         dataRepository.sendSubscribe(subscribe)
@@ -179,11 +182,10 @@ public class CreateLabelDialog extends BaseDialogFragment {
                         if (response.id != 0) {
                             label.setId(response.id);
                             tickerItem.addLabelItem(label);
-
-                            this.dismiss();
                         }
                     } else {
                         Log.e("LabelDialog", response.error);
+                        //todo don't add similar labels, fix on server and sqoh it hear as error
                         showError(R.string.connection_error);
                     }
 

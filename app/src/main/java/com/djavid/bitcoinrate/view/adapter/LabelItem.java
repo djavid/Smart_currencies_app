@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
@@ -56,6 +55,7 @@ class LabelItem {
 
     @Resolve
     private void onResolved() {
+
         if (!labelItemDto.isAddButton()) {
 
             if (labelItemDto.isPercentLabel()) {
@@ -83,7 +83,7 @@ class LabelItem {
 
         } else {
 
-            tv_ticker_label.setVisibility(android.view.View.VISIBLE);
+            tv_ticker_label.setVisibility(android.view.View.GONE);
             tv_ticker_label.setText("");
             iv_label_trending.setVisibility(android.view.View.GONE);
             iv_label_add.setVisibility(android.view.View.VISIBLE);
@@ -94,6 +94,7 @@ class LabelItem {
 
     @Click(R.id.ll_label_btn)
     private void onClick() {
+
         if (isAddButton) {
             ((MainActivity) mContext).showCreateLabelDialog(tickerItem);
         } else {
@@ -114,7 +115,8 @@ class LabelItem {
     }
 
     private void deleteSubscribe(Long id) {
-        DataRepository dataRepository = new RestDataRepository();
+
+        RestDataRepository dataRepository = new RestDataRepository();
 
         dataRepository.deleteSubscribe(id)
                 .subscribe(() -> {

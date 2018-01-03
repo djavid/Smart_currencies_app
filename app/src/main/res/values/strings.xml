@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Крипто Курсы</string>
     <string name="title_home">Курс</string>
     <string name="title_cards">Тикеры</string>
@@ -22,12 +23,6 @@
 
     <!-- Currencies titles -->
     <string name="title_btc">Bitcoin</string>
-    <string name="title_ltc">Litecoin</string>
-    <string name="title_eth">Ethereum</string>
-    <string name="title_nvc">Novacoin</string>
-    <string name="title_nmc">Namecoin</string>
-    <string name="title_ppc">Pipecoin</string>
-    <string name="title_doge">Doge</string>
 
     <!-- Dialogs -->
     <string name="title_create_dialog_name">Выберите пару</string>
@@ -51,9 +46,6 @@
     <!-- Chart strings -->
     <string name="no_data_text">Данный график недоступен.</string>
 
-    <!-- label strings -->
-
-
     <!-- errors -->
     <string name="empty_value">Пустой текст!</string>
     <string name="unable_to_load_from_server">Не удалось загрузить с сервера!</string>
@@ -64,6 +56,7 @@
     <string name="error_deleting_ticker">Не удалось удалить тикер. Попробуйте позже.</string>
     <string name="error_deleting_subscribe">Не удалось удалить подписку. Попробуйте позже.</string>
     <string name="error_occurred">Произошла ошибка!</string>
+    <string name="error_pair_already_added">Это пара уже добавлена!</string>
 
     <!-- SettingsFragment -->
     <string name="title_crypto_display">Отображение криптовалют</string>

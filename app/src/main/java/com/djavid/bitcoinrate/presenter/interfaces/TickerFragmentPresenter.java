@@ -14,7 +14,6 @@ public interface TickerFragmentPresenter extends Presenter<TickerFragmentView, R
 
     void addTickerFromServer(long token_id, long ticker_id);
     void getAllTickers(boolean refresh);
-    List<Ticker> getTickersLocal();
     void deleteTicker(long ticker_id);
     void loadTickerPrice(TickerItem tickerItem);
     void loadTickerPriceCMC(TickerItem tickerItem);

@@ -6,7 +6,6 @@ import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.Market;
@@ -33,7 +32,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
     private final String TAG = this.getClass().getSimpleName();
     private Disposable disposable = Disposables.empty();
-    private DataRepository dataRepository;
+    private RestDataRepository dataRepository;
 
 
     public RateFragmentPresenterImpl() {

@@ -2,7 +2,6 @@ package com.djavid.bitcoinrate;
 
 import android.util.Log;
 
-import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
@@ -32,7 +31,7 @@ public class FirebaseManager extends FirebaseInstanceIdService {
         //if not found preference then is default 0
         id = App.getAppInstance().getPreferences().getTokenId();
 
-        DataRepository dataRepository = new RestDataRepository();
+        RestDataRepository dataRepository = new RestDataRepository();
         dataRepository.registerToken(token, id)
                 .subscribe(response -> {
 

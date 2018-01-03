@@ -34,17 +34,22 @@ public class Codes {
             "ZMW",	"ZWD"
     };
 
-    public static Coin[] crypto_coins = {
-            new Coin("BTC", "bitcoin"), new Coin("BCH", "bitcoin-cash"), new Coin("XRP", "ripple"),
-            new Coin("LTC", "litecoin"), new Coin("ETH", "ethereum"), new Coin("NVC", "novacoin"),
-            new Coin("NMC", "namecoin"), new Coin("PPC", "peercoin"), new Coin("DOGE", "dogecoin"),
-            new Coin("DASH", "dash"), new Coin("XEM", "nem"), new Coin("XMR", "monero"),
-            new Coin("BTG", "bitcoin-gold"), new Coin("EOS", "eos"), new Coin("NEO", "neo"),
-            new Coin("ETC", "ethereum-classic"), new Coin("ZEC", "zcash"), new Coin("WAVES", "waves"),
-            new Coin("USDT", "tether"), new Coin("NXT", "nxt"), new Coin("XVG", "verge"),
-            new Coin("STEEM", "steem"), new Coin("XLM", "stellar"), new Coin("BCN", "bytecoin-bcn"),
-            new Coin("STRAT", "stratis"), new Coin("TRX", "tron"), new Coin("ADA", "cardano"),
-            new Coin("MIOTA", "iota"), new Coin("BTS", "bitshares"), new Coin("ARDR", "ardor")
+    private static Coin[] crypto_coins = {
+            new Coin("BTC", "bitcoin"), new Coin("BCH", "bitcoin-cash"),
+            new Coin("XRP", "ripple"), new Coin("LTC", "litecoin"),
+            new Coin("ETH", "ethereum"), new Coin("NVC", "novacoin"),
+            new Coin("NMC", "namecoin"), new Coin("PPC", "peercoin"),
+            new Coin("DOGE", "dogecoin"), new Coin("DASH", "dash"),
+            new Coin("XEM", "nem"), new Coin("XMR", "monero"),
+            new Coin("BTG", "bitcoin-gold"), new Coin("EOS", "eos"),
+            new Coin("NEO", "neo"), new Coin("ETC", "ethereum-classic"),
+            new Coin("ZEC", "zcash"), new Coin("WAVES", "waves"),
+            new Coin("USDT", "tether"), new Coin("NXT", "nxt"),
+            new Coin("XVG", "verge"), new Coin("STEEM", "steem"),
+            new Coin("XLM", "stellar"), new Coin("BCN", "bytecoin-bcn"),
+            new Coin("STRAT", "stratis"), new Coin("TRX", "tron"),
+            new Coin("ADA", "cardano"), new Coin("MIOTA", "iota"),
+            new Coin("BTS", "bitshares"), new Coin("ARDR", "ardor")
     };
 
     public static ChartOption[] chart_options = {
@@ -54,14 +59,14 @@ public class Codes {
             new ChartOption("1year", 365, 86400)
     };
 
-    public static String[] crypto_coins_array_code = Stream
+    private static String[] crypto_coins_array_code = Stream
             .of(crypto_coins)
             .map(coin -> coin.symbol)
             .sorted()
             .collect(Collectors.toList())
             .toArray(new String[crypto_coins.length]);
 
-    public static String[] crypto_coins_array_titles = Stream
+    private static String[] crypto_coins_array_titles = Stream
             .of(crypto_coins)
             .map(coin -> coin.id)
             .sorted()

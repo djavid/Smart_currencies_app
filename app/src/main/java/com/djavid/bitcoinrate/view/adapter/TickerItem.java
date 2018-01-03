@@ -12,6 +12,7 @@ import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.djavid.bitcoinrate.util.Codes;
+import com.djavid.bitcoinrate.util.DateFormatter;
 import com.mindorks.placeholderview.PlaceHolderView;
 import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.NonReusable;
@@ -33,6 +34,8 @@ public class TickerItem {
     private TextView tv_ticker_title;
     @View(R.id.tv_price_change)
     private TextView tv_price_change;
+    @View(R.id.tv_market_cap)
+    private TextView tv_market_cap;
     @View(R.id.iv_ticker_icon)
     private ImageView iv_ticker_icon;
     @View(R.id.tickerValue)
@@ -76,21 +79,35 @@ public class TickerItem {
 
     @Resolve
     private void onResolved() {
-        tv_ticker_title.setText(Codes.getCryptoCurrencyId(tickerItem.getCryptoId()));
 
-        iv_ticker_icon.setImageResource(Codes.getCurrencyImage(tickerItem.getCryptoId()));
-        tickerValue.setText(tv_price);
-        tv_price_change.setTextColor(price_change_color);
-        tv_price_change.setText(price_change);
+        try {
 
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        label_container.setLayoutManager(layoutManager);
+            String title = Codes.getCryptoCurrencyId(tickerItem.getCryptoId());
+            if (title.length() > 12) {
+                tv_ticker_title.setTextSize(13f);
+            }
+            tv_ticker_title.setText(title);
 
-        for (LabelItemDto item : getLabels()) {
-            label_container.addView(new LabelItem(mContext, label_container, item, this));
+            tv_market_cap.setText(DateFormatter.convertMarketCap(tickerItem.getTicker().getMarket_cap_usd()));
+
+            iv_ticker_icon.setImageResource(Codes.getCurrencyImage(tickerItem.getCryptoId()));
+            tickerValue.setText(tv_price);
+            tv_price_change.setTextColor(price_change_color);
+            tv_price_change.setText(price_change);
+
+            LinearLayoutManager layoutManager =
+                    new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            label_container.setLayoutManager(layoutManager);
+
+            for (LabelItemDto item : getLabels()) {
+                label_container.addView(new LabelItem(mContext, label_container, item, this));
+            }
+            label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
+
     }
 
 

@@ -49,7 +49,45 @@ public class DateFormatter implements IAxisValueFormatter
         }
     }
 
+    public static String convertMarketCap(double market_cap) {
+
+        if (market_cap < 1000000.0) {
+
+            return "< 1 млн";
+
+        } else if (market_cap >= 1000000.0 && market_cap < 10000000.0) {
+
+            double x = Math.floor(market_cap / 1000000.0 * 10) / 10;
+            return Double.toString(x) + " млн";
+
+        } else if (market_cap >= 10000000.0 && market_cap < 1000000000.0) {
+
+            long x = Math.round(Math.floor(market_cap / 1000000.0));
+            return x + " млн";
+
+        } else if (market_cap >= 1000000000.0 && market_cap < 10000000000.0) {
+
+            double x = Math.floor(market_cap / 1000000000.0 * 100) / 100;
+            return Double.toString(x) + " млрд";
+
+        } else if (market_cap >= 10000000000.0 && market_cap < 1000000000000.0) {
+
+            long x = Math.round(Math.floor(market_cap / 1000000000.0));
+            return x + " млрд";
+
+        } else if (market_cap >= 1000000000000.0) {
+
+            double x = Math.floor(market_cap / 1000000000000.0 * 100) / 100;
+            return Double.toString(x) + " трлн";
+
+        } else {
+            return "";
+        }
+
+    }
+
     public static String convertPrice(double price) {
+
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
         symbols.setGroupingSeparator(' ');
 

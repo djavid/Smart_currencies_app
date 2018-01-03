@@ -34,6 +34,7 @@ import com.djavid.bitcoinrate.view.dialog.TickerPopupWindow;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 import com.mindorks.placeholderview.PlaceHolderView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -119,8 +120,9 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
         super.onStart();
 
-        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null)
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_cards);
+        }
     }
 
     @Override
@@ -146,7 +148,12 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
         fab.setOnClickListener(v -> {
 
-            CreateTickerDialog dialog = CreateTickerDialog.newInstance();
+            ArrayList<String> pairs = new ArrayList<>();
+            for (Ticker pair : presenter.getTickers()) {
+                pairs.add(pair.getCryptoId() + pair.getCountryId());
+            }
+
+            CreateTickerDialog dialog = CreateTickerDialog.newInstance(pairs);
             dialog.setTargetFragment(this, 0);
             dialog.show(getFragmentManager(), TAG_CREATE_DIALOG);
 
@@ -266,13 +273,24 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
     ItemTouchHelper.SimpleCallback simpleCallback =
             new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
                 @Override
                 public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+
                     return false;
                 }
 
                 @Override
+                public boolean isItemViewSwipeEnabled() {
+
+                    return true;
+                }
+
+
+                @Override
                 public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                    System.out.println(viewHolder);
 
                     int pos = viewHolder.getAdapterPosition();
                     cl_ticker.setTag(pos);

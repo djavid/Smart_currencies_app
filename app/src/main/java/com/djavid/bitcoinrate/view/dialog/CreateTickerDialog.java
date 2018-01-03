@@ -13,11 +13,12 @@ import android.widget.TextView;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
-import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.view.adapter.CurrenciesAdapter;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 
@@ -38,10 +39,11 @@ public class CreateTickerDialog extends BaseDialogFragment {
 
     public CreateTickerDialog() { }
 
-    public static CreateTickerDialog newInstance() {
+    public static CreateTickerDialog newInstance(ArrayList<String> pairs) {
+
         CreateTickerDialog fragment = new CreateTickerDialog();
         Bundle args = new Bundle();
-
+        args.putStringArrayList("pairs", pairs);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,12 +56,29 @@ public class CreateTickerDialog extends BaseDialogFragment {
         });
 
         tv_create_btn.setOnClickListener(v -> {
+
+            ArrayList<String> pairs = getArguments().getStringArrayList("pairs");
+
             String code_crypto = Codes.getCryptoCurrencySymbol(leftSpinner.getSelectedItem().toString());
             String code_country = rightSpinner.getSelectedItem().toString();
-            long token_id = App.getAppInstance().getPreferences().getTokenId();
+            String pair = code_crypto + code_country;
 
-            Ticker ticker = new Ticker(token_id, code_crypto, code_country);
-            sendTicker(ticker);
+            if (pairs != null) {
+
+                if (pairs.contains(pair)) {
+
+                    showError(R.string.error_pair_already_added);
+
+                } else {
+
+                    long token_id = App.getAppInstance().getPreferences().getTokenId();
+                    Ticker ticker = new Ticker(token_id, code_crypto, code_country);
+
+                    sendTicker(ticker);
+                    dismiss();
+                }
+            }
+
         });
 
         setCurrenciesSpinner();
@@ -74,7 +93,8 @@ public class CreateTickerDialog extends BaseDialogFragment {
 
 
     private void sendTicker(Ticker ticker) {
-        DataRepository dataRepository = new RestDataRepository();
+
+        RestDataRepository dataRepository = new RestDataRepository();
 
         dataRepository.sendTicker(ticker)
                 .subscribe(response -> {
@@ -91,8 +111,6 @@ public class CreateTickerDialog extends BaseDialogFragment {
 
                             Intent intent = new Intent().putExtras(bundle);
                             getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-
-                            dismiss();
                         }
 
                     } else {

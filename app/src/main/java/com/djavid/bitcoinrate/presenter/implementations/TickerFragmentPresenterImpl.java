@@ -8,7 +8,6 @@ import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.model.DataRepository;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
@@ -36,7 +35,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
     private final String TAG = this.getClass().getSimpleName();
     private Disposable disposable = Disposables.empty();
-    private DataRepository dataRepository;
+    private RestDataRepository dataRepository;
     private List<Ticker> tickers;
     private List<Subscribe> subscribes;
 
@@ -107,14 +106,27 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
         } else {
             disposable = dataRepository.getTickersByTokenId(token_id)
-                    .subscribe(tickerList -> {
+                    .subscribe(response -> {
 
-                        tickers = tickerList;
-                        getAllSubscribes();
+                        if (response.error.isEmpty()) {
+
+                            tickers = response.tickers;
+                            getAllSubscribes();
+
+                        } else if (response.error.equals("No such token!")) {
+
+                            sendTokenToServer();
+
+                        } else {
+
+                            if (getView() != null)
+                                getView().showError(R.string.unable_to_load_from_server);
+                        }
 
                     }, error -> {
                         if (getView() != null)
                             getView().showError(R.string.unable_to_load_from_server);
+                        sendTokenToServer(); //todo
                         setRefreshing(false);
                     });
         }
@@ -207,7 +219,6 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     }
 
 
-
     private void sendTokenToServer() {
 
         String token = FirebaseInstanceId.getInstance().getToken();
@@ -257,12 +268,6 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     if (getView() != null) getView().showError(R.string.error_deleting_ticker);
                 });
     }
-
-    @Override
-    public List<Ticker> getTickersLocal() {
-        return tickers;
-    }
-
 
     private List<Ticker> getTickersFromRealm() {
         Log.i(TAG, "getTickersFromRealm()");
