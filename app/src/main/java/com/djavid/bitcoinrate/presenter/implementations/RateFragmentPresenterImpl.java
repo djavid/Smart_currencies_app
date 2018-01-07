@@ -197,7 +197,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                 }, error -> {
                     if (getView() != null) {
                         getView().getRateChart().getChart().clear();
-                        getView().showError(R.string.connection_error);
+                        //getView().showError(R.string.connection_error);
                     }
 
                     setRefreshing(false);
@@ -211,8 +211,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         disposable = dataRepository.getHistory(market, pair, periods, after)
                 .subscribe(result -> {
 
-                    if (result == null ||
-                            result.getResult() == null ||
+                    if (result == null || result.getResult() == null ||
                             result.getResult().getValues() == null) {
                         setRefreshing(false);
                         return;
@@ -234,7 +233,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                 }, error -> {
                     if (getView() != null) {
                         getView().getRateChart().getChart().clear();
-                        getView().showError(R.string.server_error);
+                        //getView().showError(R.string.server_error);
                     }
                     setRefreshing(false);
                 });

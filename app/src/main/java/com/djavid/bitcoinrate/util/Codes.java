@@ -49,7 +49,8 @@ public class Codes {
             new Coin("XLM", "stellar"), new Coin("BCN", "bytecoin-bcn"),
             new Coin("STRAT", "stratis"), new Coin("TRX", "tron"),
             new Coin("ADA", "cardano"), new Coin("MIOTA", "iota"),
-            new Coin("BTS", "bitshares"), new Coin("ARDR", "ardor")
+            new Coin("BTS", "bitshares"), new Coin("ARDR", "ardor"),
+            new Coin("MTH", "monetha")
     };
 
     public static ChartOption[] chart_options = {
@@ -332,6 +333,9 @@ public class Codes {
             case "stellar":
                 return R.drawable.ic_xlm;
 
+            case "MTH":
+            case "monetha":
+                return R.mipmap.ic_monetha;
 
             default:
                 return 0;
