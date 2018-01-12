@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -100,7 +101,10 @@ public class FirebaseService extends FirebaseMessagingService {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         try {
-            notificationManager.notify(NOTIFY_ID, notification);
+
+            String crypto_id = remoteMessage.getData().get("title").split(" ")[0].toLowerCase();
+            notificationManager.notify(Codes.getCryptoCoinIndex(crypto_id), notification);
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

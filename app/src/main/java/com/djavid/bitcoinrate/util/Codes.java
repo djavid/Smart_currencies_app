@@ -82,6 +82,14 @@ public class Codes {
             return crypto_coins_array_titles;
     }
 
+    public static int getCryptoCoinIndex(String id) {
+        System.out.println(id);
+        return IntStream.range(0, crypto_coins_array_titles.length)
+                .filter(i -> crypto_coins_array_titles[i].equals(id))
+                .findFirst()
+                .getAsInt();
+    }
+
     public static int getSelectedCryptoCoinIndex() {
 
         String code = App.getAppInstance().getPreferences().getLeftSpinnerValue();

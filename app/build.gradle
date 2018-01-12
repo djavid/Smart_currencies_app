@@ -98,4 +98,7 @@ dependencies {
 
     //made in china
     compile 'com.github.zyyoona7:EasyPopup:1.0.2'
+
+    //Tooltips
+    compile 'com.tomergoldst.android:tooltips:1.0.9'
 }
