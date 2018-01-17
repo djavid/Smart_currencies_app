@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.djavid.bitcoinrate.App;
@@ -41,6 +42,11 @@ public class SettingsFragment extends Fragment {
     @BindView(R.id.ll_parent)
     LinearLayout ll_parent;
 
+    @BindView(R.id.switch_sound)
+    Switch switch_sound;
+    @BindView(R.id.switch_vibration)
+    Switch switch_vibration;
+
 
     private Unbinder unbinder;
     private final String TAG = this.getClass().getSimpleName();
@@ -56,6 +62,7 @@ public class SettingsFragment extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +72,17 @@ public class SettingsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null)
+        try {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_settings);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     @Override
@@ -83,12 +99,18 @@ public class SettingsFragment extends Fragment {
 
         btn_about_developer.setOnClickListener(aboutBtnOnClickListener);
 
-        setCheckedRadioButton();
+        switch_sound.setOnCheckedChangeListener((buttonView, isChecked) ->
+                App.getAppInstance().getPreferences().setNotificationSound(isChecked));
+
+        switch_vibration.setOnCheckedChangeListener((buttonView, isChecked) ->
+                App.getAppInstance().getPreferences().setNotificationVibration(isChecked));
+
+        setButtonsDefaults();
 
         return view;
     }
 
-    private void setCheckedRadioButton() {
+    private void setButtonsDefaults() {
 
         switch (App.getAppInstance().getPreferences().getShowedPriceChange()) {
             case "hour":
@@ -110,6 +132,9 @@ public class SettingsFragment extends Fragment {
                 btn_titles.setChecked(true);
                 break;
         }
+
+        switch_sound.setChecked(App.getAppInstance().getPreferences().getNotificationSound());
+        switch_vibration.setChecked(App.getAppInstance().getPreferences().getNotificationVibration());
     }
 
     View.OnClickListener aboutBtnOnClickListener = v -> {
@@ -156,12 +181,6 @@ public class SettingsFragment extends Fragment {
                 break;
         }
     };
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
 
     public void showError(int errorId) {
         Toast.makeText(getContext(), getString(errorId), Toast.LENGTH_SHORT).show();

@@ -107,4 +107,24 @@ public class SavedPreferences {
                 .apply();
     }
 
+    public Boolean getNotificationSound() {
+        return sharedPreferences.getBoolean("notification_sound_enabled", true);
+    }
+    public void setNotificationSound(Boolean value) {
+        sharedPreferences
+                .edit()
+                .putBoolean("notification_sound_enabled", value)
+                .apply();
+    }
+
+    public Boolean getNotificationVibration() {
+        return sharedPreferences.getBoolean("notification_vibration_enabled", true);
+    }
+    public void setNotificationVibration(Boolean value) {
+        sharedPreferences
+                .edit()
+                .putBoolean("notification_vibration_enabled", value)
+                .apply();
+    }
+
 }

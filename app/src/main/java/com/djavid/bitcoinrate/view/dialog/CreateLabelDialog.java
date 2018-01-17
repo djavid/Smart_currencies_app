@@ -1,6 +1,8 @@
 package com.djavid.bitcoinrate.view.dialog;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -17,6 +19,7 @@ import com.djavid.bitcoinrate.core.BaseDialogFragment;
 import com.djavid.bitcoinrate.model.RestDataRepository;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
 import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
@@ -44,8 +47,13 @@ public class CreateLabelDialog extends BaseDialogFragment {
     TextView tv_create_btn;
     @BindView(R.id.cb_percent_change)
     CheckBox cb_percent_change;
-    @BindView(R.id.tv_price)
+    @BindView(R.id.tv_price_value)
     TextView tv_price;
+
+    @BindView(R.id.tv_change)
+    TextView tv_change;
+    @BindView(R.id.tv_change_value)
+    TextView tv_change_value;
     @BindView(R.id.iv_help)
     ImageView iv_help;
     @BindView(R.id.rl_label_dialog)
@@ -88,6 +96,8 @@ public class CreateLabelDialog extends BaseDialogFragment {
             e.printStackTrace();
         }
 
+        tv_change.setVisibility(View.GONE);
+        tv_change_value.setVisibility(View.GONE);
 
         tv_cancel_btn.setOnClickListener(v -> {
             this.dismiss();
@@ -98,6 +108,8 @@ public class CreateLabelDialog extends BaseDialogFragment {
         cb_percent_change.setOnCheckedChangeListener(percentOnCheckedChangeListener);
 
         iv_help.setOnClickListener(helpBtnOnClickListener);
+
+        et_price.addTextChangedListener(textWatcherPercent);
 
         return view;
     }
@@ -160,9 +172,19 @@ public class CreateLabelDialog extends BaseDialogFragment {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
             if (isChecked) {
+
+                tv_change.setVisibility(View.VISIBLE);
+                tv_change_value.setVisibility(View.VISIBLE);
+                tv_change_value.setText("±0");
+
                 segmented_button.setVisibility(View.GONE);
                 et_price.setHint(R.string.title_hint_percent);
+
             } else {
+
+                tv_change.setVisibility(View.GONE);
+                tv_change_value.setVisibility(View.GONE);
+
                 segmented_button.setVisibility(View.VISIBLE);
                 et_price.setHint(R.string.title_hint_price);
             }
@@ -197,22 +219,80 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
     };
 
+    TextWatcher textWatcherPercent = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+            mToolTipsManager.dismissAll();
+
+            if (cb_percent_change.isChecked()) {
+
+                if (s.toString().isEmpty()) {
+                    tv_change_value.setText("±0");
+                    return;
+                }
+
+                try {
+                    TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
+
+                    double price = selectedTicker.getTickerItem().getTicker().getPrice();
+                    double change = price * (Double.parseDouble(s.toString()) / 100.0);
+
+                    String text = "±" + DateFormatter.convertPrice(change) + " " +
+                            Codes.getCountrySymbol(selectedTicker.getTickerItem().getCountryId());
+                    tv_change_value.setText(text);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+    };
+
     private boolean isValidValue(String value, boolean isPercentLabel) {
 
         if (value.isEmpty()) {
-            showError(R.string.empty_value);
+            showErrorHint(R.string.error_empty_value);
             return false;
         }
-        if (value.startsWith(".") || value.endsWith(".")) return false;
-        if (value.contains("-") || value.contains(" ")) return false;
+
+        if (value.startsWith(".") || value.endsWith(".")) {
+            showErrorHint(R.string.error_wrong_format);
+            return false;
+        }
+
+        if (value.contains("-") || value.contains(" ")) {
+            showErrorHint(R.string.error_wrong_format);
+            return false;
+        }
 
         if (isPercentLabel) {
             try {
                 double perc = Double.parseDouble(value);
 
-                if (perc > 200 || perc <= 0) return false;
+                if (perc > 200 || perc <= 0) {
+                    showErrorHint(R.string.error_percent_max);
+                    return false;
+                }
+
                 if (value.contains(".")) {
-                    if (value.split("\\.")[1].length() > 3) return false;
+                    if (value.split("\\.")[1].length() > 4) {
+                        showErrorHint(R.string.error_percent_double);
+                        return false;
+                    }
                 }
 
             } catch (NumberFormatException e) {
@@ -255,4 +335,17 @@ public class CreateLabelDialog extends BaseDialogFragment {
     public int getLayoutId() {
         return R.layout.fragment_create_label_dialog;
     }
+
+    private void showErrorHint(int res) {
+
+        String hint = getString(res);
+
+        ToolTip.Builder builder = new ToolTip.Builder(getContext(), et_price,
+                rl_label_dialog, hint, ToolTip.POSITION_BELOW);
+        builder.setBackgroundColor(getResources().getColor(R.color.colorPriceChangeNeg));
+
+        mToolTipsManager.dismissAll();
+        tooltipView = mToolTipsManager.show(builder.build());
+    }
+
 }

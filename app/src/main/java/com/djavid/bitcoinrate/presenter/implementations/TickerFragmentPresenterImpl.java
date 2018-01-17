@@ -250,6 +250,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                         setRefreshing(false);
                         if (getView() != null) getView().showError(R.string.connection_error);
                     }
+                }, error -> {
+                    setRefreshing(false);
                 });
     }
 

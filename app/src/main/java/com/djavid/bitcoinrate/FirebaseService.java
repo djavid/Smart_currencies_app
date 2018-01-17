@@ -83,16 +83,18 @@ public class FirebaseService extends FirebaseMessagingService {
 
         Resources res = context.getResources();
         Notification.Builder builder = new Notification.Builder(context)
-                .setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true)
+                //.setDefaults(Notification.DEFAULT_SOUND)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setAutoCancel(true)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon(BitmapFactory.decodeResource(res, large_icon))
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
-//                .setContentTitle(remoteMessage.getNotification().getTitle())
-//                .setContentText(remoteMessage.getNotification().getBody());
                 .setContentTitle(remoteMessage.getData().get("title"))
                 .setContentText(remoteMessage.getData().get("body"));
+
+        setNotificationIndicators(builder);
 
         Notification notification = new Notification.BigTextStyle(builder)
                 .bigText(remoteMessage.getData().get("body")).build();
@@ -108,6 +110,20 @@ public class FirebaseService extends FirebaseMessagingService {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void setNotificationIndicators(Notification.Builder builder) {
+
+        boolean sound = App.getAppInstance().getPreferences().getNotificationSound();
+        boolean vibrate = App.getAppInstance().getPreferences().getNotificationVibration();
+
+        if (sound && !vibrate)
+            builder.setDefaults(Notification.DEFAULT_SOUND);
+        if (!sound && vibrate )
+            builder.setDefaults(Notification.DEFAULT_VIBRATE);
+        if (sound && vibrate)
+            builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
     }
 

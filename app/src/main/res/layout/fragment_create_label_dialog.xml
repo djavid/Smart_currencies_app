@@ -62,20 +62,21 @@
 
     </info.hoang8f.android.segmented.SegmentedGroup>
 
+
     <TextView
         android:id="@+id/tv_current_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_current_price"
-        android:textSize="15sp"
-        android:lineSpacingExtra="8sp"
-        android:fontFamily="sans-serif-medium"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
-        android:layout_below="@id/segmented_button" />
+        android:layout_below="@id/segmented_button"
+        android:lineSpacingExtra="8sp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/title_current_price"
+        android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/tv_price"
+        android:id="@+id/tv_price_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -84,11 +85,34 @@
         android:fontFamily="monospace"
         android:textSize="15sp" />
 
+    <TextView
+        android:id="@+id/tv_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/tv_current_price"
+        android:lineSpacingExtra="8sp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/title_change"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_change_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@id/tv_change"
+        android:layout_alignBottom="@id/tv_change"
+        android:fontFamily="monospace"
+        android:textSize="15sp" />
+
+
     <LinearLayout
         android:id="@+id/ll_price_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_current_price"
+        android:layout_below="@id/tv_change"
         android:layout_marginTop="5dp"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
@@ -107,6 +131,7 @@
             android:shadowColor="@color/colorEditTextBorder"
             android:textCursorDrawable="@null"
             android:inputType="numberDecimal"
+            android:maxLength="15"
             app:backgroundTint="@color/colorEditTextBorder" />
 
         <ImageView

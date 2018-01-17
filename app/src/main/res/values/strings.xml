@@ -28,6 +28,7 @@
     <string name="title_create_dialog_name">Выберите пару</string>
     <string name="title_label_dialog_name">Уведомить при</string>
     <string name="title_current_price">Текущая цена:</string>
+    <string name="title_change">Изменение:</string>
     <string name="title_till">До:</string>
 
     <string name="title_dialog_rise_btn">увеличении</string>
@@ -60,10 +61,17 @@
     <string name="error_pair_already_added">Это пара уже добавлена!</string>
     <string name="error_wrong_data">Неверные данные!</string>
 
+    <!-- Edittext errors -->
+    <string name="error_empty_value">Введите цену!</string>
+    <string name="error_wrong_format">Неправильный формат строки!</string>
+    <string name="error_percent_max">Введите число не более 200%!</string>
+    <string name="error_percent_double">Введите не более 4 цифр после запятой!</string>
+
     <!-- SettingsFragment -->
     <string name="title_crypto_display">Отображение криптовалют</string>
     <string name="title_default_pair">Пара по умолчанию на главном экране</string>
     <string name="title_display_price_change">Отображать процент изменения</string>
+    <string name="title_notification_settings">Настройки уведомлений</string>
     <string name="title_about_developer">О разработчике</string>
 
     <string name="title_display_codes">коды</string>
@@ -72,6 +80,9 @@
     <string name="title_price_change_hour">1 час</string>
     <string name="title_price_change_day">24 часа</string>
     <string name="title_price_change_week">7 дней</string>
+
+    <string name="title_notification_sound">Включить звук уведомлений</string>
+    <string name="title_notification_vibration">Включить вибрацию уведомлений</string>
 
     <!-- Popup window -->
     <string name="string_rbtn_title">по названию</string>

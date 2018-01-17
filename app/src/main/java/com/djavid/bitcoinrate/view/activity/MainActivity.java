@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
 
         Fragment existFragment = fragmentManager.findFragmentByTag(tag);
         FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
         if (existFragment == null) {
 

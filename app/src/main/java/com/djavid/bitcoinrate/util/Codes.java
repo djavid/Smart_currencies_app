@@ -170,6 +170,32 @@ public class Codes {
         return start;
     }
 
+    public static String getCountrySymbol(String code) {
+
+        switch (code) {
+            case "USD":
+                return "\u0024";
+            case "EUR":
+                return "\u20AC";
+            case "CAD":
+                return "C\u0024";
+            case "CNY":
+                return "\u00A5";
+            case "JPY":
+                return "\u00A5";
+            case "PLN":
+                return "z\u0142";
+            case "GBP":
+                return "\u00A3";
+            case "RUB":
+                return "\u20BD";
+            case "UAH":
+                return "\u20B4";
+            default:
+                return "";
+        }
+    }
+
     public static int getCurrencyImage(String code) {
         
         switch (code) {
