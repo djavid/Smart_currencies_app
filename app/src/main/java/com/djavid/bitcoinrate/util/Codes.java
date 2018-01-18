@@ -54,10 +54,14 @@ public class Codes {
     };
 
     public static ChartOption[] chart_options = {
+//            new ChartOption("1day", 1, 900),
+//            new ChartOption("1week", 7, 3600),
+//            new ChartOption("1month", 30, 7200),
+//            new ChartOption("1year", 365, 86400)
             new ChartOption("1day", 1, 900),
-            new ChartOption("1week", 7, 3600),
-            new ChartOption("1month", 30, 7200),
-            new ChartOption("1year", 365, 86400)
+            new ChartOption("1week", 7, 7200),
+            new ChartOption("1month", 30, 21600),
+            new ChartOption("1year", 365, 259200)
     };
 
     private static String[] crypto_coins_array_code = Stream

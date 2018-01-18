@@ -239,7 +239,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
             if (cb_percent_change.isChecked()) {
 
                 if (s.toString().isEmpty()) {
-                    tv_change_value.setText("±0");
+                    tv_change_value.setText("±0 ");
                     return;
                 }
 

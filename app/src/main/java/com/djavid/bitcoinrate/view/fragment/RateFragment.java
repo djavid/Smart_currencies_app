@@ -1,10 +1,8 @@
 package com.djavid.bitcoinrate.view.fragment;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -33,7 +31,9 @@ import butterknife.BindView;
 import static com.djavid.bitcoinrate.util.Codes.country_coins;
 
 
-public class RateFragment extends BaseFragment implements RateFragmentView, SwipeRefreshLayout.OnRefreshListener {
+public class RateFragment extends BaseFragment implements RateFragmentView
+//        , SwipeRefreshLayout.OnRefreshListener
+{
 
     @BindView(R.id.topPanel)
     TextView topPanel;
@@ -41,8 +41,8 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     Spinner leftPanel;
     @BindView(R.id.rightPanel)
     Spinner rightPanel;
-    @BindView(R.id.swipe_container)
-    SwipeRefreshLayout swipe_container;
+//    @BindView(R.id.swipe_container)
+//    SwipeRefreshLayout swipe_container;
     @BindView(R.id.optionFirst)
     TextView optionFirst;
     @BindView(R.id.optionSecond)
@@ -75,11 +75,11 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     public View setupView(View view) {
         Log.i(TAG, "setupView()");
 
-        swipe_container.setOnRefreshListener(this);
-        swipe_container.setColorSchemeColors(
-                getResources().getColor(R.color.colorAccent),
-                getResources().getColor(R.color.colorChart),
-                getResources().getColor(R.color.colorLabelBackground));
+//        swipe_container.setOnRefreshListener(this);
+//        swipe_container.setColorSchemeColors(
+//                getResources().getColor(R.color.colorAccent),
+//                getResources().getColor(R.color.colorChart),
+//                getResources().getColor(R.color.colorLabelBackground));
 
         view.findViewById(R.id.optionFirst).setOnClickListener(onChartOptionClick);
         view.findViewById(R.id.optionSecond).setOnClickListener(onChartOptionClick);
@@ -183,15 +183,15 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
                 break;
         }
 
-        ((TextView) view).setTextColor(getResources().getColor(R.color.colorChartLabelSelectedText));
+        //((TextView) view).setTextColor(getResources().getColor(R.color.colorChartLabelSelectedText));
+        //((TextView) view).setTypeface(((TextView) view).getTypeface(), Typeface.NORMAL);
         view.setBackground(getResources().getDrawable(R.drawable.rounded_corner_border));
-        ((TextView) view).setTypeface(((TextView) view).getTypeface(), Typeface.NORMAL);
     }
 
     private void setChartLabelUnselected(View view) {
-        ((TextView) view).setTextColor(getResources().getColor(R.color.colorChartLabelUnselectedText));
+        //((TextView) view).setTextColor(getResources().getColor(R.color.colorChartLabelUnselectedText));
+        //((TextView) view).setTypeface(((TextView) view).getTypeface(), Typeface.BOLD);
         view.setBackground(getResources().getDrawable(R.drawable.rounded_corner));
-        ((TextView) view).setTypeface(((TextView) view).getTypeface(), Typeface.BOLD);
     }
 
     private void getChart(Codes.ChartOption chartOption) {
@@ -276,10 +276,10 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
         mListener = null;
     }
 
-    @Override
-    public void onRefresh() {
-        presenter.refresh();
-    }
+//    @Override
+//    public void onRefresh() {
+//        presenter.refresh();
+//    }
 
     @Override
     public int getLayoutId() {
@@ -309,19 +309,19 @@ public class RateFragment extends BaseFragment implements RateFragmentView, Swip
     @Override
     public void showProgressbar() {
         super.showProgressbar();
-        swipe_container.setVisibility(View.GONE);
+//        swipe_container.setVisibility(View.GONE);
     }
 
     @Override
     public void hideProgressbar() {
         super.hideProgressbar();
-        swipe_container.setVisibility(View.VISIBLE);
+//        swipe_container.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public SwipeRefreshLayout getRefreshLayout() {
-        return swipe_container;
-    }
+//    @Override
+//    public SwipeRefreshLayout getRefreshLayout() {
+//        return swipe_container;
+//    }
 
     @Override
     public RateChart getRateChart() {

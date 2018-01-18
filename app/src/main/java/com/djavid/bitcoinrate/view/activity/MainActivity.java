@@ -22,6 +22,7 @@ import com.djavid.bitcoinrate.view.dialog.CreateLabelDialog;
 import com.djavid.bitcoinrate.view.fragment.RateFragment;
 import com.djavid.bitcoinrate.view.fragment.SettingsFragment;
 import com.djavid.bitcoinrate.view.fragment.TickerFragment;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
         TickerFragment.OnTickerInteractionListener, Router {
 
     @BindView(R.id.navigation)
-    BottomNavigationView navigation;
+    BottomNavigationViewEx navigation;
 
     private FragmentManager fragmentManager;
     Fragment rateFragment, tickerFragment, settingsFragment;
@@ -85,32 +86,23 @@ public class MainActivity extends AppCompatActivity implements RateFragment.OnFr
         settingsFragment = SettingsFragment.newInstance();
         fragmentManager = getSupportFragmentManager();
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
+        //BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_rate);
 
-//        fragmentManager = getSupportFragmentManager();
-//        navigationViewAdapter = new NavigationViewAdapter(fragmentManager,
-//                R.id.container, R.id.navigation_home, savedInstanceState);
-//        navigationViewAdapter.attachTo(navigation);
+        navigation.enableAnimation(false);
+        navigation.enableShiftingMode(false);
+        navigation.enableItemShiftingMode(false);
+        navigation.setTextVisibility(false);
+
+        int iconSize = 30;
+        navigation.setIconSize(iconSize, iconSize);
+        navigation.setItemHeight(BottomNavigationViewEx.dp2px(this, iconSize + 16));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("onResume Activity");
-
-//        String tag = fragmentManager
-//                .getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 2).getName();
-//
-//        switch (tag) {
-//            case TAG_RATE:
-//                navigation.setSelectedItemId(R.id.navigation_rate);
-//                break;
-//            case TAG_TICKER:
-//                navigation.setSelectedItemId(R.id.navigation_tickers);
-//                break;
-//        }
     }
 
     public void changeFragment(Fragment fragment, String tag, boolean addBackStack) {

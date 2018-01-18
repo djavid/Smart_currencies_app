@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -23,15 +24,23 @@ public class DateFormatter implements IAxisValueFormatter
     };
 
     private BarLineChartBase<?> chart;
+    private List<Long> dates;
 
-    public DateFormatter(BarLineChartBase<?> chart) {
+
+    DateFormatter(BarLineChartBase<?> chart, List<Long> dates) {
         this.chart = chart;
+        this.dates = dates;
     }
 
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
 
-        Date date = new Date((long) value);
+        if ((int)value >= dates.size() || (int) value < 0 ) return "";
+
+        Date date = new Date(dates.get((int)value) * 1000);
+
+        String hour = new SimpleDateFormat("hh", Locale.US).format(date);
+        String minute = new SimpleDateFormat("mm", Locale.US).format(date);
 
         int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(date));
         int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(date));
@@ -40,12 +49,22 @@ public class DateFormatter implements IAxisValueFormatter
         String monthName = mMonthsRus[month]; //TODO check
         String yearName = String.valueOf(year);
 
-        if ((chart.getVisibleXRange() / 1000 / 3600 / 24) > 30 * 5) {
+        float days_count = chart.getVisibleXRange() / 1000 / 3600 / 24;
+
+        if (days_count >= 180) {
 
             return monthName + " " + yearName;
-        } else {
+
+        } else if (days_count >= 2 && days_count < 180) {
 
             return day == 0 ? "" : day + " " + monthName;
+
+        } else if (days_count < 2 && days_count > 0) {
+
+            return hour + ":" + minute;
+
+        } else {
+            return "";
         }
     }
 

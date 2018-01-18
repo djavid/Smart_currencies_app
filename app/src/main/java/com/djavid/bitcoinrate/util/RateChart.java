@@ -1,25 +1,31 @@
 package com.djavid.bitcoinrate.util;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.CandleData;
+import com.github.mikephil.charting.data.CandleDataSet;
+import com.github.mikephil.charting.data.CandleEntry;
 
 import java.util.List;
 
 
 public class RateChart {
 
-    private LineChart chart;
+    private CandleStickChart chart;
     private int color = App.getContext().getResources().getColor(R.color.colorChart);
+    private int colorRed = App.getContext().getResources().getColor(R.color.colorPriceChangeNeg);
+    private int colorGreen = App.getContext().getResources().getColor(R.color.colorPriceChangePos);
+    private int colorPrimary = App.getContext().getResources().getColor(R.color.colorPrimary);
     private final String TAG = this.getClass().getSimpleName();
 
 
@@ -61,32 +67,51 @@ public class RateChart {
         chart.getAxisLeft().setTextColor(chart.getContext().getResources().getColor(R.color.colorPrimaryText));
         chart.getAxisLeft().setTextSize(11f);
 
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new DateFormatter(chart));
+        //XAxis xAxis = chart.getXAxis();
+        //xAxis.setValueFormatter(new DateFormatter(chart));
+
+        chart.setPinchZoom(true);
+        chart.setBackgroundColor(Color.WHITE);
+        chart.setHighlightPerDragEnabled(false);
 
         chart.invalidate();
     }
 
-    public void setData(List<Entry> entries) {
+    public void setData(List<CandleEntry> entries, List<Long> dates) {
         Log.i(TAG, "setData()");
 
-        LineDataSet dataSet = new LineDataSet(entries, "");
-        dataSet.setColor(color);
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-        dataSet.setDrawCircleHole(true);
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setLineWidth(2);
+        CandleDataSet dataSet = new CandleDataSet(entries, "");
 
-        LineData lineData = new LineData(dataSet);
+        dataSet.setDrawIcons(false);
+        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        set1.setColor(Color.rgb(80, 80, 80));
+        dataSet.setShadowColor(Color.DKGRAY);
+        dataSet.setShadowWidth(0.7f);
+        dataSet.setDecreasingColor(colorRed);
+        dataSet.setDecreasingPaintStyle(Paint.Style.FILL);
+        dataSet.setIncreasingColor(colorGreen);
+        dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
+        dataSet.setNeutralColor(colorPrimary);
+        dataSet.setShowCandleBar(true);
+
+        //dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
+        //dataSet.setDrawCircleHole(true);
+        //dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        //dataSet.setLineWidth(2);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new DateFormatter(chart, dates));
+
+        CandleData lineData = new CandleData(dataSet);
         chart.setData(lineData);
         chart.invalidate();
     }
 
-    public LineChart getChart() {
+    public CandleStickChart getChart() {
         return chart;
     }
-    public void setChart(LineChart chart) {
+    public void setChart(CandleStickChart chart) {
         this.chart = chart;
     }
 

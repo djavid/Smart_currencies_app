@@ -3,17 +3,20 @@
 
     <item
         android:id="@+id/navigation_rate"
-        android:icon="@drawable/ic_monetization_on_black_24dp"
-        android:title="@string/title_home" />
+        android:icon="@drawable/ic_show_chart_white_24px"
+        android:title="@string/title_home"
+        android:enabled="true" />
 
     <item
         android:id="@+id/navigation_tickers"
-        android:icon="@drawable/ic_view_agenda_black_24dp"
-        android:title="@string/title_cards" />
+        android:icon="@drawable/ic_view_agenda_white_24px"
+        android:title="@string/title_cards"
+        android:enabled="true" />
 
     <item
         android:id="@+id/navigation_settings"
-        android:icon="@drawable/ic_settings_black_24dp"
-        android:title="@string/title_settings" />
+        android:icon="@drawable/ic_settings_white_24px"
+        android:title="@string/title_settings"
+        android:enabled="true" />
 
 </menu>

@@ -16,7 +16,7 @@ import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
 import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.util.DateFormatter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
-import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.CandleEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -293,7 +293,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     }
 
     private void saveValuesToRealm(List<List<Double>> values, String pair) {
-        Log.i(TAG, "saveValuesFromRealm()");
+        Log.i(TAG, "saveValuesToRealm()");
 
         RealmList<RealmDoubleList> realmList = new RealmList<>();
         for (List<Double> doubleList : values) {
@@ -322,23 +322,35 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     private void loadValuesToChart(List<List<Double>> values) {
         Log.i(TAG, "loadValuesToChart()");
 
-        List<Entry> entries = new ArrayList<>();
+        List<CandleEntry> entries = new ArrayList<>();
+        List<Long> dates = new ArrayList<>();
+
+        System.out.println(values.size() + " --------------------------------------------------");
+
         for (int i = 0; i < values.size(); i++) {
-            long X = values.get(i).get(0).longValue() * 1000;
+            long X = values.get(i).get(0).longValue();
             double y = (values.get(i).get(1) + values.get(i).get(2) +
                     values.get(i).get(3) + values.get(i).get(4)) / 4;
 
-            entries.add(new Entry(X, (float) y));
+            float open = values.get(i).get(1).floatValue();
+            float close = values.get(i).get(4).floatValue();
+
+            float high = values.get(i).get(2).floatValue();
+            float low = values.get(i).get(3).floatValue();
+
+            //entries.add(new Entry(X, (float) y));
+            dates.add(X);
+            entries.add(new CandleEntry(i, high, low, open, close));
         }
 
         if (getView() != null)
-            getView().getRateChart().setData(entries);
+            getView().getRateChart().setData(entries, dates);
     }
 
     private void setRefreshing(boolean key) {
-        if (getView() != null)
-            if (getView().getRefreshLayout() != null)
-                getView().getRefreshLayout().setRefreshing(key);
+//        if (getView() != null)
+//            if (getView().getRefreshLayout() != null)
+//                getView().getRefreshLayout().setRefreshing(key);
     }
 
 }

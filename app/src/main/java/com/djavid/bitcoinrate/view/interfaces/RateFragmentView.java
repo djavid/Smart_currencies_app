@@ -1,6 +1,5 @@
 package com.djavid.bitcoinrate.view.interfaces;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -15,7 +14,7 @@ public interface RateFragmentView extends View {
     Spinner getLeftSpinner();
     Spinner getRightSpinner();
     TextView getTopPanel();
-    SwipeRefreshLayout getRefreshLayout();
+    //SwipeRefreshLayout getRefreshLayout();
     RateChart getRateChart();
 
     void setSelectedChartOption(Codes.ChartOption chartOption);

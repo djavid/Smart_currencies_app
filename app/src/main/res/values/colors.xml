@@ -7,6 +7,8 @@
     <color name="colorAccent">#f0a311</color>
     <color name="colorChart">#F0949D</color>
 
+    <color name="white">#FFFFFF</color>
+
     <!-- cardview -->
     <color name="colorCardBackground">#FFFFFF</color>
     <color name="colorCardTitleBackground">#FFFFFF</color>
