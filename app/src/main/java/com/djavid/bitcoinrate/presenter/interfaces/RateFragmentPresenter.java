@@ -3,6 +3,7 @@ package com.djavid.bitcoinrate.presenter.interfaces;
 import com.djavid.bitcoinrate.core.Presenter;
 import com.djavid.bitcoinrate.core.Router;
 import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
+import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 
 
@@ -11,5 +12,5 @@ public interface RateFragmentPresenter extends Presenter<RateFragmentView, Route
     void showRateCryptonator(boolean refresh);
     void showRateCMC(boolean refresh);
     void refresh();
-    void showChart(String crypto, String country, int timespanDays, long after, boolean refresh);
+    void showChart(String crypto, String country, Codes.ChartOption chartOption, boolean refresh);
 }

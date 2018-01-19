@@ -196,11 +196,9 @@ public class RateFragment extends BaseFragment implements RateFragmentView
 
     private void getChart(Codes.ChartOption chartOption) {
 
-        long start = Codes.getChartStartDate(chartOption);
-
-        String curr1 = (String) leftPanel.getSelectedItem();
-        String curr2 = ((String) rightPanel.getSelectedItem());
-        presenter.showChart(curr1, curr2, chartOption.intervals, start, true);
+        String curr1 = Codes.getCryptoCurrencySymbol(leftPanel.getSelectedItem().toString());
+        String curr2 = (String) rightPanel.getSelectedItem();
+        presenter.showChart(curr1, curr2, chartOption, true);
     }
 
     public void onButtonPressed(Uri uri) {

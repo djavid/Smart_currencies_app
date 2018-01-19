@@ -39,7 +39,7 @@ public class DateFormatter implements IAxisValueFormatter
 
         Date date = new Date(dates.get((int)value) * 1000);
 
-        String hour = new SimpleDateFormat("hh", Locale.US).format(date);
+        String hour = new SimpleDateFormat("HH", Locale.US).format(date);
         String minute = new SimpleDateFormat("mm", Locale.US).format(date);
 
         int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(date));
@@ -49,7 +49,17 @@ public class DateFormatter implements IAxisValueFormatter
         String monthName = mMonthsRus[month]; //TODO check
         String yearName = String.valueOf(year);
 
-        float days_count = chart.getVisibleXRange() / 1000 / 3600 / 24;
+//        System.out.println(chart.getVisibleXRange() + "-------------------------");
+
+        int high_x = (int)chart.getHighestVisibleX();
+        int low_x = (int)chart.getLowestVisibleX();
+        if (high_x >= dates.size() || high_x < 0 || low_x >= dates.size() || low_x < 0)
+            return "";
+        float visible_range = Math.abs(dates.get(high_x) - dates.get(low_x));
+        float days_count = visible_range / 3600 / 24;
+
+//        System.out.println(visible_range);
+//        System.out.println(days_count);
 
         if (days_count >= 180) {
 

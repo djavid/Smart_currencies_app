@@ -8,20 +8,24 @@ import android.view.View;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.github.mikephil.charting.charts.CandleStickChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.List;
 
 
 public class RateChart {
 
-    private CandleStickChart chart;
+    private CombinedChart chart;
     private int color = App.getContext().getResources().getColor(R.color.colorChart);
     private int colorRed = App.getContext().getResources().getColor(R.color.colorPriceChangeNeg);
     private int colorGreen = App.getContext().getResources().getColor(R.color.colorPriceChangePos);
@@ -77,41 +81,48 @@ public class RateChart {
         chart.invalidate();
     }
 
-    public void setData(List<CandleEntry> entries, List<Long> dates) {
+    public void setData(List<CandleEntry> candleEntries, List<Entry> lineEntries, List<Long> dates) {
         Log.i(TAG, "setData()");
 
-        CandleDataSet dataSet = new CandleDataSet(entries, "");
+        CandleDataSet candleDataSet = new CandleDataSet(candleEntries, "");
+        candleDataSet.setDrawIcons(false);
+        candleDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        candleDataSet.setShadowColor(Color.DKGRAY);
+        candleDataSet.setShadowWidth(0.7f);
+        candleDataSet.setDecreasingColor(colorRed);
+        candleDataSet.setDecreasingPaintStyle(Paint.Style.FILL);
+        candleDataSet.setIncreasingColor(colorGreen);
+        candleDataSet.setIncreasingPaintStyle(Paint.Style.FILL);
+        candleDataSet.setNeutralColor(colorPrimary);
+        candleDataSet.setShowCandleBar(true);
+        candleDataSet.setDrawValues(false);
+        CandleData candleData = new CandleData(candleDataSet);
 
+        LineDataSet dataSet = new LineDataSet(lineEntries, "");
         dataSet.setDrawIcons(false);
         dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(Color.rgb(80, 80, 80));
-        dataSet.setShadowColor(Color.DKGRAY);
-        dataSet.setShadowWidth(0.7f);
-        dataSet.setDecreasingColor(colorRed);
-        dataSet.setDecreasingPaintStyle(Paint.Style.FILL);
-        dataSet.setIncreasingColor(colorGreen);
-        dataSet.setIncreasingPaintStyle(Paint.Style.FILL);
-        dataSet.setNeutralColor(colorPrimary);
-        dataSet.setShowCandleBar(true);
-
-        //dataSet.setDrawCircles(false);
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawCircleHole(true);
+        dataSet.setDrawFilled(true);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setLineWidth(2);
         dataSet.setDrawValues(false);
-        //dataSet.setDrawCircleHole(true);
-        //dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        //dataSet.setLineWidth(2);
+        LineData lineData = new LineData(dataSet);
+
+        CombinedData combinedData = new CombinedData();
+        //combinedData.setData(lineData);
+        combinedData.setData(candleData);
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new DateFormatter(chart, dates));
-
-        CandleData lineData = new CandleData(dataSet);
-        chart.setData(lineData);
+        chart.setData(combinedData);
         chart.invalidate();
     }
 
-    public CandleStickChart getChart() {
+    public CombinedChart getChart() {
         return chart;
     }
-    public void setChart(CandleStickChart chart) {
+    public void setChart(CombinedChart chart) {
         this.chart = chart;
     }
 

@@ -2,6 +2,7 @@ package com.djavid.bitcoinrate.model;
 
 import com.djavid.bitcoinrate.model.dto.blockchain.BlockchainModel;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.cryptocompare.HistoData;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
@@ -60,6 +61,24 @@ public interface ApiInterface {
 
     @GET("https://api.cryptowat.ch/pairs/{pair}")
     Single<PairsResult> getCryptowatchMarkets(@Path("pair") String pair);
+
+
+    //cryptocompare
+
+    @GET("https://min-api.cryptocompare.com/data/histominute")
+    Single<HistoData> getHistoMinute(@Query("fsym") String from_symbol, @Query("tsym") String to_symbol,
+                                 @Query("limit") int limit, @Query("aggregate") int periods,
+                                 @Query("e") String exchange);
+
+    @GET("https://min-api.cryptocompare.com/data/histohour")
+    Single<HistoData> getHistoHour(@Query("fsym") String from_symbol, @Query("tsym") String to_symbol,
+                                     @Query("limit") int limit, @Query("aggregate") int periods,
+                                     @Query("e") String exchange);
+
+    @GET("https://min-api.cryptocompare.com/data/histoday")
+    Single<HistoData> getHistoDay(@Query("fsym") String from_symbol, @Query("tsym") String to_symbol,
+                                     @Query("limit") int limit, @Query("aggregate") int periods,
+                                     @Query("e") String exchange);
 
 
     //heroku server

@@ -1,5 +1,7 @@
 package com.djavid.bitcoinrate.model.dto.realm;
 
+import com.djavid.bitcoinrate.model.dto.cryptocompare.Datum;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -7,12 +9,12 @@ import io.realm.RealmObject;
 public class RealmHistoryData extends RealmObject {
 
     private String pair;
-    private RealmList<RealmDoubleList> values = null;
+    private RealmList<Datum> values = null;
 
 
     public RealmHistoryData() { }
 
-    public RealmHistoryData(RealmList<RealmDoubleList> values, String pair) {
+    public RealmHistoryData(RealmList<Datum> values, String pair) {
         this.pair = pair;
         this.values = values;
     }
@@ -24,10 +26,11 @@ public class RealmHistoryData extends RealmObject {
                 '}';
     }
 
-    public RealmList<RealmDoubleList> getValues() {
+
+    public RealmList<Datum> getValues() {
         return values;
     }
-    public void setValues(RealmList<RealmDoubleList> values) {
+    public void setValues(RealmList<Datum> values) {
         this.values = values;
     }
 

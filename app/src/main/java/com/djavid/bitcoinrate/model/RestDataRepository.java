@@ -3,6 +3,7 @@ package com.djavid.bitcoinrate.model;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.model.dto.blockchain.BlockchainModel;
 import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.dto.cryptocompare.HistoData;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CryptonatorTicker;
 import com.djavid.bitcoinrate.model.dto.cryptonator.CurrenciesModel;
 import com.djavid.bitcoinrate.model.dto.cryptowatch.HistoryDataModel;
@@ -134,4 +135,33 @@ public class RestDataRepository {
                 .compose(RxUtils.applyCompletableSchedulers())
                 .retry(2L);
     }
+
+    public Single<HistoData> getHistoMinute(String from_symbol, String to_symbol, int limit, int periods) {
+
+        String def_exchange = "CCCAGG";
+
+        return apiInterface.getHistoMinute(from_symbol, to_symbol, limit, periods, def_exchange)
+                .doOnError(Throwable::printStackTrace)
+                .compose(RxUtils.applySingleSchedulers());
+    }
+
+    public Single<HistoData> getHistoHour(String from_symbol, String to_symbol, int limit, int periods) {
+
+        String def_exchange = "CCCAGG";
+
+        return apiInterface.getHistoHour(from_symbol, to_symbol, limit, periods, def_exchange)
+                .doOnError(Throwable::printStackTrace)
+                .compose(RxUtils.applySingleSchedulers());
+    }
+
+    public Single<HistoData> getHistoDay(String from_symbol, String to_symbol, int limit, int periods) {
+
+        String def_exchange = "CCCAGG";
+
+        return apiInterface.getHistoDay(from_symbol, to_symbol, limit, periods, def_exchange)
+                .doOnError(Throwable::printStackTrace)
+                .compose(RxUtils.applySingleSchedulers());
+    }
+
+
 }

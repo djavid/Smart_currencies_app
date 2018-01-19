@@ -54,14 +54,10 @@ public class Codes {
     };
 
     public static ChartOption[] chart_options = {
-//            new ChartOption("1day", 1, 900),
-//            new ChartOption("1week", 7, 3600),
-//            new ChartOption("1month", 30, 7200),
-//            new ChartOption("1year", 365, 86400)
-            new ChartOption("1day", 1, 900),
-            new ChartOption("1week", 7, 7200),
-            new ChartOption("1month", 30, 21600),
-            new ChartOption("1year", 365, 259200)
+            new ChartOption("1day", 1, 900, 96, 15, "histominute"),
+            new ChartOption("1week", 7, 7200, 82, 2, "histohour"),
+            new ChartOption("1month", 30, 21600, 120, 6, "histohour"),
+            new ChartOption("1year", 365, 259200, 122, 3, "histoday")
     };
 
     private static String[] crypto_coins_array_code = Stream
@@ -393,14 +389,23 @@ public class Codes {
     }
 
     public static class ChartOption {
+
         public String timespan;
         public int days;
         public int intervals;
 
-        public ChartOption(String timespan, int days, int intervals) {
+        public int limit;
+        public int periods;
+        public String request;
+
+        public ChartOption(String timespan, int days, int intervals,
+                           int limit, int periods, String request) {
             this.timespan = timespan;
             this.days = days;
             this.intervals = intervals;
+            this.limit = limit;
+            this.periods = periods;
+            this.request = request;
         }
     }
 }
