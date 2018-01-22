@@ -263,6 +263,12 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     @Override
     public void deleteTicker(long ticker_id) {
 
+        for (Ticker ticker : tickers)
+            if (ticker.getId() == ticker_id) {
+                tickers.remove(ticker);
+                break;
+            }
+
         disposable = dataRepository.deleteTicker(ticker_id)
                 .subscribe(() -> {
                     Log.i(TAG, "Successfully deleted ticker with id = " + ticker_id);
