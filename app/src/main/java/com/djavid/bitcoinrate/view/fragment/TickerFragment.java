@@ -113,10 +113,10 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @Override
     public void onStart() {
         Log.i(TAG, "onStart()");
-        presenter = getPresenter(TickerFragmentPresenter.class);
-        presenter.setView(this);
-        presenter.setRouter((Router) getActivity());
-        presenter.onStart();
+//        presenter = getPresenter(TickerFragmentPresenter.class);
+//        presenter.setView(this);
+//        presenter.setRouter((Router) getActivity());
+//        presenter.onStart();
 
         super.onStart();
 
@@ -158,6 +158,17 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             dialog.show(getFragmentManager(), TAG_CREATE_DIALOG);
 
         });
+
+        //test
+        presenter = getPresenter(TickerFragmentPresenter.class);
+        presenter.setView(this);
+        presenter.setRouter((Router) getActivity());
+        presenter.onStart();
+
+//        for (Object item : rv_ticker_list.getCh) {
+//            System.out.println(item.getClass());
+//            System.out.println(item.toString());
+//        }
 
         return view;
     }
@@ -276,21 +287,16 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
                 @Override
                 public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-
                     return false;
                 }
 
                 @Override
                 public boolean isItemViewSwipeEnabled() {
-
                     return true;
                 }
 
-
                 @Override
                 public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-                    System.out.println(viewHolder);
 
                     int pos = viewHolder.getAdapterPosition();
                     cl_ticker.setTag(pos);

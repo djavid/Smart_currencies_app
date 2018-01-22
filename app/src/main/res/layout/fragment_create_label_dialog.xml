@@ -24,52 +24,13 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="21dp" />
 
-
-    <info.hoang8f.android.segmented.SegmentedGroup
-        android:id="@+id/segmented_button"
-        xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_below="@id/tv_create_dialog_name"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        android:orientation="horizontal"
-        segmentedgroup:sc_tint_color="@color/colorTint"
-        segmentedgroup:sc_border_width="1dp"
-        segmentedgroup:sc_corner_radius="20dp">
-
-        <RadioButton
-            android:id="@+id/btn_trending_up"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textSize="18sp"
-            android:checked="true"
-            android:text="@string/title_dialog_rise_btn"
-            style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
-
-        <RadioButton
-            android:id="@+id/btn_trending_down"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textSize="18sp"
-            android:text="@string/title_dialog_decline_btn"
-            style="@style/RadioButton"
-            fontPath="revofit-light.ttf" />
-
-    </info.hoang8f.android.segmented.SegmentedGroup>
-
-
     <TextView
         android:id="@+id/tv_current_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/segmented_button"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/tv_create_dialog_name"
         android:lineSpacingExtra="8sp"
         android:fontFamily="sans-serif-medium"
         android:text="@string/title_current_price"
@@ -183,7 +144,7 @@
             android:layout_marginEnd="9dp"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
-            android:textColor="#00bcd4"
+            android:textColor="@color/colorPrimary"
             android:text="@string/title_dialog_cancel_btn" />
 
         <TextView
@@ -199,7 +160,7 @@
             android:paddingEnd="9dp"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
-            android:textColor="#00bcd4"
+            android:textColor="@color/colorPrimary"
             android:text="@string/title_dialog_add_btn" />
 
     </LinearLayout>

@@ -9,7 +9,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -28,17 +27,10 @@ import com.tomergoldst.tooltips.ToolTip;
 import com.tomergoldst.tooltips.ToolTipsManager;
 
 import butterknife.BindView;
-import info.hoang8f.android.segmented.SegmentedGroup;
 
 
 public class CreateLabelDialog extends BaseDialogFragment {
 
-    @BindView(R.id.segmented_button)
-    SegmentedGroup segmented_button;
-    @BindView(R.id.btn_trending_up)
-    RadioButton btn_trending_up;
-    @BindView(R.id.btn_trending_down)
-    RadioButton btn_trending_down;
     @BindView(R.id.et_price)
     EditText et_price;
     @BindView(R.id.tv_cancel_btn)
@@ -121,17 +113,20 @@ public class CreateLabelDialog extends BaseDialogFragment {
             try {
                 TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
 
-                String value = et_price.getText().toString();
-                boolean isTrendingUp = btn_trending_up.isChecked();
-                boolean isPercentLabel = cb_percent_change.isChecked();
-
-                if (!isValidValue(value, isPercentLabel)) {
-                    return;
-                }
-
                 if (selectedTicker == null || selectedTicker.getTickerItem() == null) {
                     showError(R.string.error_occurred);
                     dismiss();
+                    return;
+                }
+
+                String value = et_price.getText().toString();
+                double value_double = Double.parseDouble(value);
+
+                //boolean isTrendingUp = btn_trending_up.isChecked();
+                boolean isTrendingUp = value_double > selectedTicker.getTickerItem().getTicker().getPrice();
+                boolean isPercentLabel = cb_percent_change.isChecked();
+
+                if (!isValidValue(value, isPercentLabel)) {
                     return;
                 }
 
@@ -145,12 +140,29 @@ public class CreateLabelDialog extends BaseDialogFragment {
 
                 if (isPercentLabel) {
 
+                    for (LabelItemDto item : selectedTicker.getLabels()) {
+                        System.out.println(item.getChange_percent());
+                        System.out.println(value_double / 100);
+                        if (item.getChange_percent() == value_double / 100) {
+                            showError(R.string.error_subscribe_already_added);
+                            return;
+                        }
+                    }
+
                     String perc = Double.toString(Double.parseDouble(value) / 100);
                     subscribe = new Subscribe(perc, ticker_id, token_id, cryptoId, countryId,
                             selectedTicker.getTickerItem().getTicker().getPrice());
                     labelItemDto = new LabelItemDto(perc, isTrendingUp, true);
 
                 } else {
+
+                    for (LabelItemDto item : selectedTicker.getLabels()) {
+                        if (Double.parseDouble(item.getValue()) == value_double) {
+                            showError(R.string.error_subscribe_already_added);
+                            return;
+                        }
+                    }
+
                     subscribe = new Subscribe(isTrendingUp, value, ticker_id, token_id, cryptoId, countryId);
                     labelItemDto = new LabelItemDto(value, isTrendingUp, false);
                 }
@@ -176,16 +188,12 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 tv_change.setVisibility(View.VISIBLE);
                 tv_change_value.setVisibility(View.VISIBLE);
                 tv_change_value.setText("±0");
-
-                segmented_button.setVisibility(View.GONE);
                 et_price.setHint(R.string.title_hint_percent);
 
             } else {
 
                 tv_change.setVisibility(View.GONE);
                 tv_change_value.setVisibility(View.GONE);
-
-                segmented_button.setVisibility(View.VISIBLE);
                 et_price.setHint(R.string.title_hint_price);
             }
 

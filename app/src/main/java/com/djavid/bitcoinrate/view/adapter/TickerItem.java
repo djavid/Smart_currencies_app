@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.model.dto.LabelItemDto;
@@ -68,6 +70,7 @@ public class TickerItem {
             labels.add(new LabelItemDto(item.getId(), item.getValue(),
                     item.isTrendingUp(), item.getChange_percent()));
         }
+        labels = sortLabels(labels);
     }
 
     public TickerItem(Context mContext, PlaceHolderView mPlaceHolderView, Ticker tickerItem) {
@@ -99,7 +102,8 @@ public class TickerItem {
                     new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             label_container.setLayoutManager(layoutManager);
 
-            for (LabelItemDto item : getLabels()) {
+
+            for (LabelItemDto item : labels) {
                 label_container.addView(new LabelItem(mContext, label_container, item, this));
             }
             label_container.addView(new LabelItem(mContext, label_container, new LabelItemDto(), this));
@@ -108,6 +112,41 @@ public class TickerItem {
             e.printStackTrace();
         }
 
+    }
+
+    private List<LabelItemDto> sortLabels(List<LabelItemDto> subscribes) {
+
+        List<LabelItemDto> sorted_subscribes;
+
+        sorted_subscribes = Stream.of(subscribes)
+                .sorted((a, b) -> {
+
+                    if (a.getChange_percent() == 0 && b.getChange_percent() == 0) {
+
+                        return a.getValue().compareTo(b.getValue());
+
+                    } else if (a.getChange_percent() != 0 && b.getChange_percent() != 0) {
+
+                        return Double.compare(a.getChange_percent(), b.getChange_percent());
+
+                    } else if (a.getChange_percent() == 0 && b.getChange_percent() != 0) {
+
+                        return 1;
+
+                    } else if (a.getChange_percent() != 0 && b.getChange_percent() == 0) {
+
+                        return -1;
+
+                    } else {
+
+                        return 0;
+
+                    }
+
+                })
+                .collect(Collectors.toList());
+
+        return sorted_subscribes;
     }
 
 
