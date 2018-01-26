@@ -344,6 +344,8 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
     public List<Ticker> sortTickers(List<Ticker> tickers) {
 
+        if (tickers == null) return new ArrayList<>();
+
         String direction = App.getAppInstance().getPreferences().getSortingDirection();
         String parameter = App.getAppInstance().getPreferences().getSortingParameter();
 

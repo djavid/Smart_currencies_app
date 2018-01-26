@@ -17,6 +17,8 @@ public class Codes {
     public static final String PURCHASE_PRODUCT_ID = "unlimited_notifications_subscription";
     public static final String PURCHASE_PRODUCT_ID2 = "purchase_labels";
 
+    public static final int ALLOWED_AMOUNT = 15;
+
     public static final String GOOGLE_PLAY_LICENSE_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhjt5eTwDu/Rmt+KvZ2oeNmT5xY8zDZ8sVwhbLR2qNnoy8rSgNeCu2z/C8xvWFqiYbjlUoemjhggCquv+JNwUhscxGyUN5VQtRAvVJd6kMMpO0UlFNOhdbUnnMVaaain2Fv0TiVXRzrxxMuFR+vYo1f09BYaFzkrgvx0QrNjaaNd9EKPDKvTcrKOctS2lIQd+u7bPSN60zsQd1VFqKQyFXrxjg1Y+kXguR85sd24GP/e+N1qPoMrB6RLWoFPfoNQY1Iex9KfciYl2ApWF4FDXUh9m18fdVs4Mh6SK8N4cOfNCypBzW5EFAQGB4roseNCfEMw46z9v8Ai/coUQN8ljiwIDAQAB";
 
     public static String[] country_codes = new String[]{

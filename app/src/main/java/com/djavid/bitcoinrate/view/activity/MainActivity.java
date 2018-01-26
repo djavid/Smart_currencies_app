@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements Router, BillingPr
         System.out.println("Subscribes amount = " + getSubscribesAmount());
 
 
-        if (getSubscribesAmount() >= 5) {
+        if (getSubscribesAmount() >= Codes.ALLOWED_AMOUNT) {
 
             if (!billingProcessor.isSubscribed(Codes.PURCHASE_PRODUCT_ID)) {
                 PurchaseDialogFragment purchaseDialogFragment = PurchaseDialogFragment.newInstance();
@@ -284,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements Router, BillingPr
 
             if (isSubsUpdateSupported) {
                 billingProcessor.subscribe(this, Codes.PURCHASE_PRODUCT_ID);
-//              billingProcessor.purchase(this, Codes.PURCHASE_PRODUCT_ID2);
             } else {
                 showError(R.string.error_service_unavailable);
             }

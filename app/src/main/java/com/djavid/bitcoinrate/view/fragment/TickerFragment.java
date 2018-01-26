@@ -268,6 +268,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                     return true;
                 }
 
+
                 @Override
                 public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 

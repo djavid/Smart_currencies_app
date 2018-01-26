@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingPrefix, ContentDescription"
-    android:id="@+id/ticket_card"
+    android:id="@+id/ticker_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="@style/TickerCardViewStyle">

@@ -120,15 +120,14 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 }
 
                 String value = et_price.getText().toString();
-                double value_double = Double.parseDouble(value);
-
-                //boolean isTrendingUp = btn_trending_up.isChecked();
-                boolean isTrendingUp = value_double > selectedTicker.getTickerItem().getTicker().getPrice();
                 boolean isPercentLabel = cb_percent_change.isChecked();
 
                 if (!isValidValue(value, isPercentLabel)) {
                     return;
                 }
+
+                double value_double = Double.parseDouble(value);
+                boolean isTrendingUp = value_double > selectedTicker.getTickerItem().getTicker().getPrice();
 
                 long token_id = App.getAppInstance().getPreferences().getTokenId();
                 long ticker_id = selectedTicker.getTickerItem().getId();
