@@ -127,4 +127,14 @@ public class SavedPreferences {
                 .apply();
     }
 
+    public int getSubscribesAmount() {
+        return sharedPreferences.getInt("subscribes_amount", 0);
+    }
+    public void setSubscribesAmount(int value) {
+        sharedPreferences
+                .edit()
+                .putInt("subscribes_amount", value)
+                .apply();
+    }
+
 }

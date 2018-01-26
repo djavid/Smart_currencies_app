@@ -54,10 +54,14 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
             List<Subscribe> subscribesFromRealm = getSubscribesFromRealm();
 
             if (!tickersFromRealm.isEmpty()) {
+
                 tickers = tickersFromRealm;
                 subscribes = subscribesFromRealm;
 
                 getView().addAllTickers(tickers, subscribes);
+
+            } else {
+                getView().updateRecyclerVisibility();
             }
         }
     }
@@ -144,6 +148,9 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
 
                     List<Ticker> tickerListRealm = getTickersFromRealm();
                     List<Subscribe> subscribeListRealm = getSubscribesFromRealm();
+
+                    if (App.getAppInstance().getPreferences().getSubscribesAmount() != subscribes.size())
+                        App.getAppInstance().getPreferences().setSubscribesAmount(subscribes.size());
 
                     if (!tickerListRealm.equals(tickers) || !subscribeListRealm.equals(subscribes)){
                         Log.i(TAG, "tickers and subscribes are NOT EQUAL");
@@ -327,9 +334,11 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     }
 
     private void setRefreshing(boolean key) {
+
         if (getView() != null) {
-            if (getView().getRefreshLayout() != null)
+            if (getView().getRefreshLayout() != null) {
                 getView().getRefreshLayout().setRefreshing(key);
+            }
         }
     }
 

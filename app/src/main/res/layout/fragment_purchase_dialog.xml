@@ -1,0 +1,64 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.djavid.bitcoinrate.view.dialog.PurchaseDialogFragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:fontFamily="sans-serif-medium"
+        android:lineSpacingExtra="8sp"
+        android:textSize="20sp"
+        android:textColor="@color/colorLabelDialogTitle"
+        android:text="@string/title_purchase_dialog_name" />
+
+    <TextView
+        android:id="@+id/tv_purchase_info_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+
+        android:fontFamily="serif-monospace"
+        android:textSize="14sp"
+        android:textColor="@color/colorPrimaryText"
+        android:text="@string/purchase_info_1" />
+
+    <TextView
+        android:id="@+id/tv_purchase_info_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+
+        android:fontFamily="serif-monospace"
+        android:textSize="14sp"
+        android:textColor="@color/colorPrimaryText"
+        android:text="@string/purchase_info_2" />
+
+    <Button
+        android:id="@+id/btn_purchase"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center"
+        android:background="@drawable/about_btn_bg"
+        android:textColor="@color/colorCardTitleBackground"
+        android:textSize="16sp"
+        android:text="@string/title_purchase_btn" />
+
+
+</LinearLayout>

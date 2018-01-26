@@ -19,8 +19,6 @@ import static android.content.ContentValues.TAG;
 
 public class FirebaseService extends FirebaseMessagingService {
 
-    private static final int NOTIFY_ID = 101;
-
 
     public FirebaseService() { }
 
@@ -59,6 +57,8 @@ public class FirebaseService extends FirebaseMessagingService {
     }
 
     private void showNotification(RemoteMessage remoteMessage) {
+
+        //TODO show another notifications
 
         Context context = getApplicationContext();
 

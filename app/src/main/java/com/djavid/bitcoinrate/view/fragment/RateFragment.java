@@ -1,7 +1,5 @@
 package com.djavid.bitcoinrate.view.fragment;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.annimon.stream.IntStream;
 import com.djavid.bitcoinrate.App;
@@ -53,7 +52,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView
     TextView optionFourth;
 
     private final String TAG = this.getClass().getSimpleName();
-    OnFragmentInteractionListener mListener;
     RateFragmentPresenter presenter;
     RateChart chart;
     Codes.ChartOption selectedChartOption;
@@ -201,16 +199,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView
         presenter.showChart(curr1, curr2, chartOption, true);
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -222,7 +210,8 @@ public class RateFragment extends BaseFragment implements RateFragmentView
         switch (item.getItemId()) {
             case R.id.refresh:
                 presenter.refresh();
-                presenter.showRateCMC(true);
+                presenter.showRate(true);
+                Toast.makeText(getContext(), getString(R.string.updating), Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -255,23 +244,6 @@ public class RateFragment extends BaseFragment implements RateFragmentView
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnTickerInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
 //    @Override

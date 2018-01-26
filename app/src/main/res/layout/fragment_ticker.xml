@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".view.fragment.TickerFragment"
+    tools:ignore="MissingPrefix, ContentDescription"
     android:id="@+id/cl_ticker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -37,6 +38,38 @@
         app:elevation="6dp"
         app:backgroundTint="@color/colorPrimary"
         app:pressedTranslationZ="12dp" />
+
+
+    <RelativeLayout
+        android:id="@+id/rl_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_below="@id/swipe_container">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_above="@id/tv_hint"
+            android:layout_centerHorizontal="true"
+            android:tint="@color/colorEditTextHint"
+            app:srcCompat="@drawable/ic_add_circle_white_24px" />
+
+        <TextView
+            android:id="@+id/tv_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+
+            android:textSize="20sp"
+            android:textColor="@color/colorEditTextHint"
+            android:textAlignment="center"
+            android:text="@string/title_no_tickers" />
+
+    </RelativeLayout>
 
 
     <include layout="@layout/view_progressbar"

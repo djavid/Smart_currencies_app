@@ -104,4 +104,10 @@ dependencies {
 
     //BottomNavigationViewEx
     compile 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
+
+    //Firebase crash reporting
+    compile 'com.google.firebase:firebase-crash:11.8.0'
+
+    //Android In-App Billing v3 Library
+    compile 'com.anjlab.android.iab.v3:library:1.0.44'
 }

@@ -1,7 +1,6 @@
 package com.djavid.bitcoinrate.view.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.annimon.stream.Stream;
 import com.djavid.bitcoinrate.App;
@@ -50,17 +50,17 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     CoordinatorLayout cl_ticker;
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout swipe_container;
-
-
-    TickerFragmentPresenter presenter;
-    TickerPopupWindow tickerPopupWindow;
-    private OnTickerInteractionListener mTickerListener;
+    @BindView(R.id.rl_no_data)
+    RelativeLayout rl_no_data;
 
     private final String TAG = this.getClass().getSimpleName();
-    final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
+    private final String TAG_CREATE_DIALOG = "TAG_CREATE_DIALOG";
+
+    private TickerFragmentPresenter presenter;
 
 
-    public TickerFragment() { }
+    public TickerFragment() {
+    }
 
     public static TickerFragment newInstance() {
         TickerFragment fragment = new TickerFragment();
@@ -102,7 +102,9 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
             case R.id.sort:
 
                 View menuItemView = getActivity().findViewById(R.id.sort);
-                tickerPopupWindow = new TickerPopupWindow(menuItemView, getContext(), this);
+                TickerPopupWindow tickerPopupWindow =
+                        new TickerPopupWindow(menuItemView, getContext(), this);
+                tickerPopupWindow.show();
 
                 break;
         }
@@ -113,10 +115,10 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     @Override
     public void onStart() {
         Log.i(TAG, "onStart()");
-//        presenter = getPresenter(TickerFragmentPresenter.class);
-//        presenter.setView(this);
-//        presenter.setRouter((Router) getActivity());
-//        presenter.onStart();
+        presenter = getPresenter(TickerFragmentPresenter.class);
+        presenter.setView(this);
+        presenter.setRouter((Router) getActivity());
+        presenter.onStart();
 
         super.onStart();
 
@@ -159,17 +161,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
         });
 
-        //test
-        presenter = getPresenter(TickerFragmentPresenter.class);
-        presenter.setView(this);
-        presenter.setRouter((Router) getActivity());
-        presenter.onStart();
-
-//        for (Object item : rv_ticker_list.getCh) {
-//            System.out.println(item.getClass());
-//            System.out.println(item.toString());
-//        }
-
         return view;
     }
 
@@ -177,28 +168,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     public void loadData() {
         Log.i(TAG, "loadData()");
         presenter.getAllTickers(false);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnTickerInteractionListener) {
-            mTickerListener = (OnTickerInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnTickerInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mTickerListener = null;
-    }
-
-    public interface OnTickerInteractionListener {
-        void onFragmentInteraction(Ticker item);
     }
 
     @Override
@@ -255,6 +224,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
         rv_ticker_list.addView(tickerItem);
         scrollToPosition(rv_ticker_list.getAllViewResolvers().size() - 1);
+
+        updateRecyclerVisibility();
     }
 
     @Override
@@ -280,6 +251,8 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
             rv_ticker_list.addView(tickerItem);
         }
+
+        updateRecyclerVisibility();
     }
 
     ItemTouchHelper.SimpleCallback simpleCallback =
@@ -314,8 +287,15 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
 
                                 @Override
                                 public void onShown(Snackbar transientBottomBar) {
+
+                                    int amount = App.getAppInstance().getPreferences()
+                                            .getSubscribesAmount() - tickerItem.getLabels().size();
+                                    App.getAppInstance().getPreferences().setSubscribesAmount(amount);
+
                                     presenter.deleteTicker(tickerItem.getTickerItem().getId());
                                     rv_ticker_list.removeView(viewHolder.getAdapterPosition());
+
+                                    updateRecyclerVisibility();
                                 }
                             });
 //                            .setAction(getResources().getString(R.string.title_cardview_undo), v -> {
@@ -348,6 +328,17 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                 }
             };
 
+    public void updateRecyclerVisibility() {
+
+        if (!rv_ticker_list.getAllViewResolvers().isEmpty()) {
+            swipe_container.setVisibility(View.VISIBLE);
+            rl_no_data.setVisibility(View.GONE);
+        } else {
+            swipe_container.setVisibility(View.GONE);
+            rl_no_data.setVisibility(View.VISIBLE);
+        }
+
+    }
 
     @Override
     public void showSnackbar(String message) {
@@ -363,4 +354,6 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
     public TickerFragmentPresenter getPresenter() {
         return presenter;
     }
+
+
 }

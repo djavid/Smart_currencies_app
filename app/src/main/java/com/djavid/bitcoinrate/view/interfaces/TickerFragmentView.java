@@ -14,4 +14,5 @@ public interface TickerFragmentView extends ScrollView<Ticker> {
     SwipeRefreshLayout getRefreshLayout();
     void addTickerToAdapter(Ticker ticker);
     void addAllTickers(List<Ticker> tickers, List<Subscribe> subscribes);
+    void updateRecyclerVisibility();
 }

@@ -121,6 +121,10 @@ class LabelItem {
         dataRepository.deleteSubscribe(id)
                 .subscribe(() -> {
                     tickerItem.deleteLabel(this);
+
+                    int amount = App.getAppInstance().getPreferences().getSubscribesAmount();
+                    App.getAppInstance().getPreferences().setSubscribesAmount(--amount);
+
                     Log.d("LabelDialog", "Successfully deleted subscribe with id = " + id);
                 }, error -> {
                     showError(R.string.error_deleting_subscribe);

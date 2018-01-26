@@ -1,8 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.djavid.bitcoinrate.view.dialog.CreateTickerDialog"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.djavid.bitcoinrate.view.dialog.CreateTickerDialog"
     android:layout_marginStart="20dp"
     android:layout_marginEnd="20dp"
     android:layout_gravity="center">
@@ -97,9 +98,7 @@
             android:textColor="#00bcd4"
             android:text="@string/title_dialog_add_btn" />
 
-
     </LinearLayout>
-
 
 
 </RelativeLayout>

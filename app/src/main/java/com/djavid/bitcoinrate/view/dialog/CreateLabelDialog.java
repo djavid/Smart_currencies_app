@@ -141,8 +141,6 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 if (isPercentLabel) {
 
                     for (LabelItemDto item : selectedTicker.getLabels()) {
-                        System.out.println(item.getChange_percent());
-                        System.out.println(value_double / 100);
                         if (item.getChange_percent() == value_double / 100) {
                             showError(R.string.error_subscribe_already_added);
                             return;
@@ -157,9 +155,12 @@ public class CreateLabelDialog extends BaseDialogFragment {
                 } else {
 
                     for (LabelItemDto item : selectedTicker.getLabels()) {
-                        if (Double.parseDouble(item.getValue()) == value_double) {
-                            showError(R.string.error_subscribe_already_added);
-                            return;
+                        if (item.getChange_percent() == 0) {
+                            System.out.println(item.getValue() + " " + value_double);
+                            if (Double.parseDouble(item.getValue()) == value_double) {
+                                showError(R.string.error_subscribe_already_added);
+                                return;
+                            }
                         }
                     }
 
@@ -324,13 +325,15 @@ public class CreateLabelDialog extends BaseDialogFragment {
                     if (response.error.isEmpty()) {
                         Log.d("LabelDialog", "Successfully sent " + subscribe.toString());
 
+                        int amount = App.getAppInstance().getPreferences().getSubscribesAmount();
+                        App.getAppInstance().getPreferences().setSubscribesAmount(++amount);
+
                         if (response.id != 0) {
                             label.setId(response.id);
                             tickerItem.addLabelItem(label);
                         }
                     } else {
                         Log.e("LabelDialog", response.error);
-                        //todo don't add similar labels, fix on server and sqoh it hear as error
                         showError(R.string.connection_error);
                     }
 

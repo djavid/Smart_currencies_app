@@ -35,6 +35,11 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+//        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+//            e.printStackTrace();
+//            FirebaseCrash.report(e);
+//        });
+
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setFontAttrId(R.attr.fontPath)
                 .build());

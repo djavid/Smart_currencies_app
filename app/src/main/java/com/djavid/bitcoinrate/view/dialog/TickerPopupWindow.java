@@ -41,13 +41,12 @@ public class TickerPopupWindow {
                 .setDimValue(0.3f)
                 .createPopup();
 
-        show();
         initListeners();
         setDefaultPopupState();
 
     }
 
-    private void show() {
+    public void show() {
         if (menuItemView != null) {
             popup_window.showAtAnchorView(menuItemView, VerticalGravity.BELOW,
                     HorizontalGravity.ALIGN_RIGHT);

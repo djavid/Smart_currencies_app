@@ -5,7 +5,7 @@
     <string name="title_cards">Тикеры</string>
     <string name="title_settings">Настройки</string>
 
-    <!-- fragment layout strings -->
+    <!-- RateFragment -->
     <string name="top_value_fragment">2 835,57 USD</string>
     <string name="left_value_fragment">BTC</string>
     <string name="right_value_fragment">USD</string>
@@ -15,6 +15,8 @@
     <string name="option_two">неделя</string>
     <string name="option_three">месяц</string>
     <string name="option_four">год</string>
+
+    <string name="updating">Обновление&#8230;</string>
 
     <!-- Action bar strings -->
     <string name="menu_item_refresh">Обновить курс</string>
@@ -59,11 +61,17 @@
     <string name="error_subscribe_already_added">Это уведомление уже добавлено!</string>
     <string name="error_wrong_data">Неверные данные!</string>
 
+    <string name="error_service_unavailable">Сервис Google Play недоступен!</string>
+    <string name="payment_error">Ошибка оплаты!</string>
+
     <!-- Edittext errors -->
     <string name="error_empty_value">Введите цену!</string>
     <string name="error_wrong_format">Неправильный формат строки!</string>
     <string name="error_percent_max">Введите число не более 200%!</string>
     <string name="error_percent_double">Введите не более 4 цифр после запятой!</string>
+
+    <!-- TickerFragment -->
+    <string name="title_no_tickers">Добавьте тикеры, чтобы отслеживать криптовалюты.</string>
 
     <!-- SettingsFragment -->
     <string name="title_crypto_display">Отображение криптовалют</string>
@@ -97,6 +105,16 @@
     <string name="hint_fixed_price">Здесь необходимо ввести полную цену,
         по достижении которой вы хотите получить уведомление.</string>
     <string name="hint_percent">Здесь необходимо ввести процент отклонения от цены,
-        при котором будут приходить уведомления.</string>
+        при котором будут приходить повторяющиеся уведомления.</string>
+
+    <!-- PurchaseDialogFragment -->
+    <string name="title_purchase_dialog_name">Доступ к уведомлениям</string>
+    <string name="purchase_info_1">В бесплатной версии приложения вы можете иметь не более
+        чем <b>пять уведомлений</b> на всех тикерах одновременно.</string>
+    <string name="purchase_info_2">Оплатите, чтобы получить доступ к <b>неограниченному количеству уведомлений</b>.</string>
+    <string name="title_purchase_btn">Приобрести</string>
+
+    <!-- Purchase -->
+    <string name="successful_purchase">Покупка успешно завершена!</string>
 
 </resources>
