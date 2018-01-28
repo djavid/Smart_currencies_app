@@ -10,8 +10,8 @@ import android.widget.Toast;
 
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.model.RestDataRepository;
-import com.djavid.bitcoinrate.model.dto.LabelItemDto;
+import com.djavid.bitcoinrate.model.project.LabelItemDto;
+import com.djavid.bitcoinrate.rest.RestDataRepository;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.mindorks.placeholderview.PlaceHolderView;
 import com.mindorks.placeholderview.annotations.Click;

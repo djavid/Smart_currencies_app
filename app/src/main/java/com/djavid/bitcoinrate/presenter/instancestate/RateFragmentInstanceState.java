@@ -1,21 +1,21 @@
 package com.djavid.bitcoinrate.presenter.instancestate;
 
-import com.djavid.bitcoinrate.util.Codes;
+import com.djavid.bitcoinrate.model.project.ChartOption;
 
 
 public class RateFragmentInstanceState {
 
-    private Codes.ChartOption chart_option;
+    private ChartOption chart_option;
 
 
-    public RateFragmentInstanceState(Codes.ChartOption chart_option) {
+    public RateFragmentInstanceState(ChartOption chart_option) {
         this.chart_option = chart_option;
     }
 
-    public Codes.ChartOption getChart_option() {
+    public ChartOption getChart_option() {
         return chart_option;
     }
-    public void setChart_option(Codes.ChartOption chart_option) {
+    public void setChart_option(ChartOption chart_option) {
         this.chart_option = chart_option;
     }
 }

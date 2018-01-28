@@ -1,6 +1,7 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingPrefix, ContentDescription"
     tools:context=".view.fragment.RateFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -34,7 +35,6 @@
 
                 </android.support.v7.widget.CardView>
 
-
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -42,32 +42,67 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:baselineAligned="false"
                         android:weightSum="2">
 
-                        <Spinner
-                            android:id="@+id/leftPanel"
+                        <LinearLayout
+                            android:id="@+id/left_panel"
                             android:layout_width="0dp"
-                            android:layout_height="40dp"
+                            android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:spinnerMode="dialog"
-                            tools:listitem="@layout/row_item"
-                            android:text="@string/left_value_fragment" />
+                            android:gravity="center">
 
-                        <Spinner
-                            android:id="@+id/rightPanel"
+                            <ImageView
+                                android:id="@+id/iv_left_panel"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center_vertical"
+                                app:srcCompat="@drawable/ic_bitcoin" />
+
+                            <TextView
+                                android:id="@+id/tv_left_panel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:textSize="25sp"
+                                android:textColor="@color/colorPrimaryText"
+                                fontPath="revofit-light.ttf"
+                                android:text="@string/left_value_fragment" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/right_panel"
                             android:layout_width="0dp"
-                            android:layout_height="40dp"
+                            android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:spinnerMode="dialog"
-                            tools:listitem="@layout/row_item"
-                            android:text="@string/right_value_fragment" />
+                            android:gravity="center">
+
+                            <ImageView
+                                android:id="@+id/iv_right_panel"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center_vertical"
+                                app:srcCompat="@drawable/ic_bitcoin" />
+
+                            <TextView
+                                android:id="@+id/tv_right_panel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:textSize="25sp"
+                                android:textColor="@color/colorPrimaryText"
+                                fontPath="revofit-light.ttf"
+                                android:text="@string/right_value_fragment" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
-
 
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
@@ -96,7 +131,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/rounded_corner"
+                        android:background="@drawable/bg_label_unselected"
                         android:textColor="@color/colorChartLabelUnselectedText"
                         android:layout_weight="7"
                         android:textAlignment="center"
@@ -110,7 +145,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/rounded_corner"
+                        android:background="@drawable/bg_label_unselected"
                         android:textColor="@color/colorChartLabelUnselectedText"
                         android:layout_weight="8"
                         android:textAlignment="center"
@@ -122,7 +157,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/rounded_corner"
+                        android:background="@drawable/bg_label_unselected"
                         android:textColor="@color/colorChartLabelUnselectedText"
                         android:layout_weight="8"
                         android:textAlignment="center"
@@ -133,7 +168,7 @@
                         android:id="@+id/optionFourth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/rounded_corner"
+                        android:background="@drawable/bg_label_unselected"
                         android:textColor="@color/colorChartLabelUnselectedText"
                         android:layout_weight="6"
                         android:textAlignment="center"

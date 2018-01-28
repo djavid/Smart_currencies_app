@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.djavid.bitcoinrate.App;
-
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -47,7 +45,8 @@ public abstract class BaseDialogFragment extends DialogFragment {
     }
 
     public void showError(int errorId) {
-        Toast.makeText(App.getContext(), getString(errorId), Toast.LENGTH_SHORT).show();
+        //todo getContext() or App.getContext() test this
+        Toast.makeText(getContext(), getString(errorId), Toast.LENGTH_SHORT).show();
     }
 
 }

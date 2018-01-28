@@ -8,15 +8,15 @@ import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.model.RestDataRepository;
-import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
-import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
-import com.djavid.bitcoinrate.model.dto.realm.RealmSubscribeList;
-import com.djavid.bitcoinrate.model.dto.realm.RealmTickerList;
+import com.djavid.bitcoinrate.model.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.heroku.Ticker;
+import com.djavid.bitcoinrate.model.realm.RealmSubscribeList;
+import com.djavid.bitcoinrate.model.realm.RealmTickerList;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
+import com.djavid.bitcoinrate.rest.RestDataRepository;
 import com.djavid.bitcoinrate.util.Codes;
-import com.djavid.bitcoinrate.util.DateFormatter;
+import com.djavid.bitcoinrate.util.PriceConverter;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -192,7 +192,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                         return;
                     }
 
-                    String price = DateFormatter.convertPrice(ticker.getTicker().getPrice());
+                    String price = PriceConverter.convertPrice(ticker.getTicker().getPrice());
                     tickerItem.setPrice(price);
 
                     setRefreshing(false);
@@ -215,7 +215,7 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
                     CoinMarketCapTicker ticker = array.get(0);
 
                     double price = ticker.getPrice(code_country);
-                    String text = DateFormatter.convertPrice(price);
+                    String text = PriceConverter.convertPrice(price);
 
                     tickerItem.setPrice(text);
                     setRefreshing(false);
@@ -416,10 +416,16 @@ public class TickerFragmentPresenterImpl extends BasePresenter<TickerFragmentVie
     }
 
     public List<Ticker> getTickers() {
-        return tickers;
+        if (tickers == null)
+            return new ArrayList<>();
+        else
+            return tickers;
     }
 
     public List<Subscribe> getSubscribes() {
-        return subscribes;
+        if (subscribes == null)
+            return new ArrayList<>();
+        else
+            return subscribes;
     }
 }

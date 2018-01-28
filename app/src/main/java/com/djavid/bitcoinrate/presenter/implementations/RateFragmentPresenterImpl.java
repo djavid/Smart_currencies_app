@@ -6,15 +6,15 @@ import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BasePresenter;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.model.RestDataRepository;
-import com.djavid.bitcoinrate.model.dto.coinmarketcap.CoinMarketCapTicker;
-import com.djavid.bitcoinrate.model.dto.cryptocompare.Datum;
-import com.djavid.bitcoinrate.model.dto.cryptocompare.HistoData;
-import com.djavid.bitcoinrate.model.dto.realm.RealmHistoryData;
+import com.djavid.bitcoinrate.model.coinmarketcap.CoinMarketCapTicker;
+import com.djavid.bitcoinrate.model.cryptocompare.Datum;
+import com.djavid.bitcoinrate.model.cryptocompare.HistoData;
+import com.djavid.bitcoinrate.model.project.ChartOption;
+import com.djavid.bitcoinrate.model.realm.RealmHistoryData;
 import com.djavid.bitcoinrate.presenter.instancestate.RateFragmentInstanceState;
 import com.djavid.bitcoinrate.presenter.interfaces.RateFragmentPresenter;
-import com.djavid.bitcoinrate.util.Codes;
-import com.djavid.bitcoinrate.util.DateFormatter;
+import com.djavid.bitcoinrate.rest.RestDataRepository;
+import com.djavid.bitcoinrate.util.PriceConverter;
 import com.djavid.bitcoinrate.view.interfaces.RateFragmentView;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
@@ -37,52 +37,58 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     private RestDataRepository dataRepository;
 
 
+    @Override
+    public void onStart() {
+
+        if (getView() != null) {
+
+            //restore clicked chart option
+            if (getInstanceState() != null) {
+                getView().setSelectedChartOption(getInstanceState().getChart_option());
+                if (getView().getSelectedChartLabelView() != null)
+                    getView().setChartLabelSelected(getView().getSelectedChartLabelView());
+            }
+
+            //restore last price
+            if (!App.getAppInstance().getPreferences().getPrice().isEmpty())
+                getView().getTopPanel().setText(App.getAppInstance().getPreferences().getPrice());
+
+            //restore history data from realm
+            final RealmHistoryData realmHistoryData = getValuesFromRealm();
+            if (realmHistoryData != null) {
+
+                String crypto_symbol = getView().getCrypto_selected().symbol;
+                String country_symbol = getView().getCountry_selected().symbol;
+                String pair = crypto_symbol + country_symbol;
+                System.out.println(pair);
+                System.out.println(realmHistoryData.getPair());
+                ChartOption option = getView().getSelectedChartOption();
+
+                if (realmHistoryData.getPair().equals(pair)
+                        && realmHistoryData.getOption().equals(option))
+
+                    loadValuesToChart(realmHistoryData.getValues());
+                else {
+                    clearValuesFromRealm();
+                    showRate(true);
+                }
+            }
+
+        }
+    }
+
     public RateFragmentPresenterImpl() {
         dataRepository = new RestDataRepository();
     }
 
     @Override
-    public String getId() {
-        return "rate_fragment";
-    }
-
-    @Override
-    public void onStart() {
-
-        if (getInstanceState() != null && getView() != null) {
-
-            getView().setAllChartLabelsUnselected();
-            getView().setSelectedChartOption(getInstanceState().getChart_option());
-
-            if (getView().getSelectedChartLabelView() != null)
-                getView().setChartLabelSelected(getView().getSelectedChartLabelView());
-        }
-
-        if (getView() != null) {
-
-            //getView().setCurrenciesSpinner();
-
-            if (!App.getAppInstance().getPreferences().getPrice().isEmpty())
-                getView().getTopPanel().setText(App.getAppInstance().getPreferences().getPrice());
-
-            String curr1 = Codes.getCryptoCurrencySymbol(getView().getLeftSpinner().getSelectedItem().toString());
-            String curr2 = getView().getRightSpinner().getSelectedItem().toString();
-            String pair = curr1 + curr2;
-
-            final RealmHistoryData realmFound = getValuesFromRealm();
-            if (realmFound != null) {
-                String realm_pair = realmFound.getPair();
-
-                if (realm_pair.equals(pair))
-                    loadValuesToChart(realmFound.getValues());
-                else clearValuesFromRealm();
-            }
-        }
-    }
-
-    @Override
     public void onStop() {
         disposable.dispose();
+    }
+
+    @Override
+    public String getId() {
+        return "rate_fragment";
     }
 
     @Override
@@ -105,10 +111,10 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         Log.i(TAG, "showRateCryptonator("+ refresh+ ")");
         if (refresh) setRefreshing(true);
 
-        final String curr1 = Codes.getCryptoCurrencySymbol(getView().getLeftSpinner().getSelectedItem().toString());
-        final String curr2 = getView().getRightSpinner().getSelectedItem().toString();
+        final String crypto_symbol = getView().getCrypto_selected().symbol;
+        final String country_symbol = getView().getCountry_selected().symbol;
 
-        disposable = dataRepository.getRate(curr1, curr2)
+        disposable = dataRepository.getRate(crypto_symbol, country_symbol)
                 .subscribe(ticker -> {
 
                     if (!ticker.getError().isEmpty()) {
@@ -120,7 +126,7 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                     }
 
                     double price = ticker.getTicker().getPrice();
-                    String text = DateFormatter.convertPrice(price) + " " + ticker.getTicker().getTarget();
+                    String text = PriceConverter.convertPrice(price) + " " + ticker.getTicker().getTarget();
 
                     if (getView() != null) {
                         if (!getView().getTopPanel().getText().equals(text)) {
@@ -128,8 +134,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                             App.getAppInstance().getPreferences().setPrice(text);
                         }
 
-                        Codes.ChartOption chartOption = getView().getSelectedChartOption();
-                        showChart(curr1, curr2, chartOption, refresh);
+                        ChartOption chartOption = getView().getSelectedChartOption();
+                        showChart(crypto_symbol, country_symbol, chartOption, refresh);
                     }
 
                 }, error -> {
@@ -145,18 +151,17 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
 
         if (refresh) setRefreshing(true);
 
-        final String crypto_id = Codes.getCryptoCurrencySymbol(
-                getView().getLeftSpinner().getSelectedItem().toString());
-        final String crypto_full_id = Codes.getCryptoCurrencyId(crypto_id);
-        final String country_id = getView().getRightSpinner().getSelectedItem().toString();
+        final String crypto_symbol = getView().getCrypto_selected().symbol;
+        final String crypto_id = getView().getCrypto_selected().id;
+        final String country_symbol = getView().getCountry_selected().symbol;
 
-        disposable = dataRepository.getRateCMC(crypto_full_id, country_id)
+        disposable = dataRepository.getRateCMC(crypto_id, country_symbol)
                 .subscribe(array -> {
 
                     CoinMarketCapTicker ticker = array.get(0);
 
-                    double price = ticker.getPrice(country_id);
-                    String text = DateFormatter.convertPrice(price) + " " + country_id;
+                    double price = ticker.getPrice(country_symbol);
+                    String text = PriceConverter.convertPrice(price) + " " + country_symbol;
 
                     if (getView() != null) {
                         if (!getView().getTopPanel().getText().equals(text)) {
@@ -164,8 +169,8 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                             App.getAppInstance().getPreferences().setPrice(text);
                         }
 
-                        Codes.ChartOption chartOption = getView().getSelectedChartOption();
-                        showChart(crypto_id, country_id, chartOption, refresh);
+                        ChartOption chartOption = getView().getSelectedChartOption();
+                        showChart(crypto_symbol, country_symbol, chartOption, refresh);
                     }
 
                 }, error -> {
@@ -176,40 +181,41 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
     }
 
     @Override
-    public void showChart(String crypto, String country, Codes.ChartOption chartOption, boolean refresh) {
+    public void showChart(String crypto, String country, ChartOption chartOption, boolean refresh) {
         Log.i(TAG, "showChart()");
 
-        getHistory(Codes.getCryptoCurrencySymbol(crypto), country, chartOption);
+        getHistory(crypto, country, chartOption);
     }
 
-    private void getHistory(String from_symbol, String to_symbol, Codes.ChartOption chartOption) {
-        Log.i(TAG, "getHistoryCC()");
+    private void getHistory(String from_symbol, String to_symbol, ChartOption chartOption) {
+        Log.i(TAG, "getHistory()");
 
         Consumer<HistoData> onSubscribe = result -> {
+            if (getView() == null) return;
 
             if (result == null || result.response.equals("Error") ||
                     result.getData() == null || result.getData().isEmpty()) {
+                getView().getRateChart().getChart().clear();
                 setRefreshing(false);
                 return;
             }
 
             if (!valuesEqualWithRealm(result.getData())) {
-                saveValuesToRealm(result.getData(), from_symbol + to_symbol);
+                saveValuesToRealm(result.getData(), from_symbol + to_symbol, chartOption);
                 loadValuesToChart(result.getData());
+            } else {
+                if (getView().getRateChart().getChart().isEmpty())
+                    loadValuesToChart(result.getData());
             }
 
             setRefreshing(false);
-
         };
 
         Consumer<Throwable> onError = error -> {
+            if (getView() == null) return;
 
-            if (getView() != null) {
-                getView().getRateChart().getChart().clear();
-                //getView().showError(R.string.server_error);
-            }
+            getView().getRateChart().getChart().clear();
             setRefreshing(false);
-
         };
 
         switch (chartOption.request) {
@@ -231,7 +237,6 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
                         chartOption.limit, chartOption.periods).subscribe(onSubscribe, onError);
                 break;
         }
-
     }
 
 
@@ -272,12 +277,12 @@ public class RateFragmentPresenterImpl extends BasePresenter<RateFragmentView, R
         return realmFound;
     }
 
-    private void saveValuesToRealm(List<Datum> values, String pair) {
+    private void saveValuesToRealm(List<Datum> values, String pair, ChartOption option) {
         Log.i(TAG, "saveValuesToRealm()");
 
         RealmList<Datum> realmList = new RealmList<>();
         realmList.addAll(values);
-        RealmHistoryData realmHistoryData = new RealmHistoryData(realmList, pair);
+        RealmHistoryData realmHistoryData = new RealmHistoryData(realmList, pair, option);
 
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();

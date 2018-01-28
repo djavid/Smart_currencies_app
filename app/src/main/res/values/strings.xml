@@ -40,6 +40,9 @@
     <string name="title_hint_percent">Введите проценты</string>
     <string name="title_checkbox_percent">изменения в процентах</string>
 
+    <string name="title_search_dialog_name">Поиск</string>
+    <string name="title_search_dialog_hint">Введите название&#8230;</string>
+
     <!-- Snackbar messages -->
     <string name="title_cardview_removed">Элемент удален</string>
     <string name="title_cardview_undo">Отмена</string>
@@ -116,5 +119,33 @@
 
     <!-- Purchase -->
     <string name="successful_purchase">Покупка успешно завершена!</string>
+
+    <!-- DateFormatter -->
+    <string-array name="month_titles">
+        <item>Янв</item>
+        <item>Фев</item>
+        <item>Мар</item>
+        <item>Апр</item>
+        <item>Май</item>
+        <item>Июн</item>
+        <item>Июл</item>
+        <item>Авг</item>
+        <item>Сен</item>
+        <item>Окт</item>
+        <item>Ноя</item>
+        <item>Дек</item>
+    </string-array>
+
+    <string-array name="country_currencies">
+        <item>доллар</item>
+        <item>евро</item>
+        <item>канадский доллар</item>
+        <item>юань</item>
+        <item>йена</item>
+        <item>польский злотый</item>
+        <item>фунт стерлингов</item>
+        <item>рубль</item>
+        <item>гривна</item>
+    </string-array>
 
 </resources>

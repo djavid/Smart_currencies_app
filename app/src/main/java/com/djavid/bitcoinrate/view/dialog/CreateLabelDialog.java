@@ -15,11 +15,11 @@ import android.widget.TextView;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BaseDialogFragment;
-import com.djavid.bitcoinrate.model.RestDataRepository;
-import com.djavid.bitcoinrate.model.dto.LabelItemDto;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.project.LabelItemDto;
+import com.djavid.bitcoinrate.rest.RestDataRepository;
 import com.djavid.bitcoinrate.util.Codes;
-import com.djavid.bitcoinrate.util.DateFormatter;
+import com.djavid.bitcoinrate.util.PriceConverter;
 import com.djavid.bitcoinrate.util.RxUtils;
 import com.djavid.bitcoinrate.view.activity.MainActivity;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
@@ -79,7 +79,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
         try {
             TickerItem selectedTicker = ((MainActivity) getActivity()).getSelectedTickerItem();
 
-            String price = DateFormatter.convertPrice(
+            String price = PriceConverter.convertPrice(
                     selectedTicker.getTickerItem().getTicker().getPrice()) + " "
                     + selectedTicker.getTickerItem().getCountryId();
             tv_price.setText(price);
@@ -257,7 +257,7 @@ public class CreateLabelDialog extends BaseDialogFragment {
                     double price = selectedTicker.getTickerItem().getTicker().getPrice();
                     double change = price * (Double.parseDouble(s.toString()) / 100.0);
 
-                    String text = "±" + DateFormatter.convertPrice(change) + " " +
+                    String text = "±" + PriceConverter.convertPrice(change) + " " +
                             Codes.getCountrySymbol(selectedTicker.getTickerItem().getCountryId());
                     tv_change_value.setText(text);
 

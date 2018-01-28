@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 
-import com.djavid.bitcoinrate.model.ApiInterface;
+import com.djavid.bitcoinrate.rest.ApiInterface;
 import com.djavid.bitcoinrate.util.PresenterProvider;
 import com.djavid.bitcoinrate.util.SavedPreferences;
 

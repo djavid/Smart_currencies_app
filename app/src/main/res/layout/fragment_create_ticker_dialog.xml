@@ -1,7 +1,8 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.djavid.bitcoinrate.view.dialog.CreateTickerDialog"
+    tools:ignore="MissingPrefix, ContentDescription"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
@@ -22,36 +23,71 @@
         android:layout_marginTop="21dp" />
 
     <LinearLayout
-        android:id="@+id/ll_spinners"
+        android:id="@+id/ll_panels_t"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_create_dialog_name"
         android:layout_marginStart="27dp"
         android:layout_marginEnd="27dp"
-        android:layout_marginTop="11dp"
-        android:orientation="horizontal">
+        android:layout_marginTop="10dp"
+        android:baselineAligned="false"
+        android:weightSum="2">
 
-        <Spinner
-            android:id="@+id/leftSpinner"
+        <LinearLayout
+            android:id="@+id/left_panel_t"
             android:layout_width="0dp"
             android:layout_height="30dp"
-            android:background="@drawable/border_spinner"
-            android:spinnerMode="dialog"
+            android:layout_weight="1"
             android:layout_marginEnd="7dp"
-            android:layout_weight="1"
-            tools:listitem="@layout/ticker_row_item"
-            android:text="@string/left_value_fragment" />
+            android:background="@drawable/border_spinner"
+            android:gravity="center">
 
-        <Spinner
-            android:id="@+id/rightSpinner"
+            <ImageView
+                android:id="@+id/iv_left_panel_t"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_bitcoin" />
+
+            <TextView
+                android:id="@+id/tv_left_panel_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="20sp"
+                android:textColor="@color/colorPrimaryText"
+                fontPath="revofit-light.ttf"
+                android:text="@string/left_value_fragment" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/right_panel_t"
             android:layout_width="0dp"
             android:layout_height="30dp"
-            android:background="@drawable/border_spinner"
-            android:spinnerMode="dialog"
-            android:layout_marginStart="7dp"
             android:layout_weight="1"
-            tools:listitem="@layout/ticker_row_item"
-            android:text="@string/left_value_fragment" />
+            android:layout_marginStart="7dp"
+            android:background="@drawable/border_spinner"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iv_right_panel_t"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_bitcoin" />
+
+            <TextView
+                android:id="@+id/tv_right_panel_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="20sp"
+                android:textColor="@color/colorPrimaryText"
+                fontPath="revofit-light.ttf"
+                android:text="@string/right_value_fragment" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -59,7 +95,7 @@
         android:id="@+id/ll_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ll_spinners"
+        android:layout_below="@id/ll_panels_t"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="12.5dp"
         android:layout_marginTop="25dp"

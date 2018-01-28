@@ -3,8 +3,8 @@ package com.djavid.bitcoinrate.view.interfaces;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.djavid.bitcoinrate.core.ScrollView;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
-import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.model.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.heroku.Ticker;
 
 import java.util.List;
 

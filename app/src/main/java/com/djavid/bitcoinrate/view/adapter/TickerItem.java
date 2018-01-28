@@ -8,13 +8,14 @@ import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.bumptech.glide.Glide;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
-import com.djavid.bitcoinrate.model.dto.LabelItemDto;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
-import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.model.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.heroku.Ticker;
+import com.djavid.bitcoinrate.model.project.LabelItemDto;
 import com.djavid.bitcoinrate.util.Codes;
-import com.djavid.bitcoinrate.util.DateFormatter;
+import com.djavid.bitcoinrate.util.PriceConverter;
 import com.mindorks.placeholderview.PlaceHolderView;
 import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.NonReusable;
@@ -91,9 +92,15 @@ public class TickerItem {
             }
             tv_ticker_title.setText(title);
 
-            tv_market_cap.setText(DateFormatter.convertMarketCap(tickerItem.getTicker().getMarket_cap_usd()));
+            tv_market_cap.setText(PriceConverter.convertMarketCap(tickerItem.getTicker().getMarket_cap_usd()));
 
-            iv_ticker_icon.setImageResource(Codes.getCurrencyImage(tickerItem.getCryptoId()));
+            System.out.println(tickerItem.getCryptoId());
+            String image_url = Codes.getCryptoCoinImage(tickerItem.getCryptoId());
+            Glide.with(mContext)
+                    .asBitmap()
+                    .load(image_url)
+                    .into(iv_ticker_icon);
+
             tickerValue.setText(tv_price);
             tv_price_change.setTextColor(price_change_color);
             tv_price_change.setText(price_change);

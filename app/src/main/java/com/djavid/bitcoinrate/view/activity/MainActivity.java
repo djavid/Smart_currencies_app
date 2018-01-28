@@ -21,7 +21,6 @@ import com.anjlab.android.iab.v3.TransactionDetails;
 import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.util.Codes;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.dialog.CreateLabelDialog;
 import com.djavid.bitcoinrate.view.dialog.PurchaseDialogFragment;
@@ -33,6 +32,10 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static com.djavid.bitcoinrate.util.Config.ALLOWED_AMOUNT;
+import static com.djavid.bitcoinrate.util.Config.GOOGLE_PLAY_LICENSE_KEY;
+import static com.djavid.bitcoinrate.util.Config.PURCHASE_PRODUCT_ID;
 
 
 public class MainActivity extends AppCompatActivity implements Router, BillingProcessor.IBillingHandler {
@@ -107,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements Router, BillingPr
         navigation.setIconSize(iconSize, iconSize);
         navigation.setItemHeight(BottomNavigationViewEx.dp2px(this, iconSize + 16));
 
-        billingProcessor = new BillingProcessor(this, Codes.GOOGLE_PLAY_LICENSE_KEY, this);
+        billingProcessor = new BillingProcessor(this, GOOGLE_PLAY_LICENSE_KEY, this);
     }
 
     @Override
@@ -169,12 +172,9 @@ public class MainActivity extends AppCompatActivity implements Router, BillingPr
 
         selectedTickerItem = tickerItem;
 
-        System.out.println("Subscribes amount = " + getSubscribesAmount());
+        if (getSubscribesAmount() >= ALLOWED_AMOUNT) {
 
-
-        if (getSubscribesAmount() >= Codes.ALLOWED_AMOUNT) {
-
-            if (!billingProcessor.isSubscribed(Codes.PURCHASE_PRODUCT_ID)) {
+            if (!billingProcessor.isSubscribed(PURCHASE_PRODUCT_ID)) {
                 PurchaseDialogFragment purchaseDialogFragment = PurchaseDialogFragment.newInstance();
                 purchaseDialogFragment.show(fragmentManager, TAG_PURCHASE_DIALOG);
             } else {
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements Router, BillingPr
             boolean isSubsUpdateSupported = billingProcessor.isSubscriptionUpdateSupported();
 
             if (isSubsUpdateSupported) {
-                billingProcessor.subscribe(this, Codes.PURCHASE_PRODUCT_ID);
+                billingProcessor.subscribe(this, PURCHASE_PRODUCT_ID);
             } else {
                 showError(R.string.error_service_unavailable);
             }
@@ -295,7 +295,13 @@ public class MainActivity extends AppCompatActivity implements Router, BillingPr
     }
 
     public void showError(int errorId) {
-        Toast.makeText(this, getString(errorId), Toast.LENGTH_SHORT).show();
+        try {
+            runOnUiThread(
+                    () -> Toast.makeText(this, getString(errorId), Toast.LENGTH_SHORT).show()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -2,8 +2,8 @@ package com.djavid.bitcoinrate.presenter.interfaces;
 
 import com.djavid.bitcoinrate.core.Presenter;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
-import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.model.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.heroku.Ticker;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.interfaces.TickerFragmentView;
 

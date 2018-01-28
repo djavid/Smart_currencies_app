@@ -24,10 +24,10 @@ import com.djavid.bitcoinrate.App;
 import com.djavid.bitcoinrate.R;
 import com.djavid.bitcoinrate.core.BaseFragment;
 import com.djavid.bitcoinrate.core.Router;
-import com.djavid.bitcoinrate.model.dto.heroku.Subscribe;
-import com.djavid.bitcoinrate.model.dto.heroku.Ticker;
+import com.djavid.bitcoinrate.model.heroku.Subscribe;
+import com.djavid.bitcoinrate.model.heroku.Ticker;
 import com.djavid.bitcoinrate.presenter.interfaces.TickerFragmentPresenter;
-import com.djavid.bitcoinrate.util.DateFormatter;
+import com.djavid.bitcoinrate.util.PriceConverter;
 import com.djavid.bitcoinrate.view.adapter.TickerItem;
 import com.djavid.bitcoinrate.view.dialog.CreateTickerDialog;
 import com.djavid.bitcoinrate.view.dialog.TickerPopupWindow;
@@ -215,7 +215,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
         Log.i(TAG, "addTickerToAdapter()");
 
         double price = ticker.getTicker().getPrice();
-        String text = DateFormatter.convertPrice(price);
+        String text = PriceConverter.convertPrice(price);
 
         TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, ticker);
         tickerItem.setPrice(text);
@@ -242,7 +242,7 @@ public class TickerFragment extends BaseFragment implements TickerFragmentView, 
                     .toList();
 
             double price = item.getTicker().getPrice();
-            String text = DateFormatter.convertPrice(price);
+            String text = PriceConverter.convertPrice(price);
 
             TickerItem tickerItem = new TickerItem(getContext(), rv_ticker_list, item, itemSubs);
             tickerItem.setPrice(text);

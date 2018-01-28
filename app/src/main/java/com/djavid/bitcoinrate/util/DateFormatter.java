@@ -1,27 +1,18 @@
 package com.djavid.bitcoinrate.util;
 
+import com.djavid.bitcoinrate.App;
+import com.djavid.bitcoinrate.R;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 
-public class DateFormatter implements IAxisValueFormatter
-{
-
-    private String[] mMonthsEng = new String[]{
-            "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    };
-
-    private String[] mMonthsRus = new String[]{
-            "", "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
-    };
+public class DateFormatter implements IAxisValueFormatter {
 
     private BarLineChartBase<?> chart;
     private List<Long> dates;
@@ -35,118 +26,53 @@ public class DateFormatter implements IAxisValueFormatter
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
 
-        if ((int)value >= dates.size() || (int) value < 0 ) return "";
+        try {
 
-        Date date = new Date(dates.get((int)value) * 1000);
+            if (value >= dates.size() || value < 0) return "";
 
-        String hour = new SimpleDateFormat("HH", Locale.US).format(date);
-        String minute = new SimpleDateFormat("mm", Locale.US).format(date);
+            Date date = new Date(dates.get((int) value) * 1000);
+            String hour = new SimpleDateFormat("HH", Locale.US).format(date);
+            String minute = new SimpleDateFormat("mm", Locale.US).format(date);
+            int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(date));
+            int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(date));
+            int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.US).format(date));
 
-        int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(date));
-        int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(date));
-        int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.US).format(date));
+            String monthName = App.getContext().getResources().getStringArray(R.array.month_titles)[month - 1]; //TODO check
+            String yearName = String.valueOf(year);
 
-        String monthName = mMonthsRus[month]; //TODO check
-        String yearName = String.valueOf(year);
+            int high_x = (int) chart.getHighestVisibleX();
+            int low_x = (int) chart.getLowestVisibleX();
+            if (high_x >= dates.size() || high_x < 0 || low_x >= dates.size() || low_x < 0)
+                return "";
+            float visible_range = Math.abs(dates.get(high_x) - dates.get(low_x));
+            float days_count = visible_range / 3600 / 24;
 
-//        System.out.println(chart.getVisibleXRange() + "-------------------------");
+//            System.out.println(chart.getVisibleXRange() + "-------------------------");
+//            System.out.println(visible_range);
+//            System.out.println(days_count);
 
-        int high_x = (int)chart.getHighestVisibleX();
-        int low_x = (int)chart.getLowestVisibleX();
-        if (high_x >= dates.size() || high_x < 0 || low_x >= dates.size() || low_x < 0)
-            return "";
-        float visible_range = Math.abs(dates.get(high_x) - dates.get(low_x));
-        float days_count = visible_range / 3600 / 24;
+            if (days_count >= 180) {
 
-//        System.out.println(visible_range);
-//        System.out.println(days_count);
+                return monthName + " " + yearName;
 
-        if (days_count >= 180) {
+            } else if (days_count >= 2 && days_count < 180) {
 
-            return monthName + " " + yearName;
+                return day == 0 ? "" : day + " " + monthName;
 
-        } else if (days_count >= 2 && days_count < 180) {
+            } else if (days_count < 2 && days_count > 0) {
 
-            return day == 0 ? "" : day + " " + monthName;
+                return hour + ":" + minute;
 
-        } else if (days_count < 2 && days_count > 0) {
+            } else {
+                return "";
+            }
 
-            return hour + ":" + minute;
-
-        } else {
-            return "";
-        }
-    }
-
-    public static String convertMarketCap(double market_cap) {
-
-        if (market_cap < 1000000.0) {
-
-            return "< 1 млн";
-
-        } else if (market_cap >= 1000000.0 && market_cap < 10000000.0) {
-
-            double x = Math.floor(market_cap / 1000000.0 * 10) / 10;
-            return Double.toString(x) + " млн";
-
-        } else if (market_cap >= 10000000.0 && market_cap < 1000000000.0) {
-
-            long x = Math.round(Math.floor(market_cap / 1000000.0));
-            return x + " млн";
-
-        } else if (market_cap >= 1000000000.0 && market_cap < 10000000000.0) {
-
-            double x = Math.floor(market_cap / 1000000000.0 * 100) / 100;
-            return Double.toString(x) + " млрд";
-
-        } else if (market_cap >= 10000000000.0 && market_cap < 1000000000000.0) {
-
-            long x = Math.round(Math.floor(market_cap / 1000000000.0));
-            return x + " млрд";
-
-        } else if (market_cap >= 1000000000000.0) {
-
-            double x = Math.floor(market_cap / 1000000000000.0 * 100) / 100;
-            return Double.toString(x) + " трлн";
-
-        } else {
+        } catch (Exception e) {
+            e.printStackTrace();
             return "";
         }
-
     }
 
-    public static String convertPrice(double price) {
 
-        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-        symbols.setGroupingSeparator(' ');
-
-        DecimalFormat formatter = new DecimalFormat(getPattern(price), symbols);
-
-        return formatter.format(price);
-    }
-
-    private static String getPattern(Double price) {
-
-        if (price < 1) {
-            return "###,###.######";
-        } else
-        if (price >= 1 && price < 10) {
-            return "###,###.###";
-        } else
-        if (price >= 10 && price < 100) {
-            return "###,###.##";
-        } else
-        if (price >= 100 && price < 1000) {
-            return "###,###.##";
-        } else
-        if (price >= 1000 && price < 10000) {
-            return "###,###.##";
-        } else
-        if (price >= 10000 && price < 100000) {
-            return "###,###.#";
-        } else { //if (price > 100000)
-            return "###,###";
-        }
-    }
 
 }

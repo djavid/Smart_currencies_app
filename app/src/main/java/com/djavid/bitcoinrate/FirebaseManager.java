@@ -2,7 +2,7 @@ package com.djavid.bitcoinrate;
 
 import android.util.Log;
 
-import com.djavid.bitcoinrate.model.RestDataRepository;
+import com.djavid.bitcoinrate.rest.RestDataRepository;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
