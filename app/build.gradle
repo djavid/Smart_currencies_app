@@ -1,16 +1,19 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
 
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '29.0.0'
     defaultConfig {
         applicationId "com.djavid.bitcoinrate"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 27
-        versionCode 4
+        versionCode 5
         versionName "0.95"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -120,4 +123,8 @@ dependencies {
 
     //CircleImageView
     compile 'de.hdodenhof:circleimageview:2.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
