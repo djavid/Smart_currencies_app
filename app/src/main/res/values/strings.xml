@@ -110,7 +110,7 @@
     <string name="hint_percent">Здесь необходимо ввести процент отклонения от цены,
         при котором будут приходить повторяющиеся уведомления.</string>
 
-    <!-- PurchaseDialogFragment -->
+    <!-- PurchaseDialog -->
     <string name="title_purchase_dialog_name">Доступ к уведомлениям</string>
     <string name="purchase_info_1">В бесплатной версии приложения вы можете иметь не более
         чем <b>пять уведомлений</b> на всех тикерах одновременно.</string>
