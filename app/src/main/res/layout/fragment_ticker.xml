@@ -1,8 +1,8 @@
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.fragment.TickerFragment"
+    tools:context=".view.ticker.TickerFragment"
     tools:ignore="MissingPrefix, ContentDescription"
     android:id="@+id/cl_ticker"
     android:layout_width="match_parent"
@@ -10,7 +10,7 @@
     android:orientation="vertical">
 
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -22,10 +22,10 @@
             app:layoutManager="LinearLayoutManager"
             tools:listitem="@layout/recycler_item_ticker" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,4 +76,4 @@
         android:visibility="invisible"/>
 
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

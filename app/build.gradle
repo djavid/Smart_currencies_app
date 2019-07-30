@@ -1,23 +1,31 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
-
+apply from: rootProject.file('deps.gradle')
 
 android {
-    compileSdkVersion 27
+
+    compileSdkVersion 28
     buildToolsVersion '29.0.0'
+
     defaultConfig {
         applicationId "com.djavid.bitcoinrate"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 5
         versionName "0.95"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = false
     }
+
+    sourceSets.all {
+        it.java.srcDir "src/${it.name}/kotlin"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,8 +34,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility kotlin_version
+        sourceCompatibility kotlin_version
     }
 
     realm {
@@ -35,96 +43,93 @@ android {
     }
 }
 
-
 dependencies {
-    implementation 'com.google.firebase:firebase-messaging:11.8.0'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation 'com.google.firebase:firebase-messaging:19.0.1'
+    compile fileTree(dir: 'libs', include: ['*.kt'])
+    androidTestCompile('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true
     }
-    compile 'com.google.firebase:firebase-core:11.8.0'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
 
     apply plugin: 'com.google.gms.google-services'
 
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:design:27.0.2'
-    compile 'com.android.support:support-vector-drawable:27.0.2'
-    compile 'com.android.support:support-v4:27.0.2'
-    compile 'com.android.support:cardview-v7:27.0.2'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
-    compile 'com.jjoe64:graphview:4.2.1'
+    implementation 'com.jjoe64:graphview:4.2.2'
+
+    //kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     //MpAndroidChart
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
     //util
-    compile 'net.danlew:android.joda:2.9.9'
+    implementation 'net.danlew:android.joda:2.10.2'
 
     //retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
 
-    compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.0.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.0.1'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     // rxjava2
-    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-
-    // butterknife
-    compile 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
-    //fonts
-    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
 
     //placeholderview
-    compile 'com.mindorks:placeholderview:0.7.1'
+    implementation 'com.mindorks:placeholderview:0.7.1'
 
     //segmented button
-    compile 'info.hoang8f:android-segmented:1.0.6'
+    implementation 'info.hoang8f:android-segmented:1.0.6'
 
     //Lightweight-Stream-API
-    compile 'com.annimon:stream:1.1.9'
+    implementation 'com.annimon:stream:1.2.1'
 
     //Android In-App Billing v3 Library
-    compile 'com.anjlab.android.iab.v3:library:1.0.44'
+    implementation 'com.anjlab.android.iab.v3:library:1.1.0'
 
     //NavigationViewFragmentAdapters
-    compile 'com.patloew.navigationviewfragmentadapters:adapters:0.3.0'
+    implementation 'com.patloew.navigationviewfragmentadapters:adapters:0.3.0'
 
     //made in china
-    compile 'com.github.zyyoona7:EasyPopup:1.0.2'
+    implementation 'com.github.zyyoona7:EasyPopup:1.0.2'
 
     //Tooltips
-    compile 'com.tomergoldst.android:tooltips:1.0.9'
+    implementation 'com.tomergoldst.android:tooltips:1.0.9'
 
     //BottomNavigationViewEx
-    compile 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
+    implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
 
     //Firebase crash reporting
-    compile 'com.google.firebase:firebase-crash:11.8.0'
+    implementation 'com.google.firebase:firebase-crash:16.2.1'
 
     //Android In-App Billing v3 Library
-    compile 'com.anjlab.android.iab.v3:library:1.0.44'
+    implementation 'com.anjlab.android.iab.v3:library:1.1.0'
 
     //search-dialog
-    compile 'com.github.mirrajabi:search-dialog:1.1'
+    implementation 'com.github.mirrajabi:search-dialog:1.1'
 
     //glide
-    implementation 'com.github.bumptech.glide:glide:4.5.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
 
     //CircleImageView
-    compile 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
+
+    //kodein
+    implementation 'org.kodein.di:kodein-di-generic-jvm:6.3.3'
+    implementation 'org.kodein.di:kodein-di-framework-android-support:6.3.3'
+
 }
