@@ -5,8 +5,10 @@ import com.djavid.bitcoinrate.R
 import com.djavid.bitcoinrate.app.App
 import com.djavid.bitcoinrate.model.cryptocompare.Datum
 import com.djavid.bitcoinrate.model.project.ChartOption
+import com.djavid.bitcoinrate.model.project.Coin
 import com.djavid.bitcoinrate.model.realm.RealmHistoryData
 import com.djavid.bitcoinrate.network.RestDataRepository
+import com.djavid.bitcoinrate.util.Config
 import com.djavid.bitcoinrate.util.PriceConverter
 import com.djavid.bitcoinrate.util.SavedPreferences
 import com.github.mikephil.charting.data.CandleEntry
@@ -25,6 +27,10 @@ class RatePresenter(
 	private val TAG = this.javaClass.simpleName
 	private var disposable = Disposables.empty()
 	private val dataRepository: RestDataRepository
+	private lateinit var crypto_selected: Coin
+	private lateinit var country_selected: Coin
+	private lateinit var selectedChartOption: ChartOption? = null
+	
 	
 	
 	override fun init() {
@@ -32,11 +38,82 @@ class RatePresenter(
 		rateChart.init()
 		
 		setCurrenciesSpinner()
+		
+		//presenter.showChart(crypto_selected.symbol, country_selected.symbol, chartOption, true)
+	}
+	
+	override fun onLeftSpinnerClicked() {
+//		val arrayList = ArrayList(Arrays.asList(*Config.cryptoCoins))
+//
+//		val dialogCompat = SearchDialog(viewRoot.context, title, hint, null, arrayList,
+//				SearchResultListener { baseSearchDialogCompat, coin, i ->
+//					viewRoot.tv_left_panel.text = coin.symbol
+//					Glide.with(viewRoot.context)
+//							.asBitmap()
+//							.load(coin.imageUrl)
+//							.into(viewRoot.iv_left_panel)
+//
+//					preferences.leftSpinnerValue = coin.symbol
+//					crypto_selected = coin
+//
+//					presenter.showRate(false)
+//					baseSearchDialogCompat.dismiss()
+//				})
+//		dialogCompat.show()
+	}
+	
+	override fun onRightSpinnerClicked() {
+//		val arrayList = ArrayList(Arrays.asList(*Config.country_coins))
+//
+//		val dialogCompat = SearchDialog(viewRoot.context, title, hint, null, arrayList,
+//				SearchResultListener { baseSearchDialogCompat, coin, i ->
+//					viewRoot.tv_right_panel.text = coin.symbol
+//
+//					Glide.with(viewRoot.context)
+//							.asBitmap()
+//							.load(Codes.getCountryImage(coin.symbol))
+//							.into(iv_right_panel!!)
+//
+//					preferences.rightSpinnerValue = coin.symbol
+//					country_selected = coin
+//
+//					presenter.showRate(false)
+//					baseSearchDialogCompat.dismiss()
+//				})
+//		dialogCompat.show()
+	}
+	
+	override fun onOptionsItemSelected(itemId: Int) {
+		when (itemId) {
+			R.id.refresh -> {
+				refresh()
+				showRate(true)
+				//todo Toast.makeText(context, getString(R.string.updating), Toast.LENGTH_SHORT).show()
+			}
+		}
 	}
 	
 	private fun setCurrenciesSpinner() {
 		val left_value = preferences.leftSpinnerValue
 		val right_value = preferences.rightSpinnerValue
+	}
+	
+	override fun getSelectedChartOption(): ChartOption? {
+		if (selectedChartOption == null) setSelectedChartOption(Config.chart_options[0])
+		
+		return selectedChartOption
+	}
+	
+	override fun setSelectedChartOption(chartOption: ChartOption) {
+		selectedChartOption = chartOption
+	}
+	
+	override fun getCrypto_selected(): Coin {
+		return crypto_selected
+	}
+	
+	override fun getCountry_selected(): Coin {
+		return country_selected
 	}
 	
 	override fun onChartOptionClick() {

@@ -11,12 +11,15 @@ interface RateContract {
 	
 	interface Presenter {
 		fun init()
+		fun onLeftSpinnerClicked()
+		fun onRightSpinnerClicked()
 		fun onChartOptionClick()
 		fun showRate(refresh: Boolean)
 		fun showRateCryptonator(refresh: Boolean)
 		fun showRateCMC(refresh: Boolean)
 		fun refresh()
 		fun showChart(crypto: String, country: String, chartOption: ChartOption, refresh: Boolean)
+		fun onOptionsItemSelected(itemId: Int)
 	}
 	
 	interface View {

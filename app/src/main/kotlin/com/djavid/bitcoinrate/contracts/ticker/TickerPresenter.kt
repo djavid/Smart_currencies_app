@@ -1,5 +1,7 @@
 package com.djavid.bitcoinrate.contracts.ticker
 
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import com.annimon.stream.Collectors
 import com.annimon.stream.Stream
@@ -12,25 +14,21 @@ import com.djavid.bitcoinrate.model.realm.RealmTickerList
 import com.djavid.bitcoinrate.network.RestDataRepository
 import com.djavid.bitcoinrate.util.Codes
 import com.djavid.bitcoinrate.util.PriceConverter
-import com.djavid.bitcoinrate.view.ticker.TickerFragmentView
 import com.djavid.bitcoinrate.view.ticker.TickerItem
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.disposables.Disposables
 import io.realm.Realm
 import java.util.*
 
-
-class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), TickerFragmentPresenter {
+class TickerPresenter(
+        private val view: TickerContract.View
+) : TickerContract.Presenter {
 
     private val TAG = this.javaClass.simpleName
     private var disposable = Disposables.empty()
     private val dataRepository: RestDataRepository
     private var tickers: MutableList<Ticker>? = null
     private var subscribes: List<Subscribe>? = null
-
-    override val id: String
-        get() = "ticker_fragment"
-
     private val tickersFromRealm: MutableList<Ticker>
         get() {
             Log.i(TAG, "getTickersFromRealm()")
@@ -81,15 +79,36 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
 
                 tickers = tickersFromRealm
                 subscribes = subscribesFromRealm
-
-                view!!.addAllTickers(tickers, subscribes)
+    
+                view.addAllTickers(tickers, subscribes)
 
             } else {
-                view!!.updateRecyclerVisibility()
+                view.updateRecyclerVisibility()
             }
         }
     }
-
+    
+    override fun showPopupWindow() {
+        view.showPopupWindow()
+    }
+    
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if (requestCode == 0) {
+            
+            if (resultCode == Activity.RESULT_OK) {
+                
+                if (data.extras != null && data.extras!!.containsKey("countryId") &&
+                        data.extras!!.containsKey("cryptoId") && data.extras!!.containsKey("id")) {
+                    
+                    val ticker_id = data.extras!!.getLong("id")
+                    val token_id = App.appInstance.preferences.tokenId
+                    
+                    presenter!!.addTickerFromServer(token_id, ticker_id)
+                }
+            }
+        }
+    }
+    
     override fun onStop() {
         disposable.dispose()
     }
@@ -106,11 +125,11 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
                 .subscribe({ ticker ->
 
                     tickers!!.add(ticker)
-                    if (view != null) view!!.addTickerToAdapter(ticker)
+                    if (view != null) view.addTickerToAdapter(ticker)
 
                 }, { error ->
                     if (view != null)
-                        view!!.showError(R.string.error_loading_ticker)
+                        view.showError(R.string.error_loading_ticker)
                 })
     }
 
@@ -139,12 +158,12 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
                         } else {
 
                             if (view != null)
-                                view!!.showError(R.string.unable_to_load_from_server)
+                                view.showError(R.string.unable_to_load_from_server)
                         }
 
                     }, { error ->
                         if (view != null)
-                            view!!.showError(R.string.unable_to_load_from_server)
+                            view.showError(R.string.unable_to_load_from_server)
                         sendTokenToServer() //todo
                         setRefreshing(false)
                     })
@@ -172,7 +191,7 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
                         saveDataToRealm(tickers, subscribes)
 
                         if (view != null) {
-                            view!!.addAllTickers(tickers, subscribes)
+                            view.addAllTickers(tickers, subscribes)
                         }
                     } else {
                         Log.i(TAG, "tickers and subscribes are EQUAL")
@@ -197,7 +216,7 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
         disposable = dataRepository.getRate(curr1, curr2)
                 .subscribe({ ticker ->
                     if (!ticker.error!!.isEmpty()) {
-                        if (view != null) view!!.showError(R.string.unable_to_load_from_server)
+                        if (view != null) view.showError(R.string.unable_to_load_from_server)
                         Log.e(TAG, ticker.error)
                         return@dataRepository.getRate(curr1, curr2)
                                 .subscribe
@@ -261,7 +280,7 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
                     } else {
                         //something gone wrong
                         setRefreshing(false)
-                        if (view != null) view!!.showError(R.string.connection_error)
+                        if (view != null) view.showError(R.string.connection_error)
                     }
                 }, { error -> setRefreshing(false) })
     }
@@ -280,7 +299,7 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
             }
 
         disposable = dataRepository.deleteTicker(ticker_id)
-                .subscribe({ Log.i(TAG, "Successfully deleted ticker with id = $ticker_id") }, { error -> if (view != null) view!!.showError(R.string.error_deleting_ticker) })
+                .subscribe({ Log.i(TAG, "Successfully deleted ticker with id = $ticker_id") }, { error -> if (view != null) view.showError(R.string.error_deleting_ticker) })
     }
 
     private fun saveDataToRealm(tickers: List<Ticker>?, subscribes: List<Subscribe>) {
@@ -303,8 +322,8 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
     private fun setRefreshing(key: Boolean) {
 
         if (view != null) {
-            if (view!!.refreshLayout != null) {
-                view!!.refreshLayout.isRefreshing = key
+            if (view.refreshLayout != null) {
+                view.refreshLayout.isRefreshing = key
             }
         }
     }
@@ -391,4 +410,49 @@ class TickerPresenter : BasePresenter<TickerFragmentView, Router, Any>(), Ticker
         else
             subscribes
     }
+    
+    override fun addAllTickers(tickers: List<Ticker>, subscribes: List<Subscribe>) {
+        var tickers = tickers
+        Log.i(TAG, "addAllTickers()")
+        resetFeed()
+        
+        tickers = presenter!!.sortTickers(tickers)
+        
+        for (item in tickers) {
+            
+            val itemSubs = Stream.of(subscribes)
+                    .filter { s -> s.tickerId == item.id }
+                    .toList()
+            
+            val price = item.ticker.price
+            val text = PriceConverter.convertPrice(price)
+            
+            val tickerItem = TickerItem(context, rv_ticker_list, item, itemSubs)
+            tickerItem.setPrice(text)
+            tickerItem.setPriceChange(item.ticker.getPercentChange(
+                    App.appInstance.preferences.showedPriceChange))
+            
+            rv_ticker_list!!.addView(tickerItem)
+        }
+        
+        updateRecyclerVisibility()
+    }
+    
+    override fun addTickerToAdapter(ticker: Ticker) {
+        Log.i(TAG, "addTickerToAdapter()")
+        
+        val price = ticker.ticker.price
+        val text = PriceConverter.convertPrice(price)
+        
+        val tickerItem = TickerItem(context, rv_ticker_list, ticker)
+        tickerItem.setPrice(text)
+        tickerItem.setPriceChange(ticker.ticker.getPercentChange(
+                App.appInstance.preferences.showedPriceChange))
+        
+        rv_ticker_list!!.addView(tickerItem)
+        scrollToPosition(rv_ticker_list!!.allViewResolvers.size - 1)
+        
+        updateRecyclerVisibility()
+    }
+    
 }
