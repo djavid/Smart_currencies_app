@@ -63,6 +63,8 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
+
     implementation 'com.jjoe64:graphview:4.2.2'
 
     //kotlin
@@ -131,5 +133,11 @@ dependencies {
     //kodein
     implementation 'org.kodein.di:kodein-di-generic-jvm:6.3.3'
     implementation 'org.kodein.di:kodein-di-framework-android-support:6.3.3'
+
+    //room
+    def room_version = "2.2.0-alpha01" // 2.1.0 for latest stable version
+
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
 }

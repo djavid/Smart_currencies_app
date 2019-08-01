@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingPrefix, ContentDescription"
     android:id="@+id/ticker_card"
+    style="@style/TickerCardViewStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/TickerCardViewStyle">
-
+    tools:ignore="MissingPrefix, ContentDescription">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,44 +20,44 @@
 
             <TextView
                 android:id="@+id/tv_ticker_title"
+                fontpath="roboto-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_btc"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif"
-                android:textAllCaps="true"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="4dp"
-                fontpath="roboto-bold.ttf"/>
+                android:fontFamily="sans-serif"
+                android:text="@string/title_btc"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/iv_ticker_icon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/tv_ticker_title"/>
+                android:layout_toStartOf="@id/tv_ticker_title" />
 
             <TextView
                 android:id="@+id/tv_market_cap"
+                fontpath="revofit-light.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="10dp"
-                android:textSize="15sp"
-                android:textStyle="bold"
                 android:textColor="@color/colorPrimary"
-                fontpath="revofit-light.ttf" />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_price_change"
+                fontpath="revofit-light.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="10dp"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                fontpath="revofit-light.ttf" />
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
@@ -66,26 +65,26 @@
             android:id="@+id/v_divider"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="@color/colorCardDivider"
             android:layout_below="@id/ll_title"
-            android:layout_marginTop="6dp" />
+            android:layout_marginTop="6dp"
+            android:background="@color/colorCardDivider" />
 
         <TextView
             android:id="@+id/tickerValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/top_value_fragment"
+            android:layout_below="@id/v_divider"
             android:gravity="center"
-            android:textSize="40sp"
-            android:layout_below="@id/v_divider"/>
+            android:text="@string/top_value_fragment"
+            android:textSize="40sp" />
 
         <View
             android:id="@+id/v_divider2"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="@color/colorCardDivider"
-            android:layout_below="@id/tickerValue" />
-        
+            android:layout_below="@id/tickerValue"
+            android:background="@color/colorCardDivider" />
+
 
         <com.mindorks.placeholderview.PlaceHolderView
             android:id="@+id/label_container"
@@ -94,11 +93,8 @@
             android:layout_below="@id/v_divider2"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-
+            tools:itemCount="1"
             tools:listitem="@layout/ticker_label_item" />
-
-        <!--android:paddingTop="7dp"-->
-        <!--android:paddingBottom="7dp"-->
 
     </RelativeLayout>
 

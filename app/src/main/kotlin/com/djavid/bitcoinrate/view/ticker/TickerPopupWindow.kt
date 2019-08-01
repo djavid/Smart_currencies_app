@@ -90,8 +90,8 @@ class TickerPopupWindow(private val menuItemView: View?, private val context: Co
 
         popup_window.dismiss()
         tickerFragment.addAllTickers(
-                tickerFragment.presenter!!.tickers,
-                tickerFragment.presenter!!.subscribes)
+				tickerFragment.presenter.tickers,
+				tickerFragment.presenter.subscribes)
     }
 
 
@@ -133,9 +133,9 @@ class TickerPopupWindow(private val menuItemView: View?, private val context: Co
     }
 
     private fun setDefaultPopupState() {
-
-        val direction = App.appInstance!!.preferences.sortingDirection
-        val parameter = App.appInstance!!.preferences.sortingParameter
+	
+		val direction = preferences.sortingDirection
+		val parameter = preferences.sortingParameter
 
         when (parameter) {
             "title" -> popup_window.getView<View>(R.id.rbtn_title).performClick()

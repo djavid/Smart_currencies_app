@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment
 import com.crashlytics.android.Crashlytics
 import com.djavid.bitcoinrate.SHARED_PREFERENCES_NAME
 import com.djavid.bitcoinrate.contracts.main.MainActivityModule
-import com.djavid.bitcoinrate.contracts.ticker.TickerFragmentModule
 import com.djavid.bitcoinrate.di.CommonModule
 import com.djavid.bitcoinrate.di.RateFragmentModule
+import com.djavid.bitcoinrate.di.TickersFragmentModule
 import com.djavid.bitcoinrate.network.ApiInterface
 import com.djavid.bitcoinrate.util.SavedPreferences
 import io.fabric.sdk.android.Fabric
@@ -76,7 +76,7 @@ class App : Application(), KodeinAware, KodeinApp {
 	
 	override fun tickerComponent(fragment: Fragment) = Kodein {
 		extend(kodein)
-		import(TickerFragmentModule().kodein)
+		import(TickersFragmentModule().kodein)
 	}
 	
 	override fun settingsFragmentComponent(fragment: Fragment) = Kodein {

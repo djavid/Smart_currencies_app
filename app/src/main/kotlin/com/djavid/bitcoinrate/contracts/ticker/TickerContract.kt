@@ -19,6 +19,7 @@ interface TickerContract {
 		fun sortTickers(tickers: List<Ticker>): List<Ticker>
 		fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent)
 		fun showPopupWindow()
+		fun onDestroy()
 	}
 	
 	interface View {
@@ -31,6 +32,9 @@ interface TickerContract {
 		fun addTickerToAdapter(ticker: Ticker)
 		fun addAllTickers(tickers: List<Ticker>, subscribes: List<Subscribe>)
 		fun updateRecyclerVisibility()
+		fun showError(error: String)
+		fun showError(res: Int)
+		fun setRefreshing(key: Boolean)
 	}
 	
 }

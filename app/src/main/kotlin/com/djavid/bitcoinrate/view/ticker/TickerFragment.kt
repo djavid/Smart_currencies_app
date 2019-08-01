@@ -45,6 +45,11 @@ class TickerFragment : BaseFragment(), KodeinAware, SwipeRefreshLayout.OnRefresh
 		return super.onOptionsItemSelected(item)
 	}
 	
+	override fun onDestroy() {
+		super.onDestroy()
+		presenter.onDestroy()
+	}
+	
 	override fun onRefresh() {
 		presenter.getAllTickers(true)
 	}

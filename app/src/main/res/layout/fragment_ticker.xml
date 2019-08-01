@@ -1,19 +1,24 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.ticker.TickerFragment"
-    tools:ignore="MissingPrefix, ContentDescription"
-    android:id="@+id/cl_ticker"
+    android:id="@+id/tickersFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".view.ticker.TickerFragment"
+    tools:ignore="MissingPrefix, ContentDescription">
 
+    <include
+        android:id="@+id/tickerToolbar"
+        layout="@layout/toolbar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tickerToolbar">
 
         <com.mindorks.placeholderview.PlaceHolderView
             android:id="@+id/rv_ticker_list"
@@ -24,28 +29,12 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_add_white_24px"
-        android:focusable="true"
-        android:clickable="true"
-        app:fabSize="normal"
-        app:elevation="6dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:pressedTranslationZ="12dp" />
-
-
     <RelativeLayout
         android:id="@+id/rl_no_data"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:layout_below="@id/swipe_container">
+        android:layout_below="@id/swipe_container"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="40dp"
@@ -60,20 +49,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginTop="10dp"
             android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="30dp"
-
-            android:textSize="20sp"
-            android:textColor="@color/colorEditTextHint"
+            android:text="@string/title_no_tickers"
             android:textAlignment="center"
-            android:text="@string/title_no_tickers" />
+            android:textColor="@color/colorEditTextHint"
+            android:textSize="20sp" />
 
     </RelativeLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="6dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:pressedTranslationZ="12dp"
+        app:srcCompat="@drawable/ic_add_white_24px" />
 
-    <include layout="@layout/view_progressbar"
-        android:visibility="invisible"/>
+    <include
+        layout="@layout/view_progressbar"
+        android:visibility="invisible" />
 
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

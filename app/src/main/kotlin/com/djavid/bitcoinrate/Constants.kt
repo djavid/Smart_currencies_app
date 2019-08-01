@@ -5,7 +5,7 @@ const val SHARED_PREFERENCES_NAME = "bitcoin_rate_app"
 //module names
 const val COMMON_MODULE = "common_module"
 const val RATE_MODULE = "rate_module"
-const val TICKER_MODULE = "ticker_module"
+const val TICKERS_MODULE = "ticker_module"
 const val MAIN_MODULE = "main_module"
 
 const val TAG_RATE = "TAG_RATE"
