@@ -1,0 +1,116 @@
+[versions]
+
+#base
+compileSdk = "33"
+minSdk = "21"
+targetSdk = "28"
+jvmTarget = "11"
+
+versionCode = "6"
+versionName = "0.95"
+
+#kotlin
+kotlin = "1.9.0"
+rxjava = "2.2.10"
+rxandroid = "2.1.1"
+kodein = "6.3.3"
+room = "2.2.0-alpha01"
+legacySupport = "1.0.0"
+cardview = "1.0.0"
+realm_kotlin = "2.1.0"
+
+#android
+android_gradle_plugin = "8.5.2"
+appcompat = "1.0.2"
+material = "1.0.0"
+vectordrawable = "1.0.1"
+constraintlayout = "2.0.0-beta2"
+
+#google
+google-services = "4.4.2"
+
+#firebase
+firebase = "33.2.0"
+crashlytics = "3.0.2"
+firebaseCore = "17.0.1"
+firebaseMessaging = "19.0.1"
+firebaseCrash = "16.2.1"
+
+#network
+retrofit = "2.6.0"
+okhttp = "4.0.1"
+gson = "2.8.5"
+
+#views
+graphview = "4.2.2"
+mpandroidchart = "3.0.2"
+segmentedbutton = "1.0.6"
+easypopup = "1.0.2"
+tooltips = "1.1.1"
+bottomnavigationviewex = "1.2.4"
+searchdialog = "1.1"
+glide = "4.9.0"
+circleimageview = "3.0.0"
+
+#others
+joda = "2.10.2"
+stream = "1.2.1"
+
+[libraries]
+
+#kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
+rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroid" }
+kodein-generic-jvm = { module = "org.kodein.di:kodein-di-generic-jvm", version.ref = "kodein" }
+kodein-android-support = { module = "org.kodein.di:kodein-di-framework-android-support", version.ref = "kodein" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+#android
+material = { module = "com.google.android.material:material", version.ref = "material" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
+androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacySupport" }
+androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+
+#firebase
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
+firebase-crash = { module = "com.google.firebase:firebase-crash", version.ref = "firebaseCrash" }
+
+#network
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+retrofit-adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
+
+#views
+graphview = { module = "com.jjoe64:graphview", version.ref = "graphview" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
+segmentedbutton = { module = "info.hoang8f:android-segmented", version.ref = "segmentedbutton" }
+easypopup = { module = "com.github.zyyoona7:EasyPopup", version.ref = "easypopup" }
+tooltips = { module = "com.tomergoldst.android:tooltips", version.ref = "tooltips" }
+bottomnavigationviewex = { module = "com.github.ittianyu:BottomNavigationViewEx", version.ref = "bottomnavigationviewex" }
+searchdialog = { module = "com.github.mirrajabi:search-dialog", version.ref = "searchdialog" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
+
+#others
+joda = { module = "net.danlew:android.joda", version.ref = "joda" }
+stream = { module = "com.annimon:stream", version.ref = "stream" }
+
+[plugins]
+
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "android_gradle_plugin" }
+android-library = { id = "com.android.library", version.ref = "android_gradle_plugin" }
+realm-kotlin = { id ="io.realm.kotlin", version.ref = "realm_kotlin" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
