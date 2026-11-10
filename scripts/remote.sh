@@ -32,11 +32,20 @@
 #   scripts/remote.sh slot <label> <command>...
 #                                       # <command> here, holding a build slot of this Mac's queue
 #                                       # (CI on the mini uses it)
+#   scripts/remote.sh testflight "<changelog>"
+#                                       # the committed tree to internal TestFlight: built, signed and
+#                                       # uploaded on the mini by fastlane/nybs.rb (lane testflight)
+#   scripts/remote.sh appstore ["<changelog>"]
+#                                       # the same, a build App Review can take: Release Kotlin
+#                                       # framework, not internal-only, preflight of the .ipa; the
+#                                       # commit must be pushed. DRY_RUN=1: everything but the upload
+#   scripts/remote.sh playtest "<changelog>"
+#                                       # the committed tree to Google Play internal testing
 #   scripts/remote.sh <command of this app>  # listed in scripts/remote.project.sh
 #
-# Builds of every app (ios, android, gradle, xcodebuild and the apps' own build
-# commands) wait in one queue on the mini, two at a time: see LEASE_SH.
-# REMOTE_QUEUE=0 skips it.
+# Builds of every app (ios, android, gradle, xcodebuild, the store uploads and the
+# apps' own build commands) wait in one queue on the mini, two at a time: see
+# LEASE_SH. REMOTE_QUEUE=0 skips it. Nothing here submits for review or rolls out.
 #
 # Env: REMOTE_HOST (mac-mini, the Tailscale name), REMOTE_DIR (the mirror under
 # the remote home: RemoteBuilds/<repo>, or RemoteBuilds/<repo>--<worktree> for a
@@ -70,6 +79,19 @@ IOS_SIM_DEFAULT=""       # simulator to boot when none is (default: iPhone 16 Pr
 SYNC_ENV=0               # 1: .env goes to the mirror (when the build reads it)
 SYNC_EXCLUDES_EXTRA=()   # more rsync --exclude options
 PROJECT_COMMANDS=""      # the app's own commands: <name>_cmd here, agent_<name> on the mini
+# Store uploads (testflight, appstore, playtest). The iOS ones run the lanes of fastlane/nybs.rb
+# from $IOS_DIR/fastlane; the mini needs ~/.appstoreconnect/<STORE_NAME>.env and the app's signing.
+STORE_NAME=""            # short app name: ~/.appstoreconnect/<name>.env, keychain <name>-signing
+STORE_MIRROR=""          # mirror prefix for uploads, + -TestFlight | -AppStore | -PlayInternal
+                         # (default RemoteBuilds/<repo>): one per kind, kept warm between uploads
+TESTFLIGHT_KOTLIN=Release  # Kotlin framework of TestFlight builds: Debug | Release (appstore: Release)
+PLAY_LANE=""             # fastlane lane of the Play internal upload, e.g. "android play_internal"
+PLAY_SECRETS=""          # files the upload needs in ~/.googleplay on the mini; *.env ones are exported
+# Hook, optional: store_kotlin_framework <Debug|Release> runs in the mirror on the mini before the
+# archive. It builds the app's Kotlin framework for the device in that configuration, or tells the
+# archive's own build phase which one to build, and may add lane options to STORE_FASTLANE_ARGS
+# (prebuilt_kotlin:true). Without it the archive builds whatever it builds (Release).
+STORE_FASTLANE_ARGS=()
 [ -f "$REPO_DIR/scripts/remote.project.sh" ] || { echo "remote: no scripts/remote.project.sh" >&2; exit 1; }
 # shellcheck source=/dev/null
 . "$REPO_DIR/scripts/remote.project.sh"
@@ -343,6 +365,79 @@ agent_doctor() {
   echo "power     $(pmset -g | awk '$1 == "sleep" || $1 == "womp" || $1 == "autorestart" { printf "%s=%s ", $1, $2 }')"
 }
 
+# fastlane over ssh. The settings query is slow on a busy Mac and fastlane gives it 3 s by default;
+# the update check at exit fails on a plugin entry and would turn a good upload into exit code 1.
+# Homebrew's Ruby may look for its CA file where its OpenSSL has none, and then fails every https
+# call to Apple: the system bundle always exists.
+store_fastlane() {
+  SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}" FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120 \
+    FASTLANE_XCODEBUILD_SETTINGS_RETRIES=4 FASTLANE_SKIP_UPDATE_CHECK=1 FASTLANE_HIDE_CHANGELOG=1 \
+    fastlane "$@"
+}
+
+# The device build for TestFlight or App Review, end to end on this Mac: the Kotlin framework (the
+# app's hook), then fastlane/nybs.rb archives, signs, preflights and uploads. NYBS_MANUAL_SIGNING:
+# a :keychain app signs the archive with the distribution identity in its own keychain, since ssh
+# finds the login keychain (and its development identity) locked. Nothing secret travels with the
+# mirror: the key and that keychain's password are in ~/.appstoreconnect here.
+agent_store_ios() { # testflight|appstore <commit> [changelog]
+  local mode="$1" commit="$2" changelog="${3:-}" config lane log line version build
+  case "$mode" in
+    testflight) config="$TESTFLIGHT_KOTLIN" lane=testflight ;;
+    appstore) config=Release lane=appstore ;;
+    *) die "store_ios: testflight or appstore" ;;
+  esac
+  ls "$HOME/.appstoreconnect/"*.env >/dev/null 2>&1 \
+    || die "no App Store Connect key on $(hostname -s) (~/.appstoreconnect/$STORE_NAME.env): see .agents/remote-build.md"
+  command -v fastlane >/dev/null || die "fastlane is not installed on $(hostname -s): brew install fastlane"
+  if declare -F store_kotlin_framework >/dev/null; then
+    say "building the $config Kotlin framework for the device"
+    store_kotlin_framework "$config"
+  fi
+  say "archiving, signing and uploading with fastlane ($lane${DRY_RUN:+, dry run})"
+  log="build/remote/$mode-fastlane.log"
+  if ! (cd "$IOS_DIR" && NYBS_MANUAL_SIGNING=1 NYBS_COMMIT="$commit" store_fastlane ios "$lane" \
+      defer_changelog:true ${STORE_FASTLANE_ARGS[@]+"${STORE_FASTLANE_ARGS[@]}"} ${DRY_RUN:+dry_run:true} 2>&1) \
+      | tee "$log"; then
+    die "fastlane $lane failed; full log: scripts/remote.sh pull $log"
+  fi
+  [ -z "${DRY_RUN:-}" ] || return 0
+  line="$(grep -m1 'NYBS-UPLOAD' "$log" || true)"
+  [ -n "$line" ] || die "the upload did not finish; full log: scripts/remote.sh pull $log"
+  [ -n "$changelog" ] || return 0
+  # Apple takes 10-20 minutes to process the build, and only then takes a changelog: that wait
+  # runs here in the background, so the command returns as soon as the binary is up
+  version="$(printf '%s\n' "$line" | awk -F'\t' '{ print $4 }')"
+  build="$(printf '%s\n' "$line" | awk -F'\t' '{ print $5 }')"
+  (cd "$IOS_DIR" && SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}" FASTLANE_SKIP_UPDATE_CHECK=1 \
+    FASTLANE_HIDE_CHANGELOG=1 nohup fastlane ios changelog version:"$version" build:"$build" changelog:"$changelog" \
+    </dev/null >"$REPO_DIR/build/remote/$mode-changelog.log" 2>&1 &)
+  say "the changelog of $version ($build) is set once Apple has processed it: $REPO_DIR/build/remote/$mode-changelog.log"
+}
+
+# A build for Google Play internal testing with the app's own lane ($PLAY_LANE). The key and the
+# upload keystore are in ~/.googleplay here; the variables exported from its .env files win over
+# any .env in the mirror.
+agent_playtest() { # <changelog>
+  local changelog="${1:-}" f log="build/remote/playtest-fastlane.log"
+  [ -n "$changelog" ] || die "playtest needs a changelog"
+  command -v fastlane >/dev/null || die "fastlane is not installed on $(hostname -s): brew install fastlane"
+  for f in $PLAY_SECRETS; do
+    [ -f "$HOME/.googleplay/$f" ] || die "no ~/.googleplay/$f on $(hostname -s): see .agents/remote-build.md"
+  done
+  set -a
+  for f in $PLAY_SECRETS; do
+    case "$f" in *.env) . "$HOME/.googleplay/$f" ;; esac
+  done
+  set +a
+  say "building and uploading with fastlane ($PLAY_LANE)"
+  # shellcheck disable=SC2086 # PLAY_LANE is "<platform> <lane>"
+  if ! store_fastlane $PLAY_LANE changelog:"$changelog" 2>&1 | tee "$log"; then
+    die "fastlane $PLAY_LANE failed; full log: scripts/remote.sh pull $log"
+  fi
+  grep -q "Successfully finished the upload to Google Play" "$log" || die "the upload did not finish; full log: scripts/remote.sh pull $log"
+}
+
 if [ "${1:-}" = __agent ]; then
   shift
   cd "$REPO_DIR"
@@ -360,6 +455,8 @@ if [ "${1:-}" = __agent ]; then
     record) agent_record "$@" ;;
     frames) analyze_video "build/remote/recordings/$1" ;;
     doctor) agent_doctor ;;
+    store_ios) mkdir -p build/remote; agent_store_ios "$@" ;;
+    playtest) mkdir -p build/remote; agent_playtest "$@" ;;
     *)
       case " $PROJECT_COMMANDS " in
         *" $cmd "*) mkdir -p build/remote; "agent_$cmd" "$@" ;;
@@ -530,6 +627,7 @@ agent() {
   vars="$(q "FLAVOR=$FLAVOR" "REMOTE_AVD=$REMOTE_AVD" "IOS_CONFIGURATION=$IOS_CONFIGURATION")"
   [ -z "${REMOTE_EMU_GPU:-}" ] || vars="$vars$(q "REMOTE_EMU_GPU=$REMOTE_EMU_GPU")"
   [ -z "${REMOTE_GRADLE_HOME:-}" ] || vars="$vars$(q "REMOTE_GRADLE_HOME=$REMOTE_GRADLE_HOME")"
+  [ -z "${DRY_RUN:-}" ] || vars="$vars$(q "DRY_RUN=$DRY_RUN")"
   ssh -n "${SSH_OPTS[@]}" "$REMOTE_HOST" "cd $(q "$REMOTE_DIR") && env $vars./scripts/remote.sh __agent $(q "$@")" \
     | sed -l "s#$REMOTE_ABS#$REPO_DIR#g"
 }
@@ -682,6 +780,91 @@ screen_cmd() {
     --window-title "$REMOTE_AVD @ $REMOTE_HOST" "$@"
 }
 
+# Store uploads take a committed tree only, so a build can always be traced back to its commit, and
+# go through one mirror per kind of upload, whichever checkout they come from: Xcode keys its
+# DerivedData by the project's path, so the pods stay compiled between uploads (archive ~1.5 min
+# warm, ~5 min cold), and a TestFlight and a store build can wait in the queue's two slots without
+# sharing a tree.
+store_mirror() { # TestFlight | AppStore | PlayInternal
+  local common
+  if [ -n "$STORE_MIRROR" ]; then echo "$STORE_MIRROR-$1"; return; fi
+  common="$(git -C "$REPO_DIR" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  echo "RemoteBuilds/$(basename "$(dirname "${common:-$REPO_DIR/.git}")")-$1"
+}
+
+committed_head() { # <what is built>
+  [ -z "$(git -C "$REPO_DIR" status --porcelain --untracked-files=no)" ] \
+    || die "uncommitted changes: commit them first, a $1 build has to match a commit"
+  git -C "$REPO_DIR" merge-base --is-ancestor HEAD origin/develop 2>/dev/null \
+    || say "note: $(git -C "$REPO_DIR" rev-parse --short HEAD) is not on origin/develop"
+  git -C "$REPO_DIR" rev-parse --short HEAD
+}
+
+# Every upload made through here, newest last, on this Mac as on the mini: /pre-review looks the
+# build of a version up in it (App Store Connect does not say which Kotlin framework a build has).
+STORE_LEDGER="$HOME/Library/Logs/nybs-store-uploads.tsv"
+
+store_ios_cmd() { # testflight|appstore [changelog]
+  local mode="$1" changelog="${2:-}" head log t line uploaded
+  need_ios
+  [ -n "$STORE_NAME" ] && [ -f "$REPO_DIR/fastlane/nybs.rb" ] && [ -f "$REPO_DIR/$IOS_DIR/fastlane/Fastfile" ] \
+    || die "this app has no store uploads: STORE_NAME in scripts/remote.project.sh, fastlane/nybs.rb, $IOS_DIR/fastlane/Fastfile"
+  [ "$mode" = appstore ] || [ -n "$changelog" ] || die 'usage: scripts/remote.sh testflight "<what changed, for testers>"'
+  head="$(committed_head "$mode")"
+  # The commit App Review saw must exist on GitHub, not only in a worktree
+  if [ "$mode" = appstore ] && [ -z "$(git -C "$REPO_DIR" branch -r --contains HEAD 2>/dev/null)" ]; then
+    [ -n "${DRY_RUN:-}" ] || die "$head is on no remote branch: push it first, a store build has to be traceable on GitHub"
+    say "note: $head is on no remote branch (fine for a dry run)"
+  fi
+  if [ "$mode" = appstore ]; then
+    REMOTE_DIR="${APPSTORE_REMOTE_DIR:-$(store_mirror AppStore)}"
+  else
+    REMOTE_DIR="${TESTFLIGHT_REMOTE_DIR:-$(store_mirror TestFlight)}"
+  fi
+  REMOTE_ABS=""
+  lease "$(label "$mode" "$head")"
+  sync_tree
+  say "$mode build of $head on $REMOTE_HOST${DRY_RUN:+ (dry run: no upload)}"
+  t=$SECONDS
+  log="$REPO_DIR/build/remote/$mode.log"
+  mkdir -p "$(dirname "$log")"
+  agent store_ios "$mode" "$head" "$changelog" | tee "$log"
+  if [ -n "${DRY_RUN:-}" ]; then
+    grep -q "Dry run: .* was not uploaded" "$log" || die "the dry run did not finish; see $log"
+    say "$mode dry run of $head: built, signed and preflighted in $((SECONDS - t))s, nothing uploaded"
+    return 0
+  fi
+  line="$(grep -m1 'NYBS-UPLOAD' "$log" | sed "s/.*NYBS-UPLOAD.//" || true)"
+  [ -n "$line" ] || die "the upload did not finish; see $log"
+  mkdir -p "$(dirname "$STORE_LEDGER")"
+  printf '%s\n' "$line" >>"$STORE_LEDGER"
+  uploaded="$(printf '%s\n' "$line" | awk -F'\t' '{ print $3 " (" $4 ")" }')"
+  if [ "$mode" = appstore ]; then
+    say "App Store: $uploaded from $head uploaded in $((SECONDS - t))s; once Apple processes it (10-20 min), pick it for the version in App Store Connect, attach the in-app purchases, run /pre-review, and only then submit"
+  else
+    say "TestFlight: $uploaded from $head uploaded in $((SECONDS - t))s; Apple processes it for 10-20 min${changelog:+, the changelog follows on its own}"
+  fi
+}
+
+playtest_cmd() { # <changelog>
+  local changelog="${1:-}" head log t uploaded
+  [ -n "$PLAY_LANE" ] || die "this app has no Play upload: PLAY_LANE in scripts/remote.project.sh"
+  [ -n "$changelog" ] || die 'usage: scripts/remote.sh playtest "<what changed, for testers>"'
+  head="$(committed_head "Play")"
+  REMOTE_DIR="${PLAYTEST_REMOTE_DIR:-$(store_mirror PlayInternal)}"
+  REMOTE_ABS=""
+  lease "$(label playtest "$head")"
+  sync_tree
+  say "Play internal build of $head on $REMOTE_HOST"
+  t=$SECONDS
+  log="$REPO_DIR/build/remote/playtest.log"
+  mkdir -p "$(dirname "$log")"
+  agent playtest "$changelog" | tee "$log"
+  grep -q "Successfully finished the upload to Google Play" "$log" || die "the upload did not finish; see $log"
+  uploaded="$(sed -n 's/.*Play internal: \(.* ([0-9]*)\) uploaded.*/\1/p' "$log" | tail -1)"
+  say "Play internal: ${uploaded:-the build} from $head uploaded in $((SECONDS - t))s; testers get it from Google Play within minutes"
+}
+
 doctor_cmd() {
   say "here"
   echo "ssh       $REMOTE_HOST: $(ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" true 2>/dev/null && echo 'key login ok' || echo "NO KEY LOGIN (ssh-copy-id $REMOTE_HOST)")"
@@ -744,6 +927,8 @@ main() {
     sync) sync_tree; say "synced to $REMOTE_HOST:$REMOTE_ABS in ${T_SYNC}s" ;;
     shell) prepare; ssh -t "${SSH_OPTS[@]}" "$REMOTE_HOST" "cd $(q "$REMOTE_DIR") && exec \$SHELL -l" ;;
     doctor) doctor_cmd ;;
+    testflight | appstore) store_ios_cmd "$@" ;;
+    playtest) shift; playtest_cmd "$@" ;;
     *)
       if [ -n "${1:-}" ] && [[ " $PROJECT_COMMANDS " == *" $1 "* ]]; then
         "${1}_cmd" "${@:2}"
